@@ -2,6 +2,8 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { createClient } from '@supabase/supabase-js'
+const supabase = createClient('https://xfpbhkpdcvwytubbvjdp.supabase.co', import.meta.env.APIKEY)
 
 // https://vitejs.dev/config/
 export default defineConfig({
