@@ -1,13 +1,20 @@
-import './assets/main.css'
+/**
+ * main.js
+ *
+ * Bootstraps Vuetify and other plugins then mounts the App`
+ */
 
-import { createApp } from 'vue'
+// Components
 import App from './App.vue'
-import router from './router'
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://xfpbhkpdcvwytubbvjdp.supabase.co', import.meta.env.APIKEY)
+
+// Composables
+import { createApp } from 'vue'
+
+// Plugins
+import { registerPlugins } from '@/plugins'
 
 const app = createApp(App)
 
-app.use(router)
+registerPlugins(app)
 
 app.mount('#app')
