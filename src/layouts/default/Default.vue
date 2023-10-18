@@ -5,7 +5,7 @@
       <v-list-item to="/home" title="Homepage" link></v-list-item>
       <v-divider></v-divider>
       <v-list-item to="/test" title="Test Page Nav"></v-list-item>
-      <v-list-item to="/" title="Empty"></v-list-item>
+      <v-list-item to="/Users" title="Empty"></v-list-item>
       <v-list-item to="/" title="Empty"></v-list-item>
     </v-navigation-drawer>
 
@@ -16,18 +16,23 @@
     </v-app-bar>
 
     <v-main>
-      <router-view />
+      <v-container>
+        <router-view />
+      </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-const drawer = ref(null)
+/*import { ref } from 'vue'
+const drawer = ref(null)*/
 </script>
 
 <script>
+/*import EventBus, { ACTIONS } from '@/EventBus/index';*/
 export default {
-  data: () => ({ drawer: null })
+  data: () => ({
+    drawer: false
+  })
 }
 </script>
