@@ -4,8 +4,8 @@
       <v-list-item title="Homepage" link></v-list-item>
       <v-divider></v-divider>
       <v-list-item to="/test" title="Test Page Nav"></v-list-item>
-      <v-list-item link title="List Item 2"></v-list-item>
-      <v-list-item link title="List Item 3"></v-list-item>
+      <v-list-item to="/" title="Empty"></v-list-item>
+      <v-list-item to="/" title="Empty"></v-list-item>
     </v-navigation-drawer>
 
     <v-app-bar>
