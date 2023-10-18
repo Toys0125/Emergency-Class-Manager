@@ -3,24 +3,6 @@
   <v-card>
     <v-layout>
       <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
-
-      <v-app-bar color="primary" prominent>
-        <v-app-bar-nav-icon
-          variant="text"
-          @click.stop="drawer = !drawer"
-        ></v-app-bar-nav-icon>
-
-        <v-toolbar-title>Home</v-toolbar-title>
-
-        <v-spacer></v-spacer>
-      </v-app-bar>
-
-      <v-navigation-drawer v-model="drawer">
-      <v-list-item to="/signin" title="Sign In"></v-list-item>
-      <v-list-item to="/contact" title="Contact"></v-list-item>
-      <v-list-item to="/register" title="Register"></v-list-item>
-    </v-navigation-drawer>
-
       <v-main style="height: 600px">
         <v-card-item>
           <div>
