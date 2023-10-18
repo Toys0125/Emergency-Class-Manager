@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div>
       <v-img
@@ -23,7 +24,7 @@
         <v-card class="mb-12" color="surface-variant" variant="tonal">
           <v-card-text class="text-medium-emphasis text-caption">
             Enter your email address associated with Emergency Class Manager to
-            receive a link to sign in.
+            receive a link to register your account.
           </v-card-text>
         </v-card>
   
@@ -52,4 +53,3 @@
       }),
     }
   </script>
-  

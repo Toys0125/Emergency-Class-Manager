@@ -1,7 +1,8 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer">
-      <v-list-item title="Homepage" link></v-list-item>
+      <v-list-item to="/home" title="Homepage" link></v-list-item>
       <v-divider></v-divider>
       <v-list-item to="/test" title="Test Page Nav"></v-list-item>
       <v-list-item link title="List Item 2"></v-list-item>
@@ -11,7 +12,7 @@
     <v-app-bar>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Emergcy Class Manager</v-app-bar-title>
+      <v-app-bar-title>Emergency Class Manager</v-app-bar-title>
     </v-app-bar>
 
     <v-main>

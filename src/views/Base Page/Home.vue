@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-card>
     <v-layout>
@@ -14,9 +15,11 @@
         <v-spacer></v-spacer>
       </v-app-bar>
 
-      <v-navigation-drawer v-model="drawer" location="top" temporary>
-        <v-list :items="items"></v-list>
-      </v-navigation-drawer>
+      <v-navigation-drawer v-model="drawer">
+      <v-list-item to="/signin" title="Sign In"></v-list-item>
+      <v-list-item to="/contact" title="Contact"></v-list-item>
+      <v-list-item to="/register" title="Register"></v-list-item>
+    </v-navigation-drawer>
 
       <v-main style="height: 600px">
         <v-card-item>
@@ -42,15 +45,15 @@
       items: [
         {
           title: 'Sign In',
-          value: 'foo',
+          value: 'signin',
         },
         {
           title: 'Register',
-          value: 'bar',
+          value: 'register',
         },
         {
           title: 'Contact',
-          value: 'fizz',
+          value: 'contact',
         },
       ],
     }),
