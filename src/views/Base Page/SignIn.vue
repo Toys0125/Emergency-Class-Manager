@@ -38,7 +38,7 @@
           rel="noopener noreferrer"
           target="_blank"
         >
-          Sign up now <v-icon icon="mdi-chevron-right"></v-icon>
+        <v-list-item to="/register" title="Sign Up Now >"></v-list-item>
         </a>
       </v-card-text>
     </v-card>

@@ -12,6 +12,8 @@
         max-width="448"
         rounded="lg"
       >
+
+
         <div class="text-subtitle-1 text-medium-emphasis">Account</div>
   
         <v-text-field
@@ -31,17 +33,6 @@
         <v-btn block class="mb-8" color="blue" size="large" variant="tonal">
           Log In
         </v-btn>
-  
-        <v-card-text class="text-center">
-          <a
-            class="text-blue text-decoration-none"
-            href="#"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Sign up now <v-icon icon="mdi-chevron-right"></v-icon>
-          </a>
-        </v-card-text>
       </v-card>
     </div>
   </template>
