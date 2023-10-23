@@ -5,7 +5,6 @@
       <v-list-item to="/home" title="Homepage" link></v-list-item>
       <v-divider></v-divider>
       <v-list-item to="/signin" title="Sign In"></v-list-item>
-      <v-list-item to="/register" title="Register"></v-list-item>
       <v-list-item to="/contact" title="Contact"></v-list-item>
     </v-navigation-drawer>
 
