@@ -51,17 +51,35 @@ const routes = [
       {
         path: 'dashboard',
         name: 'Dashboard',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Dashboard.vue')
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Dashboard.vue'),
+        beforeEnter(to) {
+          alert('Sign in to view this page.');
+          if(to.name !== 'Home') {
+            return '/'
+          }
+        },
       },
       {
         path: 'roster',
         name: 'Roster',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Roster.vue')
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Roster.vue'),
+        beforeEnter(to) {
+          alert('Sign in to view this page.');
+          if(to.name !== 'Home') {
+            return '/'
+          }
+        },
       },
       {
         path: 'events',
         name: 'Events',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Events.vue')
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Events.vue'),
+        beforeEnter(to) {
+          alert('Sign in to view this page.');
+          if(to.name !== 'Home') {
+            return '/'
+          }
+        },
       },
     ],
   },
