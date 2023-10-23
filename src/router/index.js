@@ -4,7 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
+    //component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
         path: 'home',
@@ -36,11 +36,6 @@ const routes = [
         component: () => import(/* webpackChunkName: "Contact" */ '@/views/Base Page/Contact.vue')
       },
       {
-        path: 'register',
-        name: 'Register',
-        component: () => import(/* webpackChunkName: "Contact" */ '@/views/Base Page/Register.vue')
-      },
-      {
         path: 'users',
         name: 'Users',
         // route level code-splitting
@@ -52,23 +47,11 @@ const routes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Dashboard.vue'),
-        beforeEnter(to) {
-          alert('Sign in to view this page.');
-          if(to.name !== 'Home') {
-            return '/'
-          }
-        },
       },
       {
         path: 'roster',
         name: 'Roster',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Roster.vue'),
-        beforeEnter(to) {
-          alert('Sign in to view this page.');
-          if(to.name !== 'Home') {
-            return '/'
-          }
-        },
       },
       {
         path: 'events',

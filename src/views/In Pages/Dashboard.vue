@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div>
       <h1>Welcome to Your Dashboard</h1>
@@ -10,11 +11,11 @@
     </div>
   </template>
   
+  <script setup>
+  import AppBar from '@/layouts/default/AppBar.vue'
+  </script>
   <script>
   export default {
-    // eslint-disable-next-line vue/multi-word-component-names
-    name: 'Dashboard',
-    // You can add data, methods, and other logic here as needed.
-  };
+    AppBar
+  }
   </script>
-  
