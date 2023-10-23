@@ -4,10 +4,11 @@
     <v-navigation-drawer v-model="drawer">
       <v-list-item to="/home" title="Homepage" link></v-list-item>
       <v-divider></v-divider>
-      <v-list-item to="/test" title="Test Page Nav"></v-list-item>
-      <v-list-item to="/Users" title="Users"></v-list-item>
+      <v-list-item v-if="session" to="/test" title="Test Page Nav"></v-list-item>
+      <v-list-item v-if="session" to="/Users" title="Users"></v-list-item>
       <v-list-item to="/" title="Empty"></v-list-item>
-      <v-list-item @click="supabase.auth.signOut()" title="SignOut"/>
+      <v-list-item v-if="session" @click="supabase.auth.signOut()" title="SignOut"/>
+      <v-list-item v-if="!session" to="/login" title="Log in"/>
     </v-navigation-drawer>
 
     <v-app-bar>
@@ -38,8 +39,19 @@ const drawer = ref(null)*/
 <script>
   export default {
     data: () => ({
-      drawer: false
+      drawer: false,
+      session:{}
+    }),
+    onMounted() {
+    supabase.auth.getSession().then(({ data }) => {
+      this.session = data.session
     })
+
+    supabase.auth.onAuthStateChange((_, _session) => {
+      this.session = _session
+    })
+  },
+
   }
   </script>
 

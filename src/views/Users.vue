@@ -1,4 +1,5 @@
 <!-- eslint-disable vue/multi-word-component-names -->
+<!-- eslint-disable vue/valid-v-slot -->
 <template>
   <v-responsive class="fill-width">
     <v-text-field v-model="search" placeholder="Search Here" :onchange="searchRows"></v-text-field>

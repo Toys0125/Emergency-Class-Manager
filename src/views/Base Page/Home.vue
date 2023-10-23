@@ -2,9 +2,6 @@
 <template>
   <v-card>
     <v-layout>
-      <v-app-bar class="grow" app>
-        <Default />
-      </v-app-bar>
       <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
       <v-main style="height: 600px">
         <v-card-item>
@@ -24,13 +21,5 @@
   </v-card>
 </template>
 
-<script setup>
-import Default from '@/layouts/default/Default.vue'
-</script>
-<script>
-export default {
-  Default
-}
-</script>
 
 

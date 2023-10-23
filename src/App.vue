@@ -1,14 +1,10 @@
 <template>
-  <router-view v-if="session" :session="session" />
-  <v-container v-else>
-    <Auth />
-  </v-container>
+  <router-view/>
   <snackbar ref="snackbar" />
 </template>
 
 <script setup>
 import snackbar from './components/snackbar.vue'
-import Auth from './components/Auth.vue'
 import supabase from './supabase'
 </script>
 <script>
@@ -17,20 +13,10 @@ export default {
     session: {}
   }),
   components: {
-    snackbar,
-    Auth
+    snackbar
   },
   mounted() {
     this.$root.snackbar = this.$refs.snackbar
-  },
-  onMounted() {
-    supabase.auth.getSession().then(({ data }) => {
-      this.session = data.session
-    })
-
-    supabase.auth.onAuthStateChange((_, _session) => {
-      this.session = _session
-    })
   },
   computed: {
     async checkSession() {
