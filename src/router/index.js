@@ -52,7 +52,17 @@ const routes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Dashboard.vue')
-      }
+      },
+      {
+        path: 'roster',
+        name: 'Roster',
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Roster.vue')
+      },
+      {
+        path: 'events',
+        name: 'Events',
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Events.vue')
+      },
     ],
   },
 ]
