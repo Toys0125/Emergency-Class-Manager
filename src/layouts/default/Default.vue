@@ -4,8 +4,10 @@
     <v-navigation-drawer v-model="drawer">
       <v-list-item to="/home" title="Homepage" link></v-list-item>
       <v-divider></v-divider>
-      <v-list-item to="/signin" title="Sign In"></v-list-item>
-      <v-list-item to="/contact" title="Contact"></v-list-item>
+      <v-list-item to="/test" title="Test Page Nav"></v-list-item>
+      <v-list-item to="/Users" title="Users"></v-list-item>
+      <v-list-item to="/" title="Empty"></v-list-item>
+      <v-list-item @click="supabase.auth.signOut()" title="SignOut"/>
     </v-navigation-drawer>
 
     <v-app-bar>
@@ -25,6 +27,13 @@
     </v-main>
   </v-app>
 </template>
+
+<script setup>
+import supabase from '@/supabase';
+
+/*import { ref } from 'vue'
+const drawer = ref(null)*/
+</script>
 
 <script>
   export default {
