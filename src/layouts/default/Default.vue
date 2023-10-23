@@ -54,7 +54,6 @@ export default {
       await supabase.auth.signOut()
       console.log("signed out")
       this.session = null
-      console.log(this.session)
     }
   }
 }
