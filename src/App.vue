@@ -10,22 +10,11 @@
 import snackbar from './components/snackbar.vue'
 import Auth from './components/Auth.vue'
 import supabase from './supabase'
-import { onMounted } from 'vue'
-
-onMounted(() => {
-  supabase.auth.getSession().then(({ data }) => {
-    this.session = data.session
-  })
-
-  supabase.auth.onAuthStateChange((_, _session) => {
-    this.session = _session
-  })
-})
 </script>
 <script>
 export default {
   data: () => ({
-    session:{}
+    session: {}
   }),
   components: {
     snackbar,
@@ -33,6 +22,15 @@ export default {
   },
   mounted() {
     this.$root.snackbar = this.$refs.snackbar
+  },
+  onMounted() {
+    supabase.auth.getSession().then(({ data }) => {
+      this.session = data.session
+    })
+
+    supabase.auth.onAuthStateChange((_, _session) => {
+      this.session = _session
+    })
   },
   computed: {
     async checkSession() {
@@ -46,7 +44,6 @@ export default {
       return true
     }
   },
-  methods: {
-  }
+  methods: {}
 }
 </script>
