@@ -1,6 +1,8 @@
 <template>
   <router-view v-if="session" :session="session" />
-  <Auth v-else />
+  <v-container v-else>
+    <Auth />
+  </v-container>
   <snackbar ref="snackbar" />
 </template>
 
@@ -8,31 +10,31 @@
 import snackbar from './components/snackbar.vue'
 import Auth from './components/Auth.vue'
 import supabase from './supabase'
-import { ref } from 'vue'
 import { onMounted } from 'vue'
-const session = ref()
 
 onMounted(() => {
   supabase.auth.getSession().then(({ data }) => {
-    session.value = data.session
+    this.session = data.session
   })
 
   supabase.auth.onAuthStateChange((_, _session) => {
-    session.value = _session
+    this.session = _session
   })
 })
 </script>
 <script>
 export default {
+  data: () => ({
+    session:{}
+  }),
   components: {
     snackbar,
     Auth
   },
   mounted() {
     this.$root.snackbar = this.$refs.snackbar
-    console.log(this.$root.snackbar)
   },
-  computed:{
+  computed: {
     async checkSession() {
       const { data, error } = await supabase.auth.getSession()
       if (error) {
@@ -45,7 +47,6 @@ export default {
     }
   },
   methods: {
-
   }
 }
 </script>
