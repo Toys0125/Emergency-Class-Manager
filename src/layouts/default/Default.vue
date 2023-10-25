@@ -2,13 +2,20 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer">
-      <v-list-item to="/home" title="Homepage" link></v-list-item>
-      <v-divider></v-divider>
-      <v-list-item v-show="session" to="/test" title="Test Page Nav"></v-list-item>
-      <v-list-item v-show="session" to="/Users" title="Users"></v-list-item>
-      <v-list-item to="/" title="Empty"></v-list-item>
-      <v-list-item v-show="session" @click="signOut" title="Sign Out" />
-      <v-list-item v-show="!session" to="/signin" title="Sign in" />
+      <v-list>
+        <v-list-item to="/home" title="Homepage" link></v-list-item>
+        <v-divider></v-divider>
+        <v-list-item v-show="session" to="/test" title="Test Page Nav"></v-list-item>
+        <v-list-item to="/" title="Empty"></v-list-item>
+        <v-list-item v-show="session" @click="signOut" title="Sign Out" />
+        <v-list-item v-show="!session" to="/signin" title="Sign in" />
+        <v-list-group v-show="isAdmin && session" title="Admin Section">
+          <template v-slot:activator="{ props }">
+            <v-list-item v-bind="props" title="Admin Section"></v-list-item>
+          </template>
+          <v-list-item to="/Users" title="Users"> </v-list-item>
+        </v-list-group>
+      </v-list>
     </v-navigation-drawer>
 
     <v-app-bar>
@@ -38,7 +45,8 @@ const drawer = ref(null)*/
 export default {
   data: () => ({
     drawer: false,
-    session: null
+    session: null,
+    iamAdmin: null
   }),
   mounted() {
     supabase.auth.getSession().then(({ data }) => {
@@ -49,10 +57,17 @@ export default {
       this.session = _session
     })
   },
+  computed: {
+    isAdmin() {
+      if (this.iamAdmin != null) return this.iamAdmin
+      this.iamAdmin = true
+      return true
+    }
+  },
   methods: {
-    async signOut(){
+    async signOut() {
       await supabase.auth.signOut()
-      console.log("signed out")
+      console.log('signed out')
       this.session = null
     }
   }
