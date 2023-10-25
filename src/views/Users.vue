@@ -16,7 +16,9 @@
         item-value="name"
         @update:options="loadRows"
       >
-        <template v-slot:item.admin="{ value }"><v-checkbox prepend-icon="verified_user" :model-value="value"></v-checkbox></template>
+        <template v-slot:item.admin="{ value }"
+          ><v-checkbox prepend-icon="verified_user" :model-value="value"></v-checkbox
+        ></template>
       </v-data-table-server>
     </v-responsive>
   </v-container>
@@ -93,23 +95,22 @@ const supabaseRetrive = {
   async search({ page = 0, itemsPerPage = 50, sortBy = 'desc', text = '' }) {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage
-    console.log(from, to)
-    const { data, error } = await supabase.rpc('searchusers', text).range(from, to)
-    console.log(data)
-    if (error) {
-      console.error(error)
+    const response = await supabase.rpc('searchusers', { searchtext: text }).range(from, to)
+    console.log(response)
+    if (response.error) {
+      console.error(response.error)
       this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
     }
     if (sortBy.length) {
       const sortKey = sortBy[0].key
       const sortOrder = sortBy[0].order
-      data.sort((a, b) => {
+      response.data.sort((a, b) => {
         const aValue = a[sortKey]
         const bValue = b[sortKey]
         return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
       })
     }
-    return { rows: data }
+    return { rows: response.data }
   }
 }
 
@@ -137,11 +138,14 @@ export default {
     loadRows({ page, rowsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
-        this.toalrows = supabaseRetrive.count()
+        supabaseRetrive.count().then((count) => {
+          this.totalrows = count
+        })
       }
       this.options = { page: page, rowsPerPage: rowsPerPage, sortBy: sortBy }
       if (this.search.length < 3) {
         supabaseRetrive.fetch({ page, rowsPerPage, sortBy }).then(({ rows }) => {
+          console.log(rows)
           this.rows = rows
           this.loading = false
           this.$root.snackbar.show({ text: 'Loaded', timeout: 2000, color: 'blue' })
@@ -153,12 +157,20 @@ export default {
     },
     searchRows() {
       if (this.search.length < 3) return
-      supabaseRetrive.search({
-        page: this.options.page,
-        rowsPerPage: this.options.rowsPerPage,
-        sortBy: this.options.sortBy,
-        text: this.search
-      })
+      this.loading = true
+
+      supabaseRetrive
+        .search({
+          page: this.options.page,
+          rowsPerPage: this.options.rowsPerPage,
+          sortBy: this.options.sortBy,
+          text: this.search
+        })
+        .then(({rows}) => {
+          console.log(rows)
+          this.rows = rows
+          this.loading = false
+        })
     }
   }
 }

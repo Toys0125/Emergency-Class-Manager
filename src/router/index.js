@@ -7,12 +7,20 @@ const routes = [
     component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
-        path: '',
+        path: '/',
+        name: '',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "home" */ '@/views/Base Page/Home.vue')
+      },
+      {
+        path: 'home',
         name: 'Home',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Base Page/Home.vue'),
+        component: () => import(/* webpackChunkName: "home" */ '@/views/Base Page/Home.vue')
       },
       {
         path: 'test',
@@ -20,7 +28,7 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/Base Page/Test.vue'),
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/Base Page/Test.vue')
       },
       {
         path: 'signin',
@@ -28,7 +36,7 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "SignIn" */ '@/views/Base Page/SignIn.vue'),
+        component: () => import(/* webpackChunkName: "SignIn" */ '@/views/Base Page/SignIn.vue')
       },
       {
         path: 'contact',
@@ -41,41 +49,48 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/Users.vue'),
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/Users.vue')
       },
       {
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Dashboard.vue'),
+        beforeEnter(to) {
+          alert('Sign in to view this page.')
+          if (to.name !== 'Home') {
+            return '/'
+          }
+        }
       },
       {
         path: 'roster',
         name: 'Roster',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Roster.vue'),
+        beforeEnter(to) {
+          alert('Sign in to view this page.')
+          if (to.name !== 'Home') {
+            return '/'
+          }
+        }
       },
       {
         path: 'events',
         name: 'Events',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Events.vue'),
         beforeEnter(to) {
-          alert('Sign in to view this page.');
-          if(to.name !== 'Home') {
+          alert('Sign in to view this page.')
+          if (to.name !== 'Home') {
             return '/'
           }
-        },
-      },
-      {
-        path: 'account',
-        name: 'Account',
-        component: () => import(/* webpackChunkName: "Test" */ '@/components/Accounts.vue'),
-      },
-    ],
-  },
+        }
+      }
+    ]
+  }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes,
+  routes
 })
 
 export default router
