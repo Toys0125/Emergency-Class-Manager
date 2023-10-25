@@ -1,107 +1,165 @@
 <!-- eslint-disable vue/multi-word-component-names -->
+<!-- eslint-disable vue/valid-v-slot -->
 <template>
-    <v-container class="fill-height">
-      <v-responsive class="align-center text-center fill-height">
-        <v-data-table-server
-          v-model:items-per-page="itemsPerPage"
-          :headers="headers"
-          :items-length="totalItems"
-          :items="serverItems"
-          :loading="loading"
-          class="elevation-1"
-          item-value="name"
-          @update:options="loadItems"
-          
-        ></v-data-table-server>
-      </v-responsive>
-    </v-container>
-  </template>
-  
-  <script setup>
-  import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
-  </script>
-  <script>
-  const desserts = [
-    {
-      StudentID: 'Frozen Yogurt',
-      lName: 'hi',
-      fName: 'hi',
+  <v-responsive class="fill-width">
+    <v-text-field v-model="search" placeholder="Search Here" :onchange="searchRows"></v-text-field>
+  </v-responsive>
+  <v-container class="fill-height">
+    <v-responsive class="align-center text-center fill-height">
+      <v-data-table-server
+        v-model:items-per-page="rowsPerPage"
+        :headers="headers"
+        :items-length="totalrows"
+        :items="rows"
+        :loading="loading"
+        class="elevation-1"
+        item-value="name"
+        @update:options="loadRows"
+      >
+        <template v-slot:item.admin="{ value }"><v-checkbox prepend-icon="verified_user" :model-value="value"></v-checkbox></template>
+      </v-data-table-server>
+    </v-responsive>
+  </v-container>
+</template>
+
+<script setup>
+import supabase from '@/supabase'
+import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
+</script>
+<script>
+/*
+const FakeAPI = {
+  async fetch({ page, itemsPerPage, sortBy }) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const start = (page - 1) * itemsPerPage
+        const end = start + itemsPerPage
+        //const items = desserts.slice()
+
+        if (sortBy.length) {
+          const sortKey = sortBy[0].key
+          const sortOrder = sortBy[0].order
+          items.sort((a, b) => {
+            const aValue = a[sortKey]
+            const bValue = b[sortKey]
+            return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
+          })
+        }
+
+        const paginated = items.slice(start, end)
+
+        resolve({ items: paginated, total: items.length })
+      }, 500)
+    })
+  }
+}*/
+const supabaseRetrive = {
+  async count() {
+    const { count, error } = await supabase
+      .from('Students')
+      .select('*', { count: 'exact', head: true })
+    if (error) {
+      console.error(error)
+      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+    }
+    console.log(count)
+    return count
+  },
+  async fetch({ page = 0, itemsPerPage = 50, sortBy = 'desc' }) {
+    var from = (page - 1) * itemsPerPage
+    var to = page * itemsPerPage
+    console.log(from, to)
+    const { data, error } = await supabase
+      .from('Students')
+      .select('*')
+      .range(from, to)
+    console.log(data)
+    if (error) {
+      console.error(error)
+      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+    }
+    if (sortBy.length) {
+      const sortKey = sortBy[0].key
+      const sortOrder = sortBy[0].order
+      data.sort((a, b) => {
+        const aValue = a[sortKey]
+        const bValue = b[sortKey]
+        return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
+      })
+    }
+    return { rows: data }
+  },
+  async search({ page = 0, itemsPerPage = 50, sortBy = 'desc', text = '' }) {
+    var from = (page - 1) * itemsPerPage
+    var to = page * itemsPerPage
+    console.log(from, to)
+    const { data, error } = await supabase.rpc('searchusers', text).range(from, to)
+    console.log(data)
+    if (error) {
+      console.error(error)
+      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+    }
+    if (sortBy.length) {
+      const sortKey = sortBy[0].key
+      const sortOrder = sortBy[0].order
+      data.sort((a, b) => {
+        const aValue = a[sortKey]
+        const bValue = b[sortKey]
+        return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
+      })
+    }
+    return { rows: data }
+  }
+}
+
+export default {
+  data: () => ({
+    rowsPerPage: 5,
+    headers: [
+      {
+        title: 'StudentID',
+        align: 'start',
+        sortable: false,
+        key: 'student_id'
+      },
+      { title: 'ID Number', key: 'id_number', align: 'end' },
+      { title: 'First Name', key: 'fName', align: 'end' },
+      { title: 'Last Name', key: 'lName', align: 'end' },
+      { title: 'removed', key: 'admin', align: 'end' }
+    ],
+    rows: [],
+    loading: true,
+    totalrows: 0,
+    search: '',
+    options: { page: 1, rowsPerPage: 5, sortBy: {} }
+  }),
+  methods: {
+    loadRows({ page, rowsPerPage, sortBy }) {
+      this.loading = true
+      if (this.totalrows == 0) {
+        this.toalrows = supabaseRetrive.count()
+      }
+      this.options = { page: page, rowsPerPage: rowsPerPage, sortBy: sortBy }
+      if (this.search.length < 3) {
+        supabaseRetrive.fetch({ page, rowsPerPage, sortBy }).then(({ rows }) => {
+          this.rows = rows
+          this.loading = false
+          this.$root.snackbar.show({ text: 'Loaded', timeout: 2000, color: 'blue' })
+        })
+      } else {
+        this.searchRows()
+      }
+      console.log(this.$root.snackbar)
     },
-    {
-      StudentID: 'Jelly bean',
-      lName: 'hi',
-      fName: 'hi',
-    },
-    {
-      StudentID: 'KitKat',
-      lName: 'hi',
-      fName: 'hi',
-    },
-    {
-      StudentID: 'Eclair',
-      lName: 'hi',
-      fName: 'hi'
-    },
-    {
-      StudentID: 'Gingerbread',
-      lName: 'hi',
-      fName: 'hi',
-    },
-    {
-      StudentID: 'Ice cream sandwich',
-      lName: 'hi',
-      fName: 'hi',
-    },
-  ]
-  
-  const FakeAPI = {
-    async fetch({ page, itemsPerPage, sortBy }) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const start = (page - 1) * itemsPerPage
-          const end = start + itemsPerPage
-          const items = desserts.slice()
-  
-          if (sortBy.length) {
-            const sortKey = sortBy[0].key
-            const sortOrder = sortBy[0].order
-            items.sort((a, b) => {
-              const aValue = a[sortKey]
-              const bValue = b[sortKey]
-              return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
-            })
-          }
-  
-          const paginated = items.slice(start, end)
-  
-          resolve({ items: paginated, total: items.length })
-        }, 500)
+    searchRows() {
+      if (this.search.length < 3) return
+      supabaseRetrive.search({
+        page: this.options.page,
+        rowsPerPage: this.options.rowsPerPage,
+        sortBy: this.options.sortBy,
+        text: this.search
       })
     }
   }
-  
-  export default {
-    data: () => ({
-      itemsPerPage: 5,
-      headers: [
-        { title: 'Student ID', key: 'StudentID', align: 'end' },
-        { title: 'Last Name', key: 'lName', align: 'end' },
-        { title: 'First Name', key: 'fName', align: 'end' },
-      ],
-      serverItems: [],
-      loading: true,
-      totalItems: 0
-    }),
-    methods: {
-      loadItems({ page, itemsPerPage, sortBy }) {
-        this.loading = true
-        FakeAPI.fetch({ page, itemsPerPage, sortBy }).then(({ items, total }) => {
-          this.serverItems = items
-          this.totalItems = total
-          this.loading = false
-          this.$root.snackbar.show({ text: 'Loaded', timeout:2000,color:"blue"})
-        })
-      },
-    }
-  }
-  </script>
+}
+</script>

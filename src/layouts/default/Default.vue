@@ -2,11 +2,10 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer">
-      <v-list-item to="/home" title="Homepage" link></v-list-item>
+      <v-list-item to="/" title="Homepage" link></v-list-item>
       <v-divider></v-divider>
       <v-list-item v-show="session" to="/test" title="Test Page Nav"></v-list-item>
       <v-list-item v-show="session" to="/Users" title="Users"></v-list-item>
-      <v-list-item to="/" title="Empty"></v-list-item>
       <v-list-item v-show="session" @click="signOut" title="Sign Out" />
       <v-list-item v-show="!session" to="/signin" title="Sign in" />
     </v-navigation-drawer>
