@@ -31,6 +31,7 @@
 <script>
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import supabase from '@/supabase'
 
 export default {
   components: {
@@ -49,19 +50,25 @@ export default {
     };
   },
   methods: {
-    addEvent() {
+    async addEvent() {
       if (this.newEventTitle && this.newEventDate) {
         const event = {
-          title: this.newEventTitle,
+          eventName: this.newEventTitle,
           start: new Date(this.newEventDate)
         };
 
         if (this.newEventDesc) {
-        event.description = this.newEventDesc;
-      }
+          event.description = this.newEventDesc;
+        }
 
         // Add the new event to the FullCalendar
         this.$refs.calendar.getApi().addEvent(event);
+
+        await this.insertData({
+          date: this.newEventDate,
+          eventName: this.newEventTitle,
+          description: this.newEventDesc,
+        });
 
         // Clear input fields
         this.newEventTitle = '';
@@ -69,6 +76,17 @@ export default {
         this.newEventDesc = '';
       } else {
         alert('Please enter event title and date.');
+      }
+    },
+    async insertData(data) {
+      const { data: insertedData, error } = await supabase
+        .from('Events')
+        .insert([data]);
+      if (error) {
+        console.error(error)
+        this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      } else {
+        console.log('Data inserted:', insertedData);
       }
     }
   }

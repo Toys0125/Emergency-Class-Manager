@@ -76,6 +76,11 @@ const routes = [
         name: 'Events',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Events.vue'),
       },
+      {
+        path: 'account',
+        name: 'Account',
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Account.vue'),
+      }
     ]
   }
 ]

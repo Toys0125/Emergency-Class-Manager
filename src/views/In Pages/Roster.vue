@@ -119,7 +119,7 @@ export default {
       {
         title: 'StudentID',
         align: 'start',
-        sortable: false,
+        sortable: true,
         key: 'student_id'
       },
       { title: 'ID Number', key: 'id_number', align: 'end' },
@@ -137,7 +137,7 @@ export default {
     loadRows({ page, rowsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
-        this.toalrows = supabaseRetrive.count()
+        this.totalrows = supabaseRetrive.count()
       }
       this.options = { page: page, rowsPerPage: rowsPerPage, sortBy: sortBy }
       if (this.search.length < 3) {
