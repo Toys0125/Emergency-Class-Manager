@@ -3,18 +3,19 @@
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer">
       <v-list>
-        <v-list-item to="/" title="Homepage" link></v-list-item>
+        <v-list-item v-show="!session" to="/" title="Homepage" link></v-list-item>
         <v-divider></v-divider>
         <v-list-item v-show="!session" to="/signin" title="Sign in" />
         <v-list-item v-show="!session" to="/contact" title="Contact" />
+        <v-list-item v-show="session" to="/dashboard" title="Home" />
         <v-list-item v-show="session" to="/roster" title="Roster"/>
         <v-list-item v-show="session" to="/account" title="Account"/>
-        <v-list-item v-show="session" to="/events" title="Events"/>
         <v-list-group v-show="isAdmin && session" title="Admin Section">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Admin Section"></v-list-item>
           </template>
           <v-list-item to="/Users" title="Users"> </v-list-item>
+          <v-list-item to="/events" title="Events"/>
         </v-list-group>
         <v-list-item v-show="session" @click="signOut" to="/" title="Sign Out" />
       </v-list>
