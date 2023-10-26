@@ -1,69 +1,76 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <v-row>
-      <v-col>
-        <v-sheet height="400">
-          <v-calendar
-            ref="calendar"
-            :now="today"
-            :value="today"
-            :events="events"
-            color="primary"
-            type="week"
-          ></v-calendar>
-        </v-sheet>
-      </v-col>
-    </v-row>
-  </template>
+  <div>
+    <h1>Event Calendar</h1>
+
+    <!-- Input fields for event details -->
+    <div>
+      <label for="eventTitle">Event Title:</label>
+      <input type="text" id="eventTitle" v-model="newEventTitle">
+    </div>
+
+    <div>
+      <label for="eventDate">Event Date:</label>
+      <input type="datetime-local" id="eventDate" v-model="newEventDate">
+    </div>
+
+    <div>
+      <label for="eventDesc">Event Description:</label>
+      <input type="text" id="eventDesc" v-model="newEventDesc">
+    </div>
+
+    <div>
+      <button @click="addEvent">Add Event</button>
+    </div>
+
+    <!-- FullCalendar component to display events -->
+    <FullCalendar :options='calendarOptions' ref="calendar" />
+  </div>
+</template>
 
 <script>
+import FullCalendar from '@fullcalendar/vue3'
+import dayGridPlugin from '@fullcalendar/daygrid'
+
 export default {
-  data: () => ({
-    today: '2019-01-08',
-    events: [
-      {
-        name: 'Weekly Meeting',
-        start: '2019-01-07 09:00',
-        end: '2019-01-07 10:00',
-      },
-      {
-        name: `Thomas' Birthday`,
-        start: '2019-01-10',
-      },
-      {
-        name: 'Mash Potatoes',
-        start: '2019-01-09 12:30',
-        end: '2019-01-09 15:30',
-      },
-    ],
-  }),
-  mounted () {
-    this.$refs.calendar.scrollToTime('08:00')
+  components: {
+    FullCalendar
   },
-}
+  data() {
+    return {
+      calendarOptions: {
+        plugins: [dayGridPlugin],
+        initialView: 'dayGridMonth',
+        weekends: true,
+      },
+      newEventTitle: '',
+      newEventDate: '',
+      newEventDesc: '',
+    };
+  },
+  methods: {
+    addEvent() {
+      if (this.newEventTitle && this.newEventDate) {
+        const event = {
+          title: this.newEventTitle,
+          start: new Date(this.newEventDate)
+        };
+
+        if (this.newEventDesc) {
+        event.description = this.newEventDesc;
+      }
+
+        // Add the new event to the FullCalendar
+        this.$refs.calendar.getApi().addEvent(event);
+
+        // Clear input fields
+        this.newEventTitle = '';
+        this.newEventDate = '';
+        this.newEventDesc = '';
+      } else {
+        alert('Please enter event title and date.');
+      }
+    }
+  }
+};
 </script>
-
-<style scoped>
-.my-event {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border-radius: 2px;
-  background-color: #1867c0;
-  color: #ffffff;
-  border: 1px solid #1867c0;
-  font-size: 12px;
-  padding: 3px;
-  cursor: pointer;
-  margin-bottom: 1px;
-  left: 4px;
-  margin-right: 8px;
-  position: relative;
-}
-
-.my-event.with-time {
-  position: absolute;
-  right: 4px;
-  margin-right: 0px;
-}
-</style>
