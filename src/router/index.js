@@ -80,6 +80,11 @@ const routes = [
         path: 'account',
         name: 'Account',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Account.vue'),
+      },
+      {
+        path: 'modaltest',
+        name: 'ModalTest',
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/ModalTest.vue'),
       }
     ]
   }

@@ -27,32 +27,7 @@ import supabase from '@/supabase'
 import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
 </script>
 <script>
-/*
-const FakeAPI = {
-  async fetch({ page, itemsPerPage, sortBy }) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const start = (page - 1) * itemsPerPage
-        const end = start + itemsPerPage
-        //const items = desserts.slice()
 
-        if (sortBy.length) {
-          const sortKey = sortBy[0].key
-          const sortOrder = sortBy[0].order
-          items.sort((a, b) => {
-            const aValue = a[sortKey]
-            const bValue = b[sortKey]
-            return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
-          })
-        }
-
-        const paginated = items.slice(start, end)
-
-        resolve({ items: paginated, total: items.length })
-      }, 500)
-    })
-  }
-}*/
 const supabaseRetrive = {
   async count() {
     const { count, error } = await supabase
