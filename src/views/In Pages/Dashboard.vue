@@ -102,7 +102,7 @@ export default {
     headers: [
       {
         title: 'Event',
-        align: 'start',
+        align: 'end',
         sortable: true,
         key: 'eventName'
       },

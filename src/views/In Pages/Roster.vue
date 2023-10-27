@@ -118,7 +118,7 @@ export default {
     headers: [
       {
         title: 'StudentID',
-        align: 'start',
+        align: 'end',
         sortable: true,
         key: 'student_id'
       },
