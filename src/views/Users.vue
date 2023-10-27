@@ -1,6 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
+  <v-responsive>Click to edit a row of data</v-responsive>
   <v-responsive class="fill-width">
     <v-text-field v-model="search" placeholder="Search Here" :onchange="searchRows"></v-text-field>
   </v-responsive>
@@ -15,11 +16,36 @@
         class="elevation-1"
         item-value="name"
         @update:options="loadRows"
+        @click:row="editRow"
       >
         <template v-slot:item.admin="{ value }"
           ><v-checkbox prepend-icon="verified_user" :model-value="value"></v-checkbox
         ></template>
       </v-data-table-server>
+      <v-dialog v-model="model">
+        <v-card>
+          <v-card-text>
+            <v-text-field
+              v-model="modalData.userEmail"
+              placeholder="UserEmail"
+              label="User Email"
+            />
+            <v-row
+              ><v-text-field
+                v-model="modalData.fName"
+                placeholder="First Name"
+                label="First Name" />
+                
+              <v-text-field v-model="modalData.lName" placeholder="Last Name" label="Last Name"
+            /></v-row>
+
+            <v-checkbox v-model="modalData.admin" label="is Admin" :disabled="!superadmin"/>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="green" variant="flat">Submit</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-responsive>
   </v-container>
 </template>
@@ -100,14 +126,27 @@ export default {
       },
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
-      { title: 'admin', key: 'admin', align: 'end' }
+      { title: 'admin', key: 'admin', align: 'end', sortable: false }
     ],
     rows: [],
     loading: true,
     totalrows: 0,
     search: '',
-    options: { page: 1, rowsPerPage: 5, sortBy: {} }
+    options: { page: 1, rowsPerPage: 5, sortBy: {} },
+    model: false,
+    modalData: {
+      userEmail: null,
+      fName: null,
+      lName: null,
+      admin: null
+    }
   }),
+  computed: {
+    superadmin(){
+      return true
+      //Need to implement
+    }
+  },
   methods: {
     loadRows({ page, rowsPerPage, sortBy }) {
       this.loading = true
@@ -140,11 +179,24 @@ export default {
           sortBy: this.options.sortBy,
           text: this.search
         })
-        .then(({rows}) => {
+        .then(({ rows }) => {
           console.log(rows)
           this.rows = rows
           this.loading = false
         })
+    },
+    editRow(data, data2) {
+      //console.log(data)
+      //console.log(data2)
+      this.model = true
+      
+      this.modalData.userEmail=data2.item.userEmail
+      this.modalData.fName=data2.item.fName
+      this.modalData.lName=data2.item.lName
+      this.modalData.admin=data2.item.admin
+    },
+    submit(){
+
     }
   }
 }
