@@ -62,11 +62,6 @@ const routes = [
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Roster.vue'),
       },
       {
-        path: 'events',
-        name: 'Events',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Events.vue'),
-      },
-      {
         path: 'account',
         name: 'Account',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Account.vue'),
@@ -75,6 +70,11 @@ const routes = [
         path: 'events',
         name: 'Events',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Events.vue'),
+      },
+      {
+        path: 'teachevents',
+        name: 'TeacherEvents',
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/TeacherEvents.vue'),
       },
       {
         path: 'account',
@@ -83,8 +83,8 @@ const routes = [
       },
       {
         path: 'modaltest',
-        name: 'ModalTest',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/ModalTest.vue'),
+        name: 'DatePickerTest',
+        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/DatePickerTest.vue'),
       }
     ]
   }

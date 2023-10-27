@@ -2,22 +2,12 @@
 <template>
   <div>
     <h1>Event Calendar</h1>
-
-    <!-- Input fields for event details -->
-    <div>
-      <label for="eventTitle">Event Title:</label>
-      <input type="text" id="eventTitle" v-model="newEventTitle">
-    </div>
-
-    <div>
-      <label for="eventDate">Event Date:</label>
-      <input type="datetime-local" id="eventDate" v-model="newEventDate">
-    </div>
-
-    <div>
-      <label for="eventDesc">Event Description:</label>
-      <input type="text" id="eventDesc" v-model="newEventDesc">
-    </div>
+      
+    <v-app>
+    <v-container>
+      <v-date-picker></v-date-picker>
+    </v-container>
+  </v-app>
 
     <div>
       <button @click="addEvent">Add Event</button>
@@ -32,10 +22,12 @@
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import supabase from '@/supabase'
+import { VDatePicker } from 'vuetify/labs/VDatePicker'
 
 export default {
   components: {
-    FullCalendar
+    FullCalendar,
+    VDatePicker,
   },
   data() {
     return {
