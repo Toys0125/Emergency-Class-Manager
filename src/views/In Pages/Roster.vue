@@ -112,7 +112,9 @@ export default {
     loadRows({ page, rowsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
-        this.totalrows = supabaseRetrive.count()
+        this.totalrows = supabaseRetrive.count().then((count) => {
+          this.totalrows = count
+        })
       }
       this.options = { page: page, rowsPerPage: rowsPerPage, sortBy: sortBy }
       if (this.search.length < 3) {
