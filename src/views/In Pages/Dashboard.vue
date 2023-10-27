@@ -9,9 +9,6 @@
       Upcoming events:
     </h2>
   </div>
-  <v-responsive class="fill-width">
-    <v-text-field v-model="search" placeholder="Search Here" :onchange="searchRows"></v-text-field>
-  </v-responsive>
   <v-container class="fill-height">
     <v-responsive class="align-center text-center fill-height">
       <v-data-table-server
@@ -23,9 +20,33 @@
         class="elevation-1"
         item-value="name"
         @update:options="loadRows"
+        @click:row="editRow"
       >
-        <template v-slot:item.admin="{ value }"><v-checkbox prepend-icon="verified_user" :model-value="value"></v-checkbox></template>
       </v-data-table-server>
+      <v-dialog v-model="model">
+        <v-card>
+          <v-card-text>
+            <v-text-field
+              v-model="modalData.eventName"
+              placeholder="EventName"
+              label="Event Name"
+              readonly
+            />
+            <v-row
+              ><v-text-field
+                v-model="modalData.date"
+                placeholder="Date"
+                label="Date" 
+                readonly/>
+                
+              <v-text-field v-model="modalData.description" placeholder="Description" label="Description" readonly/>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="$emit('close')" color="green" variant="flat">Okay </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-responsive>
   </v-container>
 </template>
@@ -102,19 +123,22 @@ export default {
     headers: [
       {
         title: 'Event',
-        align: 'end',
+        align: 'center',
         sortable: true,
         key: 'eventName'
-      },
-      { title: 'Date', key: 'date', align: 'end' },
-      { title: 'Time', key: 'scheduledTime', align: 'end'},
-      { title: 'Description', key: 'description', align: 'end' }
+      }
     ],
     rows: [],
     loading: true,
     totalrows: 0,
     search: '',
-    options: { page: 1, rowsPerPage: 5, sortBy: {} }
+    options: { page: 1, rowsPerPage: 5, sortBy: {} },
+    model: false,
+    modalData: {
+      eventName: null,
+      date: null,
+      description: null,
+    }
   }),
   methods: {
     loadRows({ page, rowsPerPage, sortBy }) {
@@ -142,6 +166,18 @@ export default {
         sortBy: this.options.sortBy,
         text: this.search
       })
+    },
+    editRow(data, data2) {
+      //console.log(data)
+      //console.log(data2)
+      this.model = true
+      
+      this.modalData.eventName=data2.item.eventName
+      this.modalData.date=data2.item.date
+      this.modalData.description=data2.item.description
+    },
+    showModal() {
+      this.modal = false;
     }
   }
 }

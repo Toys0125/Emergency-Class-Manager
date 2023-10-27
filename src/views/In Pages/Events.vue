@@ -2,12 +2,22 @@
 <template>
   <div>
     <h1>Event Calendar</h1>
-      
-    <v-app>
-    <v-container>
-      <v-date-picker></v-date-picker>
-    </v-container>
-  </v-app>
+
+    <!-- Input fields for event details -->
+    <div>
+      <label for="eventTitle">Event Title:</label>
+      <input type="text" id="eventTitle" v-model="newEventTitle">
+    </div>
+
+    <div>
+      <label for="eventDate">Event Date:</label>
+      <input type="datetime-local" id="eventDate" v-model="newEventDate">
+    </div>
+
+    <div>
+      <label for="eventDesc">Event Description:</label>
+      <input type="text" id="eventDesc" v-model="newEventDesc">
+    </div>
 
     <div>
       <button @click="addEvent">Add Event</button>
@@ -22,12 +32,10 @@
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import supabase from '@/supabase'
-import { VDatePicker } from 'vuetify/labs/VDatePicker'
 
 export default {
   components: {
-    FullCalendar,
-    VDatePicker,
+    FullCalendar
   },
   data() {
     return {
@@ -46,7 +54,7 @@ export default {
       if (this.newEventTitle && this.newEventDate) {
         const event = {
           eventName: this.newEventTitle,
-          start: new Date(this.newEventDate)
+          start: new Date(this.newEventDate),
         };
 
         if (this.newEventDesc) {
@@ -67,7 +75,7 @@ export default {
         this.newEventDate = '';
         this.newEventDesc = '';
       } else {
-        alert('Please enter event title and date.');
+        alert('Please enter event title and date');
       }
     },
     async insertData(data) {
@@ -79,6 +87,7 @@ export default {
         this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
       } else {
         console.log('Data inserted:', insertedData);
+        this.$root.snackbar.show({ text: 'Data inserted into table', timeout: 10000, color: 'green' })
       }
     }
   }

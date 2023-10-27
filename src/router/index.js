@@ -76,16 +76,6 @@ const routes = [
         name: 'TeacherEvents',
         component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/TeacherEvents.vue'),
       },
-      {
-        path: 'account',
-        name: 'Account',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Account.vue'),
-      },
-      {
-        path: 'modaltest',
-        name: 'DatePickerTest',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/DatePickerTest.vue'),
-      }
     ]
   }
 ]
