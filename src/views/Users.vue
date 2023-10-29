@@ -8,13 +8,14 @@
   <v-container class="fill-height">
     <v-responsive class="align-center text-center fill-height">
       <v-data-table-server
-        v-model:items-per-page="rowsPerPage"
+        v-model:items-per-page="itemsPerPage"
         :headers="headers"
         :items-length="totalrows"
         :items="rows"
         :loading="loading"
         class="elevation-1"
         item-value="name"
+        :items-per-page-options="itemsPerPageOptions"
         @update:options="loadRows"
         @click:row="editRow"
       >
@@ -35,11 +36,11 @@
                 v-model="modalData.fName"
                 placeholder="First Name"
                 label="First Name" />
-                
+
               <v-text-field v-model="modalData.lName" placeholder="Last Name" label="Last Name"
             /></v-row>
 
-            <v-checkbox v-model="modalData.admin" label="is Admin" :disabled="!superadmin"/>
+            <v-checkbox v-model="modalData.admin" label="is Admin" :disabled="!superadmin" />
           </v-card-text>
           <v-card-actions>
             <v-btn color="green" variant="flat">Submit</v-btn>
@@ -116,7 +117,7 @@ const supabaseRetrive = {
 
 export default {
   data: () => ({
-    rowsPerPage: 5,
+    itemsPerPage: 5,
     headers: [
       {
         title: 'userEmail',
@@ -132,7 +133,8 @@ export default {
     loading: true,
     totalrows: 0,
     search: '',
-    options: { page: 1, rowsPerPage: 5, sortBy: {} },
+    options: { page: 1, itemsPerPage: 5, sortBy: {} },
+    itemsPerPageOptions:[{value: 1, title: '1'},{value: 5, title: '5'},{value: 10, title: '10'},{value: 20, title: '20'}],
     model: false,
     modalData: {
       userEmail: null,
@@ -142,22 +144,22 @@ export default {
     }
   }),
   computed: {
-    superadmin(){
+    superadmin() {
       return true
       //Need to implement
     }
   },
   methods: {
-    loadRows({ page, rowsPerPage, sortBy }) {
+    loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
         supabaseRetrive.count().then((count) => {
           this.totalrows = count
         })
       }
-      this.options = { page: page, rowsPerPage: rowsPerPage, sortBy: sortBy }
+      this.options = { page: page, itemsPerPage: itemsPerPage, sortBy: sortBy }
       if (this.search.length < 3) {
-        supabaseRetrive.fetch({ page, rowsPerPage, sortBy }).then(({ rows }) => {
+        supabaseRetrive.fetch({ page, itemsPerPage, sortBy }).then(({ rows }) => {
           console.log(rows)
           this.rows = rows
           this.loading = false
@@ -189,15 +191,13 @@ export default {
       //console.log(data)
       //console.log(data2)
       this.model = true
-      
-      this.modalData.userEmail=data2.item.userEmail
-      this.modalData.fName=data2.item.fName
-      this.modalData.lName=data2.item.lName
-      this.modalData.admin=data2.item.admin
-    },
-    submit(){
 
-    }
+      this.modalData.userEmail = data2.item.userEmail
+      this.modalData.fName = data2.item.fName
+      this.modalData.lName = data2.item.lName
+      this.modalData.admin = data2.item.admin
+    },
+    submit() {}
   }
 }
 </script>
