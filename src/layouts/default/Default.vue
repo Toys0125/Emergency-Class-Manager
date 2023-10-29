@@ -8,14 +8,14 @@
         <v-list-item v-show="!session" to="/signin" title="Sign in" />
         <v-list-item v-show="!session" to="/contact" title="Contact" />
         <v-list-item v-show="session" to="/dashboard" title="Home" />
-        <v-list-item v-show="session" to="/roster" title="Roster"/>
-        <v-list-item v-show="session" to="/account" title="Account"/>
+        <v-list-item v-show="session" to="/roster" title="Roster" />
+        <v-list-item v-show="session" to="/account" title="Account" />
         <v-list-group v-show="isAdmin && session" title="Admin Section">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Admin Section"></v-list-item>
           </template>
           <v-list-item to="/Users" title="Users"> </v-list-item>
-          <v-list-item to="/events" title="Events"/>
+          <v-list-item to="/events" title="Events" />
         </v-list-group>
         <v-list-item v-show="session" @click="signOut" to="/" title="Sign Out" />
       </v-list>
@@ -27,6 +27,7 @@
       <v-app-bar-title>Emergency Class Manager</v-app-bar-title>
 
       <v-spacer></v-spacer>
+      <v-switch v-model="darkMode" color="primary" @click="toggleTheme" />
     </v-app-bar>
 
     <v-main>
@@ -39,7 +40,16 @@
 
 <script setup>
 import supabase from '@/supabase'
+import { ref } from 'vue';
+import { useTheme } from 'vuetify/lib/framework.mjs'
+const theme = useTheme()
+const darkMode = ref(false)
 
+const toggleTheme = () => {
+  theme.global.name.value = darkMode.value == false ? "dark" : "light";
+  localStorage.setItem('DarkMode', darkMode.value)
+  console.log(`Current theme is dark? ${theme.global.current.value.dark}`);
+}
 /*import { ref } from 'vue'
 const drawer = ref(null)*/
 </script>
@@ -49,8 +59,20 @@ export default {
   data: () => ({
     drawer: false,
     session: null,
-    iamAdmin: null
+    iamAdmin: null,
+    darkMode: false
   }),
+  created() {
+    if (typeof window === 'object') {
+      if (localStorage.getItem('DarkMode')) {
+        const cookieValue = localStorage.getItem('DarkMode') === 'true'
+        this.darkMode = cookieValue
+        toggleTheme()
+      } else {
+        toggleTheme()
+      }
+    }
+  },
   mounted() {
     supabase.auth.getSession().then(({ data }) => {
       this.session = data.session
@@ -72,7 +94,7 @@ export default {
       await supabase.auth.signOut()
       console.log('signed out')
       this.session = null
-    }
+    },
   }
 }
 </script>
