@@ -43,12 +43,23 @@ import supabase from '@/supabase'
 import { ref } from 'vue';
 import { useTheme } from 'vuetify/lib/framework.mjs'
 const theme = useTheme()
-const darkMode = ref(false)
+const darkModeref = ref(false)
 
-const toggleTheme = () => {
-  theme.global.name.value = darkMode.value == false ? "dark" : "light";
-  localStorage.setItem('DarkMode', darkMode.value)
+const toggleTheme = (setValue = undefined) => {
+  if(setValue == "turn Dark"){
+    theme.global.name.value=setValue ? "dark" : "light";
+    console.log("Setting Darkmode")
+  }else{
+    theme.global.name.value = darkModeref.value == false ? "dark" : "light";
+    localStorage.setItem('DarkMode', darkModeref.value);
+  }
   console.log(`Current theme is dark? ${theme.global.current.value.dark}`);
+}
+if (typeof window === 'object') {
+  if (localStorage.getItem('DarkMode')) {
+    const cookieValue = localStorage.getItem('DarkMode') === 'true'
+    toggleTheme(cookieValue?"turn Dark":undefined)
+  }
 }
 /*import { ref } from 'vue'
 const drawer = ref(null)*/
@@ -63,15 +74,7 @@ export default {
     darkMode: false
   }),
   created() {
-    if (typeof window === 'object') {
-      if (localStorage.getItem('DarkMode')) {
-        const cookieValue = localStorage.getItem('DarkMode') === 'true'
-        this.darkMode = cookieValue
-        toggleTheme()
-      } else {
-        toggleTheme()
-      }
-    }
+    //this.darkMode=this.$vuetify.theme.current.dark
   },
   mounted() {
     supabase.auth.getSession().then(({ data }) => {
@@ -81,6 +84,7 @@ export default {
     supabase.auth.onAuthStateChange((_, _session) => {
       this.session = _session
     })
+    this.setDarkmodeValue()
   },
   computed: {
     isAdmin() {
@@ -95,6 +99,9 @@ export default {
       console.log('signed out')
       this.session = null
     },
+    async setDarkmodeValue(){
+      this.darkMode=true;
+    }
   }
 }
 </script>
