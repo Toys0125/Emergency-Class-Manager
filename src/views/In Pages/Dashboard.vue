@@ -12,13 +12,14 @@
   <v-container class="fill-height">
     <v-responsive class="align-center text-center fill-height">
       <v-data-table-server
-        v-model:items-per-page="rowsPerPage"
+        v-model:items-per-page="itemsPerPage"
         :headers="headers"
         :items-length="totalrows"
         :items="rows"
         :loading="loading"
         class="elevation-1"
         item-value="name"
+        :items-per-page-options="itemsPerPageOptions"
         @update:options="loadRows"
         @click:row="editRow"
       >
@@ -119,7 +120,7 @@ const supabaseRetrive = {
 
 export default {
   data: () => ({
-    rowsPerPage: 5,
+    itemsPerPage: 5,
     headers: [
       {
         title: 'Event',
@@ -132,7 +133,8 @@ export default {
     loading: true,
     totalrows: 0,
     search: '',
-    options: { page: 1, rowsPerPage: 5, sortBy: {} },
+    options: { page: 1, itemsPerPage: 5, sortBy: {} },
+    itemsPerPageOptions:[{value: 1, title: '1'},{value: 5, title: '5'},{value: 10, title: '10'},{value: 20, title: '20'}],
     model: false,
     modalData: {
       eventName: null,
@@ -141,14 +143,16 @@ export default {
     }
   }),
   methods: {
-    loadRows({ page, rowsPerPage, sortBy }) {
+    loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
-        this.totalrows = supabaseRetrive.count()
+        supabaseRetrive.count().then((count) => {
+          this.totalrows = count
+        })
       }
-      this.options = { page: page, rowsPerPage: rowsPerPage, sortBy: sortBy }
+      this.options = { page: page, rowsPerPage: itemsPerPage, sortBy: sortBy }
       if (this.search.length < 3) {
-        supabaseRetrive.fetch({ page, rowsPerPage, sortBy }).then(({ rows }) => {
+        supabaseRetrive.fetch({ page, itemsPerPage, sortBy }).then(({ rows }) => {
           this.rows = rows
           this.loading = false
           this.$root.snackbar.show({ text: 'Loaded', timeout: 2000, color: 'blue' })
