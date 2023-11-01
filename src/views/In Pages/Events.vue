@@ -5,26 +5,24 @@
 
     <!-- Input fields for event details -->
     <div>
-      <label for="eventTitle">Event Title:</label>
-      <input type="text" id="eventTitle" v-model="newEventTitle">
+      <v-text-field v-model="newEventTitle" placeholder="Event Title" label="Event Title" />
     </div>
 
     <div>
       <label for="eventDate">Event Date:</label>
-      <input type="datetime-local" id="eventDate" v-model="newEventDate">
+      <input type="datetime-local" id="eventDate" v-model="newEventDate" />
     </div>
 
     <div>
-      <label for="eventDesc">Event Description:</label>
-      <input type="text" id="eventDesc" v-model="newEventDesc">
+      <v-textarea v-model="newEventDesc" placeholder="Event Description"  label="Event Description" />
     </div>
 
     <div>
-      <button @click="addEvent">Add Event</button>
+      <v-btn color="green" variant="flat" @click="addEvent">Add Event</v-btn>
     </div>
 
     <!-- FullCalendar component to display events -->
-    <FullCalendar :options='calendarOptions' ref="calendar" />
+    <FullCalendar :options="calendarOptions" ref="calendar" />
   </div>
 </template>
 
@@ -42,54 +40,56 @@ export default {
       calendarOptions: {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
-        weekends: true,
+        weekends: true
       },
       newEventTitle: '',
       newEventDate: '',
-      newEventDesc: '',
-    };
+      newEventDesc: ''
+    }
   },
   methods: {
     async addEvent() {
       if (this.newEventTitle && this.newEventDate) {
         const event = {
           eventName: this.newEventTitle,
-          start: new Date(this.newEventDate),
-        };
+          start: new Date(this.newEventDate)
+        }
 
         if (this.newEventDesc) {
-          event.description = this.newEventDesc;
+          event.description = this.newEventDesc
         }
 
         // Add the new event to the FullCalendar
-        this.$refs.calendar.getApi().addEvent(event);
+        this.$refs.calendar.getApi().addEvent(event)
 
         await this.insertData({
           date: this.newEventDate,
           eventName: this.newEventTitle,
-          description: this.newEventDesc,
-        });
+          description: this.newEventDesc
+        })
 
         // Clear input fields
-        this.newEventTitle = '';
-        this.newEventDate = '';
-        this.newEventDesc = '';
+        this.newEventTitle = ''
+        this.newEventDate = ''
+        this.newEventDesc = ''
       } else {
-        alert('Please enter event title and date');
+        alert('Please enter event title and date')
       }
     },
     async insertData(data) {
-      const { data: insertedData, error } = await supabase
-        .from('Events')
-        .insert([data]);
+      const { data: insertedData, error } = await supabase.from('Events').insert([data])
       if (error) {
         console.error(error)
         this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
       } else {
-        console.log('Data inserted:', insertedData);
-        this.$root.snackbar.show({ text: 'Data inserted into table', timeout: 10000, color: 'green' })
+        console.log('Data inserted:', insertedData)
+        this.$root.snackbar.show({
+          text: 'Data inserted into table',
+          timeout: 10000,
+          color: 'green'
+        })
       }
     }
   }
-};
+}
 </script>
