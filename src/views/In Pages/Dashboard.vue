@@ -2,12 +2,8 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <div>
-    <h1>
-      Welcome to your Dashboard.
-    </h1>
-    <h2>
-      Upcoming events:
-    </h2>
+    <h1>Welcome to your Dashboard.</h1>
+    <h2>Upcoming events:</h2>
   </div>
   <v-container class="fill-height">
     <v-responsive class="align-center text-center fill-height">
@@ -34,17 +30,20 @@
               readonly
             />
             <v-row
-              ><v-text-field
-                v-model="modalData.date"
-                placeholder="Date"
-                label="Date" 
-                readonly/>
-                
-              <v-text-field v-model="modalData.description" placeholder="Description" label="Description" readonly/>
+              ><v-text-field v-model="modalData.date" placeholder="Date" label="Date" readonly />
+            </v-row>
+            <v-row>
+              <v-textarea
+                v-model="modalData.description"
+                placeholder="Description"
+                label="Description"
+                readonly
+                :disabled=true
+              />
             </v-row>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="$emit('close')" color="green" variant="flat">Okay </v-btn>
+            <v-btn @click="model=false" color="green" variant="flat">Okay </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -57,7 +56,7 @@ import supabase from '@/supabase'
 import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
 </script>
 <script>
-let date = new Date().toJSON();
+let date = new Date().toJSON()
 const supabaseRetrive = {
   async count() {
     const { count, error } = await supabase
@@ -77,7 +76,7 @@ const supabaseRetrive = {
     const { data, error } = await supabase
       .from('Events')
       .select('*')
-      .order('date', {ascending:true})
+      .order('date', { ascending: true })
       .eq('date', date)
     console.log(data)
     if (error) {
@@ -134,12 +133,17 @@ export default {
     totalrows: 0,
     search: '',
     options: { page: 1, itemsPerPage: 5, sortBy: {} },
-    itemsPerPageOptions:[{value: 1, title: '1'},{value: 5, title: '5'},{value: 10, title: '10'},{value: 20, title: '20'}],
+    itemsPerPageOptions: [
+      { value: 1, title: '1' },
+      { value: 5, title: '5' },
+      { value: 10, title: '10' },
+      { value: 20, title: '20' }
+    ],
     model: false,
     modalData: {
       eventName: null,
       date: null,
-      description: null,
+      description: null
     }
   }),
   methods: {
@@ -175,13 +179,13 @@ export default {
       //console.log(data)
       //console.log(data2)
       this.model = true
-      
-      this.modalData.eventName=data2.item.eventName
-      this.modalData.date=data2.item.date
-      this.modalData.description=data2.item.description
+
+      this.modalData.eventName = data2.item.eventName
+      this.modalData.date = data2.item.date
+      this.modalData.description = data2.item.description
     },
     showModal() {
-      this.modal = false;
+      this.modal = false
     }
   }
 }
