@@ -45,7 +45,7 @@ export default {
       calendarOptions: {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
-        weekends: false,
+        weekends: true,
         events: []
       },
       newEventTitle: '',
@@ -65,6 +65,8 @@ export default {
     if (error) {
       console.error(error);
     } else {
+      const d = new Date()
+      console.log(d);
       // Populate events in the calendar
       this.calendarOptions.events = events.map(event => ({
         title: event.eventName,

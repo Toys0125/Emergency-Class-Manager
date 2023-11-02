@@ -10,6 +10,7 @@
         <v-list-item v-show="session" to="/dashboard" title="Home" />
         <v-list-item v-show="session" to="/roster" title="Roster" />
         <v-list-item v-show="session" to="/account" title="Account" />
+        <v-list-item v-show="session" to="/teachevents" title="Teacher Events" />
         <v-list-group v-show="isAdmin && session" title="Admin Section">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Admin Section"></v-list-item>
