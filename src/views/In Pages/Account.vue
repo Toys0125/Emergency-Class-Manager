@@ -48,17 +48,14 @@ export default {
     };
   },
   mounted() {
-    // Fetch user data from Supabase and populate the user object
     this.fetchUserData();
   },
   methods: {
     async fetchUserData() {
-      // Use Supabase client to query user data based on the authenticated user's email
-      // Replace 'supabaseClient' with your actual Supabase client instance
       const { data, error } = await supabase
-        .from('Users') // Replace with your actual table name
+        .from('Users')
         .select('fName, lName, userEmail, phoneNum, emergcyInfo')
-        .eq('userEmail', 'hoskinskatie1@gmail.com'); // Replace with the authenticated user's email
+        .eq('userEmail', 'hoskinskatie1@gmail.com'); 
       if (error) {
         console.error('Error fetching user data:', error);
       } else {
@@ -70,17 +67,12 @@ export default {
     },
     async handleInput(field, value) {
       if (this.isEditing) {
-        // When in edit mode, update the user object with the input value
-        // For simplicity, we assume there's no validation here (add validation as needed)
         this.user[field] = value;
       }
     },
     async saveChanges() {
-      // Implement the logic to save the changes to the Supabase database
-      // Use the Supabase client to update the user data
-      // For example:
       const { error } = await supabase
-        .from('Users') // Replace with your actual table name
+        .from('Users') 
         .update([
           {
             fName: this.user.fName,
@@ -89,13 +81,12 @@ export default {
             emergcyInfo: this.user.emergcyInfo,
           },
         ])
-        .eq('userEmail', 'hoskinskatie1@gmail.com'); // Replace with the authenticated user's email
+        .eq('userEmail', 'hoskinskatie1@gmail.com'); 
 
       if (error) {
         console.error('Error saving changes:', error);
       } else {
-        // Changes saved successfully
-        this.isEditing = false; // Disable editing mode after saving
+        this.isEditing = false; 
       }
     },
   },
