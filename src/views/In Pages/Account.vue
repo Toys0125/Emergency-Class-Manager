@@ -5,7 +5,7 @@
       <v-btn icon="mdi-account"></v-btn>
 
       <v-toolbar-title class="font-weight-light">
-        My Profile
+        My Account
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -28,13 +28,13 @@
             <v-text-field label="Last Name" v-model="user.lName" :readonly="!isEditing" @input="handleInput('lName, user.lName')"></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field label="Email" v-model="user.userEmail" readonly></v-text-field>
+            <v-text-field :disabled=true label="Email" v-model="user.userEmail" readonly></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field label="Phone Number" v-model="user.phoneNum" :readonly="!isEditing" @input="handleInput('phoneNum, user.phoneNum')"></v-text-field>
+            <v-text-field :required=false label="Phone Number" v-model="user.phoneNum" :readonly="!isEditing" @input="handleInput('phoneNum, user.phoneNum')"></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field label="Emergency Contact Information" v-model="user.emergcyInfo" :readonly="!isEditing" @input="handleInput('emergcyInfo, user.emergcyInfo')"></v-text-field>
+            <v-text-field :required=false label="Emergency Contact Information" v-model="user.emergcyInfo" :readonly="!isEditing" @input="handleInput('emergcyInfo, user.emergcyInfo')"></v-text-field>
           </v-col>
         </v-row>
       </v-card-text>
@@ -43,7 +43,7 @@
     <v-card-actions>
       <v-spacer></v-spacer>
 
-      <v-btn :disabled="!isEditing" @click="save"> Save </v-btn>
+      <v-btn :disabled="!isEditing" @click="saveChanges"> Save </v-btn>
     </v-card-actions>
 
     <v-snackbar
@@ -56,6 +56,8 @@
       Your profile has been updated
     </v-snackbar>
     </v-card>
+
+    
   </div>
 </template>
 
@@ -101,6 +103,8 @@ export default {
       }
     },
     async saveChanges() {
+      this.isEditing = !this.isEditing
+      this.hasSaved = true
       const { error } = await supabase
         .from('Users') 
         .update([
