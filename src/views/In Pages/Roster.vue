@@ -16,7 +16,7 @@
         item-value="name"
         @update:options="loadRows"
       >
-        <template v-slot:item.admin="{ value }"><v-checkbox prepend-icon="verified_user" :model-value="value"></v-checkbox></template>
+        <template v-slot:item.id_number="{ value }"><p class="d-flex justify-left">{{ value }}</p></template>
       </v-data-table-server>
     </v-responsive>
   </v-container>
@@ -68,7 +68,7 @@ const supabaseRetrive = {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage-1
     console.log(from, to)
-    const { data, error } = await supabase.rpc('searchusers', text).range(from, to)
+    const { data, error } = await supabase.rpc('searchroster', { searchtext: text }).range(from, to)
     console.log(data)
     if (error) {
       console.error(error)
@@ -91,16 +91,9 @@ export default {
   data: () => ({
     itemsPerPage: 5,
     headers: [
-      {
-        title: 'StudentID',
-        align: 'end',
-        sortable: true,
-        key: 'student_id'
-      },
-      { title: 'ID Number', key: 'id_number', align: 'end' },
+      { title: 'ID Number', key: 'id_number', align: 'left' ,width:'20%' },
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
-      { title: 'removed', key: 'admin', align: 'end' }
     ],
     rows: [],
     loading: true,
@@ -130,7 +123,8 @@ export default {
       console.log(this.$root.snackbar)
     },
     searchRows() {
-      if (this.search.length < 3) return
+      if (this.search.length < 2) return
+      console.log("Searching")
       supabaseRetrive.search({
         page: this.options.page,
         rowsPerPage: this.options.rowsPerPage,
