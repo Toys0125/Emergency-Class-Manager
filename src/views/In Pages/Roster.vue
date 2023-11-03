@@ -66,7 +66,7 @@ const supabaseRetrive = {
   },
   async search({ page = 0, itemsPerPage = 50, sortBy = 'desc', text = '' }) {
     var from = (page - 1) * itemsPerPage
-    var to = page * itemsPerPage
+    var to = page * itemsPerPage-1
     console.log(from, to)
     const { data, error } = await supabase.rpc('searchusers', text).range(from, to)
     console.log(data)
