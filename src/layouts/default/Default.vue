@@ -22,13 +22,19 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar>
+    <v-app-bar class="d-flex">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Emergency Class Manager</v-app-bar-title>
+      <v-app-bar-title class="align-self-center">Emergency Class Manager</v-app-bar-title>
 
       <v-spacer></v-spacer>
-      <v-switch v-model="darkMode" color="primary" @change="toggleTheme($event)" />
+      <v-switch
+        class="align-self-baseline"
+        v-bind:prepend-icon="darkMode ? 'mdi-weather-night' : 'mdi-weather-sunny'"
+        v-model="darkMode"
+        color="primary"
+        @change="toggleTheme($event)"
+      ></v-switch>
     </v-app-bar>
 
     <v-main>
@@ -41,7 +47,7 @@
 
 <script setup>
 import supabase from '@/supabase'
-import { ref } from 'vue';
+import { ref } from 'vue'
 import { useTheme } from 'vuetify/lib/framework.mjs'
 const theme = useTheme()
 const darkMode = ref(false)
@@ -49,21 +55,21 @@ const darkMode = ref(false)
 const toggleTheme = (setValue = undefined) => {
   console.log(setValue)
   console.log(darkMode.value)
-  if(setValue == "turn Dark"){
-    theme.global.name.value=setValue ? "dark" : "light";
-    console.log("Setting Darkmode")
-  }else{
-    theme.global.name.value = darkMode.value == true ? "dark" : "light";
-    localStorage.setItem('DarkMode', darkMode.value);
+  if (setValue == 'turn Dark') {
+    theme.global.name.value = setValue ? 'dark' : 'light'
+    console.log('Setting Darkmode')
+  } else {
+    theme.global.name.value = darkMode.value == true ? 'dark' : 'light'
+    localStorage.setItem('DarkMode', darkMode.value)
   }
-  console.log(`Current theme is dark? ${theme.global.current.value.dark}`);
+  console.log(`Current theme is dark? ${theme.global.current.value.dark}`)
 }
 if (typeof window === 'object') {
   if (localStorage.getItem('DarkMode')) {
-    console.log("Dark Mode settings Found",localStorage.getItem('DarkMode'))
+    console.log('Dark Mode settings Found', localStorage.getItem('DarkMode'))
     const cookieValue = localStorage.getItem('DarkMode') === 'true'
-    toggleTheme(cookieValue?"turn Dark":undefined)
-    darkMode.value=true
+    toggleTheme(cookieValue ? 'turn Dark' : undefined)
+    darkMode.value = true
   }
 }
 /*import { ref } from 'vue'
@@ -106,3 +112,11 @@ export default {
   }
 }
 </script>
+<style scoped>
+  :deep() .v-table .v-table__wrapper > table > thead > tr > th:not(:last-child) {
+    border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  }
+  :deep() .v-table .v-table__wrapper > table > tbody > tr > td:not(:last-child), .v-table .v-table__wrapper > table > tbody > tr > th:not(:last-child) { 
+    border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  }
+</style>
