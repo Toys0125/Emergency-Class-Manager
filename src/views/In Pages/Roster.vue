@@ -42,7 +42,7 @@ const supabaseRetrive = {
   },
   async fetch({ page = 0, itemsPerPage = 50, sortBy = 'desc' }) {
     var from = (page - 1) * itemsPerPage
-    var to = page * itemsPerPage
+    var to = page * itemsPerPage - 1
     console.log(from, to)
     const { data, error } = await supabase
       .from('Students')
