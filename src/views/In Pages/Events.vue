@@ -5,26 +5,29 @@
 
     <!-- Input fields for event details -->
     <div>
-      <label for="eventTitle">Event Title:</label>
-      <input type="text" id="eventTitle" v-model="newEventTitle">
+      <v-text-field v-model="newEventTitle" placeholder="Event Title" label="Event Title" />
     </div>
 
     <div>
       <label for="eventDate">Event Date:</label>
-      <input type="datetime-local" id="eventDate" v-model="newEventDate">
+      <input type="date" id="eventDate" v-model="newEventDate" />
     </div>
 
     <div>
-      <label for="eventDesc">Event Description:</label>
-      <input type="text" id="eventDesc" v-model="newEventDesc">
+      <label for="eventTime">Event Time:</label>
+      <input type="time" id="scheduledTime" v-model="newEventTime" />
     </div>
 
     <div>
-      <button @click="addEvent">Add Event</button>
+      <v-textarea v-model="newEventDesc" placeholder="Event Description"  label="Event Description" />
+    </div>
+
+    <div>
+      <v-btn color="green" variant="flat" @click="addEvent">Add Event</v-btn>
     </div>
 
     <!-- FullCalendar component to display events -->
-    <FullCalendar :options='calendarOptions' ref="calendar" />
+    <FullCalendar :options="calendarOptions" ref="calendar" />
   </div>
 </template>
 
@@ -43,18 +46,48 @@ export default {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
         weekends: true,
+        events: []
       },
       newEventTitle: '',
       newEventDate: '',
+      newEventTime: '',
       newEventDesc: '',
     };
+  },
+  async mounted() {
+    // Load events from the database and populate the calendar
+    const { data: events, error } = await supabase
+      .from('Events')
+      .select('*');
+
+    console.log(events)
+    
+    if (error) {
+      console.error(error);
+    } else {
+      const d = new Date()
+      console.log(d);
+      // Populate events in the calendar
+      this.calendarOptions.events = events.map(event => ({
+        title: event.eventName,
+        //It does not like this .-.
+        //start: new Date(event.date),
+        //start: new Date(event.date + 'T' + event.scheduledTime),
+        //start: new Date(event.date + event.scheduledTime),
+        //start: new Date(`${event.date} + 'T' + ${event.scheduledTime}`)
+        //start: new Date(`${event.date} + ${event.scheduledTime}`)
+        //start: new Date(event.date, event.scheduledTime)
+        start: new Date(`${event.date} ${event.scheduledTime}`),
+      }));
+    }
   },
   methods: {
     async addEvent() {
       if (this.newEventTitle && this.newEventDate) {
         const event = {
-          eventName: this.newEventTitle,
-          start: new Date(this.newEventDate),
+          title: this.newEventTitle,
+          //It likes this & this works
+          start: new Date(this.newEventDate + 'T' + this.newEventTime),
         };
 
         if (this.newEventDesc) {
@@ -67,12 +100,14 @@ export default {
         await this.insertData({
           date: this.newEventDate,
           eventName: this.newEventTitle,
+          scheduledTime: this.newEventTime,
           description: this.newEventDesc,
         });
 
         // Clear input fields
         this.newEventTitle = '';
         this.newEventDate = '';
+        this.newEventTime = '';
         this.newEventDesc = '';
       } else {
         alert('Please enter event title and date');
@@ -89,7 +124,8 @@ export default {
         console.log('Data inserted:', insertedData);
         this.$root.snackbar.show({ text: 'Data inserted into table', timeout: 10000, color: 'green' })
       }
-    }
+    },
   }
 };
 </script>
+

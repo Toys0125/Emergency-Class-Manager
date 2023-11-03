@@ -10,6 +10,7 @@
         <v-list-item v-show="session" to="/dashboard" title="Home" />
         <v-list-item v-show="session" to="/roster" title="Roster" />
         <v-list-item v-show="session" to="/account" title="Account" />
+        <v-list-item v-show="session" to="/teachevents" title="Teacher Events" />
         <v-list-group v-show="isAdmin && session" title="Admin Section">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Admin Section"></v-list-item>
@@ -27,7 +28,7 @@
       <v-app-bar-title>Emergency Class Manager</v-app-bar-title>
 
       <v-spacer></v-spacer>
-      <v-switch v-model="darkMode" color="primary" @click="toggleTheme" />
+      <v-switch v-model="darkMode" color="primary" @change="toggleTheme($event)" />
     </v-app-bar>
 
     <v-main>
@@ -43,22 +44,26 @@ import supabase from '@/supabase'
 import { ref } from 'vue';
 import { useTheme } from 'vuetify/lib/framework.mjs'
 const theme = useTheme()
-const darkModeref = ref(false)
+const darkMode = ref(false)
 
 const toggleTheme = (setValue = undefined) => {
+  console.log(setValue)
+  console.log(darkMode.value)
   if(setValue == "turn Dark"){
     theme.global.name.value=setValue ? "dark" : "light";
     console.log("Setting Darkmode")
   }else{
-    theme.global.name.value = darkModeref.value == false ? "dark" : "light";
-    localStorage.setItem('DarkMode', darkModeref.value);
+    theme.global.name.value = darkMode.value == true ? "dark" : "light";
+    localStorage.setItem('DarkMode', darkMode.value);
   }
   console.log(`Current theme is dark? ${theme.global.current.value.dark}`);
 }
 if (typeof window === 'object') {
   if (localStorage.getItem('DarkMode')) {
+    console.log("Dark Mode settings Found",localStorage.getItem('DarkMode'))
     const cookieValue = localStorage.getItem('DarkMode') === 'true'
     toggleTheme(cookieValue?"turn Dark":undefined)
+    darkMode.value=true
   }
 }
 /*import { ref } from 'vue'
@@ -84,7 +89,6 @@ export default {
     supabase.auth.onAuthStateChange((_, _session) => {
       this.session = _session
     })
-    this.setDarkmodeValue()
   },
   computed: {
     isAdmin() {
@@ -98,9 +102,6 @@ export default {
       await supabase.auth.signOut()
       console.log('signed out')
       this.session = null
-    },
-    async setDarkmodeValue(){
-      this.darkMode=true;
     }
   }
 }
