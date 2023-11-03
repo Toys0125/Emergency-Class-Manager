@@ -17,11 +17,12 @@
         item-value="name"
         :items-per-page-options="itemsPerPageOptions"
         @update:options="loadRows"
-        @click:row="editRow"
       >
         <template v-slot:item.admin="{ value }"
-          ><v-checkbox prepend-icon="verified_user" :model-value="value"></v-checkbox
+          ><v-checkbox width="10px" prepend-icon="verified_user" :model-value="value" :disabled=true></v-checkbox
         ></template>
+        <template v-slot:item.edit="value"
+          ><v-btn color="green" @click="editRow(value.item)">Edit</v-btn></template>
       </v-data-table-server>
       <v-dialog v-model="model">
         <v-card>
@@ -127,7 +128,8 @@ export default {
       },
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
-      { title: 'admin', key: 'admin', align: 'end', sortable: false }
+      { title: 'admin', key: 'admin', align: 'end', sortable: false , width:"15%"},
+      { title:'Edit', key: 'edit', align:'end'}
     ],
     rows: [],
     loading: true,
@@ -187,7 +189,7 @@ export default {
           this.loading = false
         })
     },
-    editRow(data, data2) {
+    editRow(data2) {
       //console.log(data)
       //console.log(data2)
       this.model = true
