@@ -60,9 +60,7 @@ export default {
       } else {
         // Email doesn't exist in the database, insert it
         if (existingUser.length === 0) {
-          await this.insertData({
-            userEmail: this.email
-          });
+          await this.insertData({ userEmail: this.email });
           this.$root.snackbar.show({ text: 'Email inserted into the database', timeout: 10000, color: 'green' });
         }
 
@@ -82,10 +80,10 @@ export default {
         }
       }
     },
-    async insertData(email) {
+    async insertData(data) {
       const { data: insertedData, error } = await supabase
         .from('Users')
-        .insert(email);
+        .insert(data);
       if (error) {
         console.error(error);
         this.$root.snackbar.show({ text: 'Error inserting email into the database', timeout: 10000, color: 'red' });

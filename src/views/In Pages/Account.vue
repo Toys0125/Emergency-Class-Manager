@@ -1,147 +1,104 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-card
-    class="mx-auto"
-    color="blue-darken-2"
-    max-width="500"
-  >
-    <v-toolbar flat color="blue-darken-1">
-      <v-btn icon="mdi-account"></v-btn>
-
-      <v-toolbar-title class="font-weight-light">
-        User Profile
-      </v-toolbar-title>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        icon
-        @click="isEditing = !isEditing"
-      >
-        <v-fade-transition leave-absolute>
-          <v-icon v-if="isEditing">mdi-close</v-icon>
-
-          <v-icon v-else>mdi-pencil</v-icon>
-        </v-fade-transition>
-      </v-btn>
-    </v-toolbar>
-
-    <v-card-text>
-      <v-text-field
-        :disabled="true"
-        base-color="white"
-        label="Email"
-        readonly
-      ></v-text-field>
-
-      <v-text-field
-        :disabled="!isEditing"
-        base-color="white"
-        label="First Name"
-      ></v-text-field>
-
-      <v-text-field
-        :disabled="!isEditing"
-        base-color="white"
-        label="Last Name"
-      ></v-text-field>
-
-      <v-text-field
-      :disabled="!isEditing"
-      base-color="white"
-      label="Phone Number"
-      ></v-text-field>
-
-      <v-text-field
-        :disabled="!isEditing"
-        base-color="white"
-        label="Emergency Contact"
-      ></v-text-field>
-
-      <v-autocomplete
-        :disabled="true"
-        :items="states"
-        :custom-filter="customFilter"
-        base-color="white"
-        item-title="name"
-        label="School"
-        readonly
-      ></v-autocomplete>
-    </v-card-text>
-
-    <v-divider></v-divider>
-
-    <v-card-actions>
-      <v-spacer></v-spacer>
-
-      <v-btn
-        :disabled="!isEditing"
-        @click="save"
-      >
-        Save
-      </v-btn>
-    </v-card-actions>
-
-    <v-snackbar
-      v-model="hasSaved"
-      :timeout="2000"
-      attach
-      position="absolute"
-      location="bottom left"
-    >
-      Your profile has been updated
-    </v-snackbar>
-  </v-card>
+  <div>
+    <h1>My Account</h1>
+    <v-card>
+      <v-card-title>Account Information</v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field label="First Name" v-model="user.fName" :readonly="!isEditing" @input="handleInput('fName')"></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field label="Last Name" v-model="user.lName" :readonly="!isEditing" @input="handleInput('lName')"></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field label="Email" v-model="user.userEmail" readonly></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field label="Phone Number" v-model="user.phoneNum" :readonly="!isEditing" @input="handleInput('phoneNum')"></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field label="Emergency Contact Information" v-model="user.emergcyInfo" :readonly="!isEditing" @input="handleInput('emergcyInfo')"></v-text-field>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn @click="toggleEditing" color="primary">{{ isEditing ? 'Save' : 'Edit' }}</v-btn>
+      </v-card-actions>
+    </v-card>
+  </div>
 </template>
 
-<script>
-  export default {
-    data: () => ({
-      hasSaved: false,
-      isEditing: null,
-      schools: [
-        { name: 'Barkers Mill Elem.', id: 1 },
-        { name: 'Barksdale Elem.', id: 2 },
-        { name: 'Barksdale Elem. Spanish Em.', id: 3 },
-        { name: 'Burt Elementaryy', id: 4 },
-        { name: 'Byrns L. Darden Elem.', id: 5 },
-        { name: 'Carmel Elem.', id: 6 },
-        { name: 'Cumberland Heights Elem.', id: 7 },
-        { name: 'East Montgomery Elem.', id: 8 },
-        { name: 'Glenellen Elem.', id: 9 },
-        { name: 'Hazelwood Elem.', id: 10 },
-        { name: 'Kenwood Elem.', id: 11 },
-        { name: 'Kirkwood Elem.', id: 12 },
-        { name: 'Liberty Elem.', id: 13 },
-        { name: 'Minglewood Elem.', id: 14 },
-        { name: 'Montgomery Central Elem.', id: 15 },
-        { name: 'Moore Magnet Elem.', id: 16 },
-        { name: 'Norman Smith Elem.', id: 17 },
-        { name: 'Northeast Elem.', id: 18 },
-        { name: 'Oakland Elem.', id: 19 },
-        { name: 'Pisgah Elem.', id: 20 },
-        { name: 'Ringgold Elem.', id: 21 },
-        { name: 'Rossview Elem.', id: 22 },
-        { name: 'St. Bethlehem Elem.', id: 23 },
-        { name: 'Sango Elem.', id: 24 },
-        { name: 'West Creek Elem.', id: 25 },
-        { name: 'Woodlawn Elem.', id: 26 },
-      ],
-    }),
-
-    methods: {
-      customFilter (itemTitle, queryText, item) {
-        const textOne = item.raw.name.toLowerCase()
-        const textTwo = item.raw.abbr.toLowerCase()
-        const searchText = queryText.toLowerCase()
-
-        return textOne.indexOf(searchText) > -1 ||
-          textTwo.indexOf(searchText) > -1
-      },
-      save () {
-        this.isEditing = !this.isEditing
-        this.hasSaved = true
-      },
-    },
-  }
+<script setup>
+import supabase from '@/supabase'
 </script>
+<script>
+export default {
+  data() {
+    return {
+      user: {
+        fName: '',
+        lName: '',
+        userEmail: '',
+        phoneNum: '',
+        emergcyInfo: '',
+      },
+      isEditing: false,
+    };
+  },
+  mounted() {
+    // Fetch user data from Supabase and populate the user object
+    this.fetchUserData();
+  },
+  methods: {
+    async fetchUserData() {
+      // Use Supabase client to query user data based on the authenticated user's email
+      // Replace 'supabaseClient' with your actual Supabase client instance
+      const { data, error } = await supabase
+        .from('Users') // Replace with your actual table name
+        .select('fName, lName, userEmail, phoneNum, emergcyInfo')
+        .eq('userEmail', 'hoskinskatie1@gmail.com'); // Replace with the authenticated user's email
+      if (error) {
+        console.error('Error fetching user data:', error);
+      } else {
+        this.user = data[0];
+      }
+    },
+    toggleEditing() {
+      this.isEditing = !this.isEditing;
+    },
+    async handleInput(field, value) {
+      if (this.isEditing) {
+        // When in edit mode, update the user object with the input value
+        // For simplicity, we assume there's no validation here (add validation as needed)
+        this.user[field] = value;
+      }
+    },
+    async saveChanges() {
+      // Implement the logic to save the changes to the Supabase database
+      // Use the Supabase client to update the user data
+      // For example:
+      const { error } = await supabase
+        .from('Users') // Replace with your actual table name
+        .update([
+          {
+            fName: this.user.fName,
+            lName: this.user.lName,
+            phoneNum: this.user.phoneNum,
+            emergcyInfo: this.user.emergcyInfo,
+          },
+        ])
+        .eq('userEmail', 'hoskinskatie1@gmail.com'); // Replace with the authenticated user's email
+
+      if (error) {
+        console.error('Error saving changes:', error);
+      } else {
+        // Changes saved successfully
+        this.isEditing = false; // Disable editing mode after saving
+      }
+    },
+  },
+};
+</script>
+
