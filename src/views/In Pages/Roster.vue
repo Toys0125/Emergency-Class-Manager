@@ -94,10 +94,7 @@ export default {
       { title: 'ID Number', key: 'id_number', align: 'left' ,width:'20%' },
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
-<<<<<<< Updated upstream
-=======
       { title: 'removed', key: 'removed', align: 'end' }
->>>>>>> Stashed changes
     ],
     rows: [],
     loading: true,
@@ -127,17 +124,6 @@ export default {
       console.log(this.$root.snackbar)
     },
     searchRows() {
-<<<<<<< Updated upstream
-      if (this.search.length < 2) return
-      console.log("Searching")
-      supabaseRetrive.search({
-        page: this.options.page,
-        rowsPerPage: this.options.rowsPerPage,
-        sortBy: this.options.sortBy,
-        text: this.search
-      })
-    }
-=======
       if (this.search.length < 3) return
       this.loading = true
 
@@ -150,7 +136,6 @@ export default {
         })
     },
     
->>>>>>> Stashed changes
   }
 }
 </script>
