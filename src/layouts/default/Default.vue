@@ -17,6 +17,7 @@
           </template>
           <v-list-item to="/Users" title="Users"> </v-list-item>
           <v-list-item to="/events" title="Events" />
+          <v-list-item to="/classes" title="Classes" />
         </v-list-group>
         <v-list-item v-show="session" @click="signOut" to="/" title="Sign Out" />
       </v-list>
