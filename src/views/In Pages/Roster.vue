@@ -17,14 +17,17 @@
         @update:options="loadRows"
       >
         <template v-slot:item.id_number="{ value }"><p class="d-flex justify-left">{{ value }}</p></template>
+        <template v-slot:item.path="{ presence }">
+          <v-select v-model="cSel" :items="presence.path"> </v-select>
+        </template> 
       </v-data-table-server>
     </v-responsive>
   </v-container>
 </template>
 
 <script setup>
-import supabase from '@/supabase'
-import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
+  import supabase from '@/supabase'
+  import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
 </script>
 <script>
 
@@ -94,8 +97,9 @@ export default {
       { title: 'ID Number', key: 'id_number', align: 'left' ,width:'20%' },
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
-      { title: 'removed', key: 'removed', align: 'end' }
+      { title: 'Presense', value: 'presence', align: 'end' }
     ],
+    
     rows: [],
     loading: true,
     totalrows: 0,
