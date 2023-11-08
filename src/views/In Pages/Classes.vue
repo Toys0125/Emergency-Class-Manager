@@ -82,7 +82,7 @@ const supabaseRetrive = {
     const { data, error } = await supabase
       .rpc('searchclasses', { searchtext: text })
       .range(from, to)
-    console.log(data)
+    //console.log(data)
     if (error) {
       console.error(error)
       this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
@@ -121,29 +121,21 @@ export default {
     model: false,
     modalData: {
       class_id: null,
-      className: null,
-      itemsPerPage: 5,
-      headers: [
-        { title: 'Class Name', key: 'className', align: 'left' },
-        { title: 'Edit', key: 'edit', align: 'end', width: '20%' }
-      ],
-      rows: [],
-      loading: true,
-      totalrows: 0,
-      options: { page: 1, itemsPerPage: 5, sortBy: {} },
+      className: null
     }
   }),
   methods: {
     loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
-        this.totalrows = supabaseRetrive.count().then((count) => {
+        supabaseRetrive.count().then((count) => {
           this.totalrows = count
         })
       }
-      this.options = { page: page, rowsPerPage: itemsPerPage, sortBy: sortBy }
+      this.options = { page: page, itemsPerPage: itemsPerPage, sortBy: sortBy }
       if (this.search.length < 3) {
         supabaseRetrive.fetch({ page, itemsPerPage, sortBy }).then(({ rows }) => {
+          //console.log(rows)
           this.rows = rows
           this.loading = false
           this.$root.snackbar.show({ text: 'Loaded', timeout: 2000, color: 'blue' })
@@ -151,7 +143,7 @@ export default {
       } else {
         this.searchRows()
       }
-      console.log(this.$root.snackbar)
+      //console.log(this.$root.snackbar)
     },
     searchRows() {
       if (this.search.length < 2) return
@@ -164,20 +156,18 @@ export default {
       })
     },
     editRow(data2) {
-      //console.log(data)
       //console.log(data2)
+      this.modalData.class_id = data2.class_id
+      this.modalData.className = data2.className
       this.model = true
-
-      this.modalData.class_id = data2.item.class_id
-      this.modalData.classname = data2.item.className
     },
     addRow() {
       //console.log(data)
       //console.log(data2)
-      this.model = true
 
       this.modalData.class_id = null
       this.modalData.className = ''
+      this.model = true
     }
   }
 }

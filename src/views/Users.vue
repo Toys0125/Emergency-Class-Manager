@@ -162,7 +162,7 @@ export default {
       this.options = { page: page, itemsPerPage: itemsPerPage, sortBy: sortBy }
       if (this.search.length < 3) {
         supabaseRetrive.fetch({ page, itemsPerPage, sortBy }).then(({ rows }) => {
-          console.log(rows)
+          //console.log(rows)
           this.rows = rows
           this.loading = false
           this.$root.snackbar.show({ text: 'Loaded', timeout: 2000, color: 'blue' })
@@ -170,7 +170,7 @@ export default {
       } else {
         this.searchRows()
       }
-      console.log(this.$root.snackbar)
+      //console.log(this.$root.snackbar)
     },
     searchRows() {
       if (this.search.length < 3) return
