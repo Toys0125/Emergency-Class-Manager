@@ -49,37 +49,37 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/Users.vue')
+        component: () => import(/* webpackChunkName: "Users" */ '@/views/Users.vue')
       },
       {
         path: 'dashboard',
         name: 'Dashboard',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Dashboard.vue'),
+        component: () => import(/* webpackChunkName: "Dashboard" */ '@/views/In Pages/Dashboard.vue'),
       },
       {
         path: 'roster',
         name: 'Roster',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Roster.vue'),
+        component: () => import(/* webpackChunkName: "Roster" */ '@/views/In Pages/Roster.vue'),
       },
       {
         path: 'account',
         name: 'Account',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Account.vue'),
+        component: () => import(/* webpackChunkName: "Account" */ '@/views/In Pages/Account.vue'),
       },
       {
         path: 'events',
         name: 'Events',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Events.vue'),
+        component: () => import(/* webpackChunkName: "Events" */ '@/views/In Pages/Events.vue'),
       },
       {
         path: 'teachevents',
         name: 'TeacherEvents',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/TeacherEvents.vue'),
+        component: () => import(/* webpackChunkName: "TeacherEvents" */ '@/views/In Pages/TeacherEvents.vue'),
       },
       {
         path: 'classes',
         name: 'Classes',
-        component: () => import(/* webpackChunkName: "Test" */ '@/views/In Pages/Classes.vue'),
+        component: () => import(/* webpackChunkName: "Classes" */ '@/views/In Pages/Classes.vue'),
       }
     ]
   }
