@@ -15,11 +15,7 @@
         class="elevation-1"
         item-value="name"
         @update:options="loadRows"
-      >
-        <template v-slot:item.id_number="{ value }"><p class="d-flex justify-left">{{ value }}</p></template>
-        <template v-slot:item.path="{ presence }">
-          <v-select v-model="cSel" :items="presence.path"> </v-select>
-        </template> 
+      > 
       </v-data-table-server>
     </v-responsive>
   </v-container>
