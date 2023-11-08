@@ -10,6 +10,7 @@
       block
       class="mt-2"
       :text="loading ? 'Loading' : 'Send magic link'"
+      @click="addEmail"
     ></v-btn>
   </VForm>
 </template>
@@ -26,7 +27,10 @@ const handleLogin = async () => {
   try {
     loading.value = true
     const { error } = await supabase.auth.signInWithOtp({
-      email: email.value
+      email: email.value,
+      options: {
+        shouldCreateUser: true
+      }
     })
     if (error) throw error
     alert('Check your email for the login link!')

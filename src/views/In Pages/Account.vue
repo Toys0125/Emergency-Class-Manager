@@ -70,6 +70,7 @@ export default {
     return {
       hasSaved: false,
       isEditing: null,
+      unsavedChanges: false,
       user: {
         fName: '',
         lName: '',
@@ -84,10 +85,11 @@ export default {
   },
   methods: {
     async fetchUserData() {
+      const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from('Users')
-        .select('fName, lName, userEmail, phoneNum, emergcyInfo')
-        .eq('userEmail', 'hoskinskatie1@gmail.com'); 
+        .select('*')
+        .eq('userEmail', user.userEmail); 
       if (error) {
         console.error('Error fetching user data:', error);
       } else {
@@ -100,6 +102,7 @@ export default {
     async handleInput(field, value) {
       if (this.isEditing) {
         this.user[field] = value;
+        this.unsavedChanges = true;
       }
     },
     async saveChanges() {
@@ -115,14 +118,19 @@ export default {
             emergcyInfo: this.user.emergcyInfo,
           },
         ])
-        .eq('userEmail', 'hoskinskatie1@gmail.com'); 
+        .eq('userEmail', 'email@gmail.com'); 
 
       if (error) {
         console.error('Error saving changes:', error);
       } else {
         this.isEditing = false; 
       }
+      this.unsavedChanges = false;
     },
+  },
+  beforeRouteLeave (to, from) {
+  const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+  if (!answer) return false
   },
 };
 </script>

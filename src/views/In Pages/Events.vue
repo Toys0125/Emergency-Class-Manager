@@ -125,7 +125,8 @@ export default {
         this.$root.snackbar.show({ text: 'Data inserted into table', timeout: 10000, color: 'green' })
       }
     },
-  }
+  },
 };
 </script>
+
 
