@@ -67,7 +67,7 @@ const supabaseRetrive = {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage-1
     console.log(from, to)
-    const { data, error } = await supabase.rpc('searchroster', { searchtext: text }).range(from, to)
+    const { data, error } = await supabase.rpc('searchstudents', { searchtext: text }).range(from, to)
     console.log(data)
     if (error) {
       console.error(error)
