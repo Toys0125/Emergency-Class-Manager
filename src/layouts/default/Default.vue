@@ -11,6 +11,7 @@
         <v-list-item v-show="session" to="/roster" title="Roster" />
         <v-list-item v-show="session" to="/account" title="Account" />
         <v-list-item v-show="session" to="/teachevents" title="Teacher Events" />
+        <v-list-item v-show="session" to="/teachcontact" title="Contact Info" />
         <v-list-group v-show="isAdmin && session" title="Admin Section">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Admin Section"></v-list-item>
@@ -28,14 +29,19 @@
 
       <v-app-bar-title class="align-self-center">Emergency Class Manager</v-app-bar-title>
 
+      <router-link to="/dashboard">
+      <v-img
+        class="align-self-center"
+        src="src/assets/IMG_2734.jpeg-PhotoRoom.png-PhotoRoom.png"
+        height="100px"
+        width="150px"
+      ></v-img>
+    </router-link>
       <v-spacer></v-spacer>
-      <v-switch
-        class="align-self-baseline"
-        v-bind:prepend-icon="darkMode ? 'mdi-weather-night' : 'mdi-weather-sunny'"
-        v-model="darkMode"
-        color="primary"
-        @change="toggleTheme($event)"
-      ></v-switch>
+      
+
+      <v-switch class="align-self-baseline" v-bind:prepend-icon="darkMode ? 'mdi-weather-night' : 'mdi-weather-sunny'"
+        v-model="darkMode" color="primary" @change="toggleTheme($event)"></v-switch>
     </v-app-bar>
 
     <v-main>
@@ -114,10 +120,12 @@ export default {
 }
 </script>
 <style scoped>
-  :deep() .v-table .v-table__wrapper > table > thead > tr > th:not(:last-child) {
-    border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-  }
-  :deep() .v-table .v-table__wrapper > table > tbody > tr > td:not(:last-child), .v-table .v-table__wrapper > table > tbody > tr > th:not(:last-child) { 
-    border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-  }
+:deep() .v-table .v-table__wrapper>table>thead>tr>th:not(:last-child) {
+  border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+:deep() .v-table .v-table__wrapper>table>tbody>tr>td:not(:last-child),
+.v-table .v-table__wrapper>table>tbody>tr>th:not(:last-child) {
+  border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
 </style>

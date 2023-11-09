@@ -10,7 +10,6 @@
       block
       class="mt-2"
       :text="loading ? 'Loading' : 'Send magic link'"
-      @click="addEmail"
     ></v-btn>
   </VForm>
 </template>
@@ -36,6 +35,7 @@ const handleLogin = async () => {
     alert('Check your email for the login link!')
   } catch (error) {
     if (error instanceof Error) {
+      console.log("Error: " + error)
       alert(error.message)
     }
   } finally {
@@ -51,39 +51,6 @@ export default {
     };
   },
   methods: {
-    async addEmail() {
-      // Check if the email already exists in the database
-      const { data: existingUser, error: queryError } = await supabase
-        .from('Users')
-        .select('*')
-        .eq('userEmail', this.email);
-
-      if (queryError) {
-        console.error(queryError);
-        this.$root.snackbar.show({ text: 'Error checking email in the database', timeout: 10000, color: 'red' });
-      } else {
-        // Email doesn't exist in the database, insert it
-        if (existingUser.length === 0) {
-          await this.insertData({ userEmail: this.email });
-          this.$root.snackbar.show({ text: 'Email inserted into the database', timeout: 10000, color: 'green' });
-        }
-
-        // Proceed to sign in with the email
-        try {
-          const { error } = await supabase.auth.signInWithOtp({
-            email: this.email
-          });
-          if (error) {
-            throw error;
-          }
-          alert('Check your email for the login link!');
-        } catch (error) {
-          if (error instanceof Error) {
-            alert(error.message);
-          }
-        }
-      }
-    },
     async insertData(data) {
       const { data: insertedData, error } = await supabase
         .from('Users')

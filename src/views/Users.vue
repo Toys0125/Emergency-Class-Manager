@@ -39,7 +39,10 @@
                 label="First Name" />
 
               <v-text-field v-model="modalData.lName" placeholder="Last Name" label="Last Name"
-            /></v-row>
+            />
+              
+          </v-row>
+          <v-text-field v-model="modalData.school" placeholder="School" label="School"/>
 
             <v-checkbox v-model="modalData.admin" label="is Admin" :disabled="!superadmin" />
           </v-card-text>
@@ -128,6 +131,7 @@ export default {
       },
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
+      { title: 'School', key: 'school', align: 'end' },
       { title: 'admin', key: 'admin', align: 'end', sortable: false , width:"15%"},
       { title:'Edit', key: 'edit', align:'end'}
     ],
@@ -142,6 +146,7 @@ export default {
       userEmail: null,
       fName: null,
       lName: null,
+      school: null,
       admin: null
     }
   }),
@@ -197,6 +202,7 @@ export default {
       this.modalData.userEmail = data2.item.userEmail
       this.modalData.fName = data2.item.fName
       this.modalData.lName = data2.item.lName
+      this.modalData.school = data2.item.school
       this.modalData.admin = data2.item.admin
     },
     submit() {}
