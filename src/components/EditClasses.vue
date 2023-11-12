@@ -28,21 +28,34 @@
               ><p class="d-flex justify-left">{{ value }}</p></template
             >
             <template v-slot:item.edit="value"
-              ><v-btn color="red" variant="outlined" @click="removeRow(value.item)">Remove</v-btn></template
+              ><v-btn color="red" variant="outlined" @click="removeRow(value.item)"
+                >Remove</v-btn
+              ></template
             >
           </v-data-table-server>
         </v-row>
         <v-row>
-          <v-col width="10%" align-self="start">
-            <v-autocomplete placeholder="Id Number"></v-autocomplete>
-          </v-col>
-          <v-col>
-            <v-autocomplete placeholder="First Name"></v-autocomplete>
-          </v-col>
-          <v-col>
-            <v-autocomplete placeholder="Last Name"></v-autocomplete>
-          </v-col>
+          <v-autocomplete
+            v-model="searchData.selected"
+            placeholder="Search for student"
+            :items="searchData.rows"
+            @update:search="studentSearch"
+            :loading="searchData.loading"
+            item-title="fName"
+            no-filter
+            ><template v-slot:selection="{ item }">
+              <p>{{ item?.raw?.id_number + '\t' + item?.raw?.fName + '\t' + item?.raw?.lName }}</p>
+            </template>
+            <template v-slot:item="{ props, item }">
+              <v-list-item
+                v-bind="props"
+                :title="item?.raw?.id_number + '\t' + item?.raw?.fName + '\t' + item?.raw?.lName"
+              ></v-list-item> </template
+          ></v-autocomplete>
         </v-row>
+        <v-row v-show="searchData.selected"
+          ><v-spacer></v-spacer> <v-btn color="primary" outlined align-end>Add User</v-btn></v-row
+        >
       </v-container>
     </v-card-text>
     <v-card-actions class="d-flex align-end flex-column">
@@ -101,12 +114,12 @@ const supabaseRetrive = {
     var to = page * itemsPerPage - 1
     console.log(from, to)
     const { data, error } = await supabase
-      .rpc('searchstudents', { searchtext: text })
+      .rpc('searchpermstudents', { searchtext: text })
       .range(from, to)
     console.log(data)
     if (error) {
       console.error(error)
-      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      throw error
     }
     if (sortBy.length) {
       const sortKey = sortBy[0].key
@@ -116,6 +129,15 @@ const supabaseRetrive = {
         const bValue = b[sortKey]
         return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
       })
+    }
+    return { rows: data }
+  },
+  async searchStudents({ text = '' }) {
+    const { data, error } = await supabase.rpc('searchstudents', { searchtext: text }).range(0, 5)
+    //console.log(data)
+    if (error) {
+      console.error(error)
+      throw error
     }
     return { rows: data }
   }
@@ -149,7 +171,13 @@ export default {
       class_id: null,
       className: null
     },
-    editItem: false
+    addedRows: [],
+    searchData: {
+      selected: null,
+      rows: [],
+      text: '',
+      loading: false
+    }
   }),
   methods: {
     loadRows({ page, itemsPerPage, sortBy }) {
@@ -169,6 +197,9 @@ export default {
             this.loading = false
             this.$root.snackbar.show({ text: 'Loaded', timeout: 2000, color: 'blue' })
           })
+          .catch(() => {
+            this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+          })
       } else {
         this.searchRows()
       }
@@ -184,21 +215,56 @@ export default {
         text: this.search
       })
     },
-    async saveChanges() {
-      const { error } = await supabase.from('Perm Roaster').insert([
-        {
-          class_id: this.modalData.class_id
+    async studentSearch(searchtext) {
+      if (searchtext.length > 3) {
+        if (this.searchData.text != searchtext) {
+          this.searchData.loading = true
+          this.searchData.text = searchtext
+          await supabaseRetrive
+            .searchStudents({ text: this.searchData.text })
+            .then((data) => {
+              console.log(data)
+              this.searchData.rows = data.rows
+              this.searchData.loading = false
+            })
+            .catch(() => {
+              this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+              this.loading = false
+            })
         }
-      ])
+      }
+    },
+    async saveChanges() {
+      var newrows = []
+      this.addedRows.forEach((element) => {
+        newrows.push({ class_id: this.modalData.class_id, student_id: element.student_id })
+      })
+      const { error } = await supabase.from('Perm Roaster').insert(newrows)
 
       if (error) {
         console.error('Error saving changes:', error)
+        this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
       } else {
         this.isEditing = false
       }
     },
+    addStudent(){
+      this.addedRows.push(this.searchData.selected)
+      this.searchData.selected = null
+    },
     async removeRow(rowdata) {
       console.log(rowdata)
+      if (this.addedRows.includes(rowdata)) {
+        if (
+          await this.$refs.confirm.open(
+            'Confirm',
+            'Are you sure you want to delete this added record?'
+          )
+        ) {
+          this.addedRows.splice(this.addedRows.indexOf(rowdata), 1)
+          return
+        }
+      }
       if (
         await this.$refs.confirm.open('Confirm', 'Are you sure you want to delete this record?')
       ) {
