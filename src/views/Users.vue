@@ -22,7 +22,7 @@
           ><v-checkbox width="10px" prepend-icon="verified_user" :model-value="value" :disabled=true></v-checkbox
         ></template>
         <template v-slot:item.edit="value"
-          ><v-btn color="green" @click="editRow(value.item)">Edit</v-btn></template>
+          ><v-btn color="green" @click="editRow(value)">Edit</v-btn></template>
       </v-data-table-server>
       <v-dialog v-model="model">
         <v-card>
