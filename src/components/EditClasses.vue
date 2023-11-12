@@ -204,6 +204,15 @@ export default {
       ) {
         //this.rows.splice(this.rows.findIndex(rowdata),1)
         console.log("Delete row.")
+        const {error} = await supabase.from('Perm roaster').delete().eq('class_id',this.modalData.class_id).eq('student_id',rowdata.student_id)
+        if (error) {
+          console.error('Error Deleting row from supabase', error)
+          this.$root.snackbar.show({ text:'Error Removing Student', color:'Red', timeout:5000})
+        }
+        else{
+          const index = this.rows.findIndex(rowdata)
+          this.rows.splice(index)
+        }
       }
     }
   },
