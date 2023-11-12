@@ -1,7 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
-  <v-responsive>Click to edit a row of data</v-responsive>
   <v-responsive class="fill-width">
     <v-text-field v-model="search" placeholder="Search Here" :onchange="searchRows"></v-text-field>
   </v-responsive>
@@ -76,15 +75,12 @@ const supabaseRetrive = {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage -1
     console.log(from, to)
-    const { data, error } = await supabase
-      .from('Users')
-      .select('*')
-      .range(from, to)
-      .neq('removed', true)
+    const { data, error } = await supabase.rpc('getusers').range(from, to)
     console.log(data)
     if (error) {
       console.error(error)
       this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      throw(error)
     }
     if (sortBy.length) {
       const sortKey = sortBy[0].key
@@ -105,6 +101,7 @@ const supabaseRetrive = {
     if (response.error) {
       console.error(response.error)
       this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      throw(response.error)
     }
     if (sortBy.length) {
       const sortKey = sortBy[0].key
@@ -116,6 +113,16 @@ const supabaseRetrive = {
       })
     }
     return { rows: response.data }
+  },
+  async getSuperAdmin(userEmail){
+    const response = await supabase.from('Users').select('superAdmin').eq('userEmail',userEmail)
+    console.log(response)
+    if (response.error) {
+      console.error(response.error)
+      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      throw(response.error)
+    }
+    return response.data[0].superAdmin
   }
 }
 
@@ -148,15 +155,28 @@ export default {
       lName: null,
       school: null,
       admin: null
-    }
+    },
+    iamsuperAdmin: null
   }),
   computed: {
     superadmin() {
-      return true
-      //Need to implement
+      return this.iamsuperAdmin
     }
   },
+  mounted() {
+    this.getSuperAdmin();
+  },
   methods: {
+    async getSuperAdmin(){
+      const { data, error } = await supabase.auth.getSession()
+      if (error) {
+        this.$root.snackbar.show({ text: 'Auth Error', timeout: 5000, color: 'red' })
+        return false
+      }
+      if (data.session == null) return false
+      console.log("Super admin log", data.session.user.email)
+      this.iamsuperAdmin = await supabaseRetrive.getSuperAdmin(data.session.user.email)
+    },
     loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
@@ -194,16 +214,16 @@ export default {
           this.loading = false
         })
     },
-    editRow(data2) {
+    editRow(data) {
       //console.log(data)
-      //console.log(data2)
+      //Provided data is value.item.{columns}
       this.model = true
 
-      this.modalData.userEmail = data2.item.userEmail
-      this.modalData.fName = data2.item.fName
-      this.modalData.lName = data2.item.lName
-      this.modalData.school = data2.item.school
-      this.modalData.admin = data2.item.admin
+      this.modalData.userEmail = data.item.userEmail
+      this.modalData.fName = data.item.fName
+      this.modalData.lName = data.item.lName
+      this.modalData.school = data.item.school
+      this.modalData.admin = data.item.admin
     },
     submit() {}
   }
