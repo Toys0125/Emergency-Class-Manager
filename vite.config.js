@@ -29,6 +29,14 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      external: [
+        /^node:.*/,
+        'srv/assets/*'
+      ]
+    }
+  },
   define: { 'process.env': {} },
   resolve: {
     alias: {
