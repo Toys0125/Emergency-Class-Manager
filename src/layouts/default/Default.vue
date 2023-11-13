@@ -27,16 +27,17 @@
     <v-app-bar class="d-flex">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title class="align-self-center">Emergency Class Manager</v-app-bar-title>
-
-      <router-link to="/dashboard">
+      <v-app-bar-title class="align-self-center"><router-link to="/dashboard">
       <v-img
         class="align-self-center"
         src="src/assets/IMG_2734.jpeg-PhotoRoom.png-PhotoRoom.png"
         height="100px"
         width="150px"
+        to="/dashboard"
       ></v-img>
-    </router-link>
+      </router-link></v-app-bar-title>
+
+      
       <v-spacer></v-spacer>
       
 
