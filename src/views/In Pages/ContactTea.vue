@@ -23,23 +23,11 @@
           <v-card>
             <v-card-text>
               <v-text-field
-                v-model="modalData.eventName"
-                placeholder="EventName"
-                label="Event Name"
+                v-model="modalData.pEmail"
+                placeholder="Principal Email"
+                label="Principal Email"
                 readonly
               />
-              <v-row
-                ><v-text-field v-model="modalData.date" placeholder="Date" label="Date" readonly />
-              </v-row>
-              <v-row>
-                <v-textarea
-                  v-model="modalData.description"
-                  placeholder="Description"
-                  label="Description"
-                  readonly
-                  :disabled=true
-                />
-              </v-row>
             </v-card-text>
             <v-card-actions>
               <v-btn @click="model=false" color="green" variant="flat">Okay </v-btn>
@@ -138,9 +126,7 @@
       ],
       model: false,
       modalData: {
-        eventName: null,
-        date: null,
-        description: null
+        pEmail: null,
       }
     }),
     methods: {

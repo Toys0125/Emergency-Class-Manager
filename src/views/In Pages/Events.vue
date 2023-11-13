@@ -65,13 +65,12 @@ export default {
     if (error) {
       console.error(error);
     } else {
-      const d = new Date()
+      const d = new Date().toISOString()
       console.log(d);
       // Populate events in the calendar
 
       this.calendarOptions.events = events.map(event => ({
         title: event.eventName,
-
         start: new Date(event.date),
       }));
     }

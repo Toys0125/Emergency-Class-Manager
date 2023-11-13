@@ -16,6 +16,15 @@
         item-value="name"
         @update:options="loadRows"
       > 
+      <template v-slot:item.presence="{ item }">
+          <v-select
+            v-model="item.presence"
+            :items="presenceOptions"
+            label="Select"
+            outlined
+            dense
+          ></v-select>
+        </template>
       </v-data-table-server>
     </v-responsive>
   </v-container>
@@ -24,6 +33,8 @@
 <script setup>
   import supabase from '@/supabase'
   import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
+
+  const presenceOptions = ['Present', 'Absent', 'Visiting'];
 </script>
 <script>
 
@@ -83,7 +94,7 @@ const supabaseRetrive = {
       })
     }
     return { rows: data }
-  }
+  },
 }
 
 export default {
