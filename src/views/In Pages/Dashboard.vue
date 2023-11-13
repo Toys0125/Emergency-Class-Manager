@@ -61,6 +61,7 @@ const supabaseRetrive = {
     const { count, error } = await supabase
       .from('Events')
       .select('*', { count: 'exact', head: true })
+      .eq('date', date)
     if (error) {
       console.error(error)
       this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
