@@ -30,7 +30,7 @@
       <v-app-bar-title class="align-self-center"><router-link to="/dashboard">
       <v-img
         class="align-self-center"
-        src="src/assets/IMG_2734.jpeg-PhotoRoom.png-PhotoRoom.png"
+        src="@/assets/IMG_2734.jpeg-PhotoRoom.png-PhotoRoom.png"
         height="100px"
         width="150px"
         to="/dashboard"
