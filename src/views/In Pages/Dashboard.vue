@@ -57,6 +57,7 @@ import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
 <script>
 const supabaseRetrive = {
   async count() {
+    let date = new Date()
     const { count, error } = await supabase
       .from('Events')
       .select('*', { count: 'exact', head: true })
