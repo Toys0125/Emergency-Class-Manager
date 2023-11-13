@@ -22,7 +22,7 @@
       <v-card-text>
         <v-row>
           <v-col cols="12">
-            <v-text-field :disabled=true label="Email" v-model="user.email" readonly></v-text-field>
+            <v-text-field :disabled=true label="Email" v-model="user.userEmail" readonly></v-text-field>
           </v-col>
           <v-col cols="12">
             <v-text-field :disabled=true label="School" v-model="user.school" readonly></v-text-field>
@@ -98,15 +98,17 @@ export default {
 
           const { data, error } = await supabase
             .from('Users')
-            .select('*')
-            .eq('email', userEmail);
+            .select('userEmail, fName, lName, phoneNum, emergcyInfo, school:Schools(school)')
+            .eq('userEmail', userEmail);
 
           if (error) {
             console.error('Error fetching user data:', error);
           } else if (data.length > 0) {
-            this.user = data[0]; // Populate the user data object with fetched data
+            const userWithSchool = data[0];
+
+            this.user= {...userWithSchool,
+            school: userWithSchool.school.school}
           }
-          // Now you can use the email for further processing, such as fetching user data from your 'Users' table.
         } else {
           console.error('User email not found.');
         }
@@ -138,7 +140,7 @@ export default {
             emergcyInfo: this.user.emergcyInfo,
           },
         ])
-        .eq('email', userEmail);
+        .eq('userEmail', userEmail);
 
       if (error) {
         console.error('Error saving changes:', error);
