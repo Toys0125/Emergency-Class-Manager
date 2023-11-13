@@ -56,7 +56,6 @@ import supabase from '@/supabase'
 import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
 </script>
 <script>
-let date = new Date().toJSON()
 const supabaseRetrive = {
   async count() {
     const { count, error } = await supabase
@@ -70,6 +69,8 @@ const supabaseRetrive = {
     return count
   },
   async fetch({ page = 0, itemsPerPage = 50, sortBy = 'date' }) {
+    let date = new Date()
+    let formattedDate = date.toLocaleDateString();
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage
     console.log(from, to)
@@ -77,7 +78,7 @@ const supabaseRetrive = {
       .from('Events')
       .select('*')
       .order('date', { ascending: true })
-      .eq('date', date)
+      .eq('date', formattedDate)
     console.log(data)
     if (error) {
       console.error(error)

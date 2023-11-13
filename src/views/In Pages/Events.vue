@@ -68,16 +68,11 @@ export default {
       const d = new Date()
       console.log(d);
       // Populate events in the calendar
+
       this.calendarOptions.events = events.map(event => ({
         title: event.eventName,
-        //It does not like this .-.
-        //start: new Date(event.date),
-        //start: new Date(event.date + 'T' + event.scheduledTime),
-        //start: new Date(event.date + event.scheduledTime),
-        //start: new Date(`${event.date} + 'T' + ${event.scheduledTime}`)
-        //start: new Date(`${event.date} + ${event.scheduledTime}`)
-        //start: new Date(event.date, event.scheduledTime)
-        start: new Date(`${event.date} ${event.scheduledTime}`),
+
+        start: new Date(event.date),
       }));
     }
   },
