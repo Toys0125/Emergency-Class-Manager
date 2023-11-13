@@ -39,7 +39,7 @@ export default {
       )
       this.mode = snackbarOptions.mode
       this.snackBar = true
-      console.log('Snack bar show')
+      //console.log('Snack bar show')
     }
   }
 }
