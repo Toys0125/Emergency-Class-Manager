@@ -17,7 +17,6 @@
         item-value="name"
         :items-per-page-options="itemsPerPageOptions"
         @update:options="loadRows"
-        @click:row="editRow"
       >
       </v-data-table-server>
       <v-dialog v-model="model">
