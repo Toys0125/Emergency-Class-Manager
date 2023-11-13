@@ -270,18 +270,12 @@ export default {
               text: this.search,
               class_id: this.modalData.class_id
             })
-          ]).then((data) => {
-            //console.log(data)
-            this.searchData.rows = data[0].rows
-            this.rows = data[1].rows
-            this.loading = false
-            this.searchData.loading = false
-          })
-          await supabaseRetrive
-            .searchStudents({ text: this.searchData.text })
+          ])
             .then((data) => {
-              console.log(data)
-              this.searchData.rows = data.rows
+              //console.log(data)
+              this.searchData.rows = data[0].rows
+              this.rows = data[1].rows
+              this.loading = false
               this.searchData.loading = false
             })
             .catch(() => {
@@ -347,7 +341,9 @@ export default {
       }
     },
     addStudent() {
-      var exists = this.rows.find(value => value.student_id == this.searchData.selected.student_id)
+      var exists = this.rows.find(
+        (value) => value.student_id == this.searchData.selected.student_id
+      )
       if (!exists) {
         this.addedRows.push(this.searchData.selected)
         this.rows.push(this.searchData.selected)
