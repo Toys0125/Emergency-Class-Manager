@@ -31,38 +31,79 @@
       </v-data-table-server>
       <v-dialog v-model="model">
         <v-card>
-          <v-card-text>
-            <v-text-field
-              v-model="modalData.userEmail"
-              placeholder="UserEmail"
-              label="User Email"
-            />
-            <v-row
-              ><v-text-field
+          <v-form v-model="valid" @submit.prevent="submit">
+            <v-card-text>
+              <v-text-field
+                v-model="modalData.userEmail"
+                placeholder="UserEmail"
+                label="User Email"
+                :rules="[
+                  (v) => !!v || 'Name is required',
+                  (v) => (v && v.length > 4) || 'Must be more than 4 characters'
+                ]"
+                :loading="modalData.loading"
+              ></v-text-field>
+
+              <v-text-field
                 v-model="modalData.fName"
                 placeholder="First Name"
                 label="First Name"
+                :rules="[
+                  (v) => !!v || 'Name is required',
+                  (v) => (v && v.length > 4) || 'Must be more than 4 characters'
+                ]"
+                :loading="modalData.loading"
               />
 
-              <v-text-field v-model="modalData.lName" placeholder="Last Name" label="Last Name" />
-            </v-row>
-            <v-autocomplete
-              v-model="searchData.selected"
-              placeholder="Search for school"
-              :items="searchData.rows"
-              @update:search="schoolSearch"
-              :loading="searchData.loading"
-              item-title="school"
-              no-filter
-              return-object
-              @onkeyup.enter="updateSchool"
-            ></v-autocomplete>
-            <v-btn v-show="modalData.school_id != searchData.selected.school_id" @click="updateSchool">Change Schools</v-btn>
-            <v-checkbox v-model="modalData.admin" label="is Admin" :disabled="!superadmin" />
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="green" variant="flat">Submit</v-btn>
-          </v-card-actions>
+              <v-text-field
+                v-model="modalData.lName"
+                placeholder="Last Name"
+                label="Last Name"
+                :rules="[
+                  (v) => !!v || 'Name is required',
+                  (v) => (v && v.length > 4) || 'Must be more than 4 characters'
+                ]"
+                :loading="modalData.loading"
+              />
+
+              <v-autocomplete
+                v-model="searchData.selected"
+                placeholder="Search for school"
+                :items="searchData.rows"
+                @update:search="schoolSearch"
+                :loading="searchData.loading || modalData.loading"
+                item-title="school"
+                no-filter
+                return-object
+                @onkeyup.enter="updateSchool"
+              ></v-autocomplete>
+              <v-btn
+                v-show="modalData.school_id != searchData.selected.school_id"
+                @click="updateSchool"
+                color="primary"
+                >Change Schools</v-btn
+              >
+              <v-checkbox
+                v-model="modalData.admin"
+                label="is Admin"
+                :disabled="!superadmin"
+                :loading="modalData.loading"
+              />
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                :color="valid ? 'green' : 'red'"
+                variant="flat"
+                type="submit"
+                :disabled="!hasChanged"
+                :loading="modalData.loading"
+                @click="submit"
+                >Submit</v-btn
+              >
+            </v-card-actions>
+          </v-form>
         </v-card>
       </v-dialog>
     </v-responsive>
@@ -83,7 +124,7 @@ const supabaseRetrive = {
       console.error(error)
       this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
     }
-   //console.log(count)
+    //console.log(count)
     return count
   },
   async fetch({ page = 0, itemsPerPage = 50, sortBy = 'desc' }) {
@@ -178,14 +219,17 @@ export default {
       { value: 20, title: '20' }
     ],
     model: false,
+    passedData: null,
     modalData: {
       userEmail: null,
       fName: null,
       lName: null,
       school: null,
       school_id: null,
-      admin: null
+      admin: null,
+      loading: false
     },
+    valid: false,
     searchData: {
       selected: null,
       rows: [],
@@ -197,6 +241,12 @@ export default {
   computed: {
     superadmin() {
       return this.iamsuperAdmin
+    },
+    hasChanged() {
+      if (this.modalData.userEmail != this.passedData.userEmail) return true
+      if (this.modalData.fName != this.passedData.fName) return true
+      if (this.modalData.lName != this.passedData.lName) return true
+      return false
     }
   },
   mounted() {
@@ -272,7 +322,7 @@ export default {
       //console.log(data)
       //Provided data is value.item.{columns}
       this.model = true
-
+      this.passedData = data.item
       this.modalData.userEmail = data.item.userEmail
       this.modalData.fName = data.item.fName
       this.modalData.lName = data.item.lName
@@ -281,7 +331,45 @@ export default {
       this.modalData.admin = data.item.admin
       this.searchData.selected = { school_id: data.item.school_id, school: data.item.school }
     },
-    submit() {}
+    async updateSchool() {
+      await supabase
+        .from('Users')
+        .update({ school_id: this.searchData.selected.school_id })
+        .eq('userEmail', this.passedData.userEmail)
+        .then(() => {
+          this.$root.snackbar.show({
+            text: 'Successfully updated School',
+            timeout: 5000,
+            color: 'green'
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+          this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+        })
+    },
+    async submit() {
+      await supabase
+        .from('Users')
+        .update({
+          userEmail: this.modalData.userEmail,
+          fName: this.modalData.fName,
+          lName: this.modalData.lName,
+          admin: this.modalData.admin
+        })
+        .eq('userEmail', this.passedData.userEmail)
+        .then(() => {
+          this.$root.snackbar.show({
+            text: 'Successfully updated User Data',
+            timeout: 5000,
+            color: 'green'
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+          this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+        })
+    }
   }
 }
 </script>
