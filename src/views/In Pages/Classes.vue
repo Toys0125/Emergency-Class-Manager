@@ -26,7 +26,7 @@
       </v-data-table-server>
     </v-responsive>
     <v-dialog max-width="80%" v-model="model">
-      <EditClasses :passedData="modalData"></EditClasses>
+      <EditClasses :passedData="modalData" @onsubmit="refresh"></EditClasses>
     </v-dialog>
   </v-container>
   <v-responsive class="d-flex align-end flex-column"
@@ -168,6 +168,10 @@ export default {
       this.modalData.class_id = null
       this.modalData.className = ''
       this.model = true
+    },
+    refresh() {
+      this.model = false;
+      this.loadRows();
     }
   }
 }
