@@ -4,6 +4,7 @@
     <v-layout>
       <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
       <v-main style="height: 600px">
+        <v-row>
         <v-card-item>
           <v-card-text>
             <div>
@@ -16,6 +17,7 @@
             </div>
           </v-card-text>
         </v-card-item>
+        </v-row>
       </v-main>
     </v-layout>
   </v-card>

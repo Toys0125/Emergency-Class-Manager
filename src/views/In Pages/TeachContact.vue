@@ -5,29 +5,17 @@
             <v-card-text>
                 <v-row>
                     <v-col cols=12>
-                        <v-text-field :disabled=true label="Principal" v-model="schools.principal" readonly></v-text-field>
-                    </v-col>
-                    <v-col cols=12>
-                        <v-text-field :disabled=true label="Principal Email" v-model="schools.pEmail"
+                        <v-text-field :label="schools.principal" v-model="schools.pEmail"
                             readonly></v-text-field>
                     </v-col>
-                    <v-col cols=12>
-                        <v-text-field :disabled=true label="Assistant Principal" v-model="schools.assistantPrincipal" readonly></v-text-field>
+                    <v-col v-if="schools.aEmail" cols=12>
+                        <v-text-field :label="schools.assistantPrincipal" v-model="schools.aEmail" readonly></v-text-field>
                     </v-col>
-                    <v-col cols=12>
-                        <v-text-field :disabled=true label="AP Email" v-model="schools.aEmail" readonly></v-text-field>
+                    <v-col v-if="schools.aEmailTwo" cols=12>
+                        <v-text-field :label="schools.assistantPrincipalTwo" v-model="schools.aEmailTwo" readonly></v-text-field>
                     </v-col>
-                    <v-col cols=12>
-                        <v-text-field :disabled=true label="Assistant Principal 2" v-model="schools.assistantPrincipalTwo" readonly></v-text-field>
-                    </v-col>
-                    <v-col cols=12>
-                        <v-text-field :disabled=true label="AP Email 2" v-model="schools.aEmailTwo" readonly></v-text-field>
-                    </v-col>
-                    <v-col cols=12>
-                        <v-text-field :disabled=true label="Assistant Principal 3" v-model="schools.assistantPrincipalThree" readonly></v-text-field>
-                    </v-col>
-                    <v-col cols=12>
-                        <v-text-field :disabled=true label="AP Email 3" v-model="schools.aEmailThree" readonly></v-text-field>
+                    <v-col v-if="schools.aEmailThree" cols=12>
+                        <v-text-field :label="schools.assistantPrincipalThree" v-model="schools.aEmailThree" readonly></v-text-field>
                     </v-col>
                 </v-row>
             </v-card-text>
@@ -42,9 +30,6 @@ import supabase from '@/supabase'
 export default {
     data() {
         return {
-            hasSaved: false,
-            isEditing: null,
-            unsavedChanges: false,
             schools: {
                 principal: '',
                 pEmail: '',
@@ -92,7 +77,11 @@ export default {
                                 principal: schoolData.principal,
                                 pEmail: schoolData.pEmail,
                                 assistantPrincipal: schoolData.assistantPrincipal,
-                                aEmail: schoolData.assistantPrincipal,
+                                aEmail: schoolData.aEmail,
+                                assistantPrincipalTwo: schoolData.assistantPrincipalTwo,
+                                aEmailTwo: schoolData.aEmailTwo,
+                                assistantPrincipalThree: schoolData.assistantPrincipalThree,
+                                aEmailThree: schoolData.aEmailThree
                             };
                         }
                     }
@@ -102,40 +91,6 @@ export default {
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
-        },
-
-        toggleEditing() {
-            this.isEditing = !this.isEditing;
-        },
-        async handleInput(field, value) {
-            if (this.isEditing) {
-                this.user[field] = value;
-                this.unsavedChanges = true;
-            }
-        },
-        async saveChanges() {
-            const { data: { user } } = await supabase.auth.getUser();
-            this.isEditing = !this.isEditing
-            this.hasSaved = true
-            const userEmail = user.email
-            const { error } = await supabase
-                .from('Users')
-                .update([
-                    {
-                        fName: this.user.fName,
-                        lName: this.user.lName,
-                        phoneNum: this.user.phoneNum,
-                        emergcyInfo: this.user.emergcyInfo,
-                    },
-                ])
-                .eq('userEmail', userEmail);
-
-            if (error) {
-                console.error('Error saving changes:', error);
-            } else {
-                this.isEditing = false;
-            }
-            this.unsavedChanges = false;
         },
     },
 };

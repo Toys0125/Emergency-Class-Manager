@@ -36,12 +36,11 @@
         to="/dashboard"
       ></v-img>
       </router-link></v-app-bar-title>
-
       
       <v-spacer></v-spacer>
-      
 
-      <v-switch class="align-self-baseline" v-bind:prepend-icon="darkMode ? 'mdi-weather-night' : 'mdi-weather-sunny'"
+      
+      <v-switch class="align-self-baseline" inset v-bind:prepend-icon="darkMode ? 'mdi-weather-night' : 'mdi-weather-sunny'"
         v-model="darkMode" color="primary" @change="toggleTheme($event)"></v-switch>
     </v-app-bar>
 

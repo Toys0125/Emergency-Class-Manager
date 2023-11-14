@@ -46,7 +46,8 @@ export default {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
         weekends: true,
-        events: []
+        events: [],
+        timeZone: 'America/Chicago'
       },
       newEventTitle: '',
       newEventDate: '',
@@ -71,17 +72,19 @@ export default {
 
       this.calendarOptions.events = events.map(event => ({
         title: event.eventName,
-        start: new Date(event.date),
+        start: new Date(event.date).toISOString(),
       }));
     }
   },
   methods: {
     async addEvent() {
       if (this.newEventTitle && this.newEventDate) {
+        const dateTimeString = `${this.newEventDate}T${this.newEventTime}`;
+        const eventDate = new Date(dateTimeString)
         const event = {
           title: this.newEventTitle,
           //It likes this & this works
-          start: new Date(this.newEventDate + 'T' + this.newEventTime),
+          start: eventDate.toISOString()
         };
 
         if (this.newEventDesc) {
