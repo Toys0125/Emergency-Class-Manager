@@ -79,7 +79,7 @@
       }
       return { rows: data }
     },
-    async search({ page = 0, itemsPerPage = 50, sortBy = 'date', text = '' }) {
+    async search({ page = 0, itemsPerPage = 50, sortBy = 'principal', text = '' }) {
       var from = (page - 1) * itemsPerPage
       var to = page * itemsPerPage
       console.log(from, to)
