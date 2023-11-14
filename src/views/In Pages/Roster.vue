@@ -17,7 +17,7 @@
         @update:options="loadRows"
       > 
       <template v-slot:item.presence="{ item }">
-          <v-select
+          <v-select 
             v-model="item.presence"
             :items="presenceOptions"
             label="Select"
@@ -26,6 +26,9 @@
           ></v-select>
         </template>
       </v-data-table-server>
+      <div class="text-right">
+      <v-btn color="green" @click="submitTable">Sumbit</v-btn>
+    </div>
     </v-responsive>
   </v-container>
 </template>

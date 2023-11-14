@@ -1,21 +1,24 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div>
-        <v-card>
+        <v-card class="w-50 mx-auto" align:center>
             <v-card-text>
-                <v-row>
+                <v-row no-gutters>
                     <v-col cols=12>
                         <v-text-field :label="schools.principal" v-model="schools.pEmail"
-                            readonly></v-text-field>
+                            readonly @click="openEmail(schools.pEmail)" class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmail" cols=12>
-                        <v-text-field :label="schools.assistantPrincipal" v-model="schools.aEmail" readonly></v-text-field>
+                        <v-text-field :label="schools.assistantPrincipal" v-model="schools.aEmail" 
+                            readonly @click="openEmail(schools.aEmail)" class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailTwo" cols=12>
-                        <v-text-field :label="schools.assistantPrincipalTwo" v-model="schools.aEmailTwo" readonly></v-text-field>
+                        <v-text-field :label="schools.assistantPrincipalTwo" v-model="schools.aEmailTwo" 
+                            readonly @click="openEmail(schools.aEmailTwo)" class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailThree" cols=12>
-                        <v-text-field :label="schools.assistantPrincipalThree" v-model="schools.aEmailThree" readonly></v-text-field>
+                        <v-text-field :label="schools.assistantPrincipalThree" v-model="schools.aEmailThree" 
+                            readonly @click="openEmail(schools.aEmailThree)" class="email-text-field"></v-text-field>
                     </v-col>
                 </v-row>
             </v-card-text>
@@ -47,6 +50,9 @@ export default {
         this.fetchUserData();
     },
     methods: {
+        openEmail(email) {
+      window.location.href = `mailto:${email}`;
+    },
         async fetchUserData() {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
@@ -96,4 +102,10 @@ export default {
 };
 </script>
   
-  
+<style scoped>
+    .email-text-field {
+  cursor: pointer;
+  text-decoration: underline;
+  align-content: start;
+}
+</style>

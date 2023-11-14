@@ -87,10 +87,15 @@ const routes = [
         component: () => import(/* webpackChunkName: "Classes" */ '@/views/In Pages/TeachContact.vue'),
       },
       {
-        path: 'ContactTea',
+        path: 'contactTea',
         name: 'ContactTea',
         component: () => import(/* webpackChunkName: "Classes" */ '@/views/In Pages/ContactTea.vue'),
-      }
+      },
+      {
+        path: 'reports',
+        name: 'Reports',
+        component: () => import(/* webpackChunkName: "Classes" */ '@/views/In Pages/Reports.vue'),
+      },
     ]
   }
 ]
