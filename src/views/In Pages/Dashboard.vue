@@ -17,7 +17,9 @@
         item-value="name"
         :items-per-page-options="itemsPerPageOptions"
         @update:options="loadRows"
+        @click:row="editRow"
       >
+      
       </v-data-table-server>
       <v-dialog v-model="model">
         <v-card>
@@ -57,7 +59,6 @@ import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
 <script>
 const supabaseRetrive = {
   async count() {
-    let date = new Date()
     const { count, error } = await supabase
       .from('Events')
       .select('*', { count: 'exact', head: true })

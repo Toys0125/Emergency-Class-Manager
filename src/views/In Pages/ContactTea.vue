@@ -62,7 +62,7 @@
       console.log(from, to)
       const { data, error } = await supabase
         .from('Schools')
-        .select('principal')
+        .select('*')
       console.log(data)
       if (error) {
         console.error(error)
@@ -163,7 +163,7 @@
         //console.log(data2)
         this.model = true
   
-        this.modalData.eventName = data2.item.eventName
+        this.modalData.pEmail = data2.item.pEmail
         this.modalData.date = data2.item.date
         this.modalData.description = data2.item.description
       },
