@@ -25,7 +25,7 @@
             <v-text-field :disabled=true label="Email" v-model="user.userEmail" readonly></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field :disabled=true label="School" v-model="user.school" readonly></v-text-field>
+            <v-text-field  :disabled=true label="School" v-model="user.school" readonly></v-text-field>
           </v-col>
           <v-col cols="12">
             <v-text-field label="First Name" v-model="user.fName" :readonly="!isEditing"
