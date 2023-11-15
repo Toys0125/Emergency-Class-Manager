@@ -91,11 +91,6 @@ const routes = [
         name: 'ContactTea',
         component: () => import(/* webpackChunkName: "Classes" */ '@/views/In Pages/ContactTea.vue'),
       },
-      {
-        path: 'reports',
-        name: 'Reports',
-        component: () => import(/* webpackChunkName: "Classes" */ '@/views/In Pages/Reports.vue'),
-      },
     ]
   }
 ]

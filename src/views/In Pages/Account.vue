@@ -25,7 +25,7 @@
             <v-text-field :disabled=true label="Email" v-model="user.userEmail" readonly></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field  :disabled=true label="School" v-model="user.school" readonly></v-text-field>
+            <v-text-field  :disabled=true label="School" v-model="user.school" readonly :loading="loading"></v-text-field>
           </v-col>
           <v-col cols="12">
             <v-text-field label="First Name" v-model="user.fName" :readonly="!isEditing"
@@ -50,7 +50,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
 
-        <v-btn :disabled="!isEditing" @click="saveChanges"> Save </v-btn>
+        <v-btn :disabled="!isEditing" @click="saveChanges" :loading="submitloading"> Save </v-btn>
       </v-card-actions>
 
       <v-snackbar v-model="hasSaved" :timeout="2000" attach position="absolute" location="bottom left">
@@ -80,6 +80,8 @@ export default {
         emergcyInfo: '',
         school: '',
       },
+      loading: false,
+      submitloading:false
     };
   },
   mounted() {
@@ -88,6 +90,7 @@ export default {
   methods: {
     async fetchUserData() {
       try {
+        this.loading=true;
         // Get the signed-in user's data
         const { data: { user } } = await supabase.auth.getUser();
 
@@ -108,6 +111,7 @@ export default {
 
             this.user= {...userWithSchool,
             school: userWithSchool.school.school}
+            this.loading=false
           }
         } else {
           console.error('User email not found.');
@@ -126,6 +130,7 @@ export default {
       }
     },
     async saveChanges() {
+      this.submitloading = true
       const { data: { user } } = await supabase.auth.getUser();
       this.isEditing = !this.isEditing
       this.hasSaved = true
@@ -146,6 +151,7 @@ export default {
         console.error('Error saving changes:', error);
       } else {
         this.isEditing = false;
+        this.submitloading = false;
       }
       this.unsavedChanges = false;
     },
