@@ -5,22 +5,22 @@
             <v-card-text>
                 <v-row no-gutters>
                     <v-col cols=12>
-                        Principal
+                        <h3>Principal</h3>
                         <v-text-field :label="schools.principal" v-model="schools.pEmail"
                             readonly @click="openEmail(schools.pEmail)" class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmail" cols=12>
-                        Assistant Principal
+                        <h3>Assistant Principal</h3>
                         <v-text-field :label="schools.assistantPrincipal" v-model="schools.aEmail" 
                             readonly @click="openEmail(schools.aEmail)" class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailTwo" cols=12>
-                        Assistant Principal
+                        <h3>Assistant Principal</h3>
                         <v-text-field :label="schools.assistantPrincipalTwo" v-model="schools.aEmailTwo" 
                             readonly @click="openEmail(schools.aEmailTwo)" class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailThree" cols=12>
-                        Assistant Principal
+                        <h3>Assistant Principal</h3>
                         <v-text-field :label="schools.assistantPrincipalThree" v-model="schools.aEmailThree" 
                             readonly @click="openEmail(schools.aEmailThree)" class="email-text-field"></v-text-field>
                     </v-col>

@@ -50,7 +50,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
 
-        <v-btn :disabled="!isEditing" @click="saveChanges"> Save </v-btn>
+        <v-btn :disabled="!isEditing" color=green @click="saveChanges"> Save </v-btn>
       </v-card-actions>
 
       <v-snackbar v-model="hasSaved" :timeout="2000" attach position="absolute" location="bottom left">
