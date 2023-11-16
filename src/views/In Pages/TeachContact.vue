@@ -3,25 +3,25 @@
     <div>
         <v-card class="w-50 mx-auto" align:center>
             <v-card-text>
-                <v-row no-gutters>
+                <v-row>
                     <v-col cols=12>
                         <h3>Principal</h3>
-                        <v-text-field :label="schools.principal" v-model="schools.pEmail"
+                        <v-text-field :label="schools.principal" v-model="schools.pEmail" hint="Click to open email" persistent-hint
                             readonly @click="openEmail(schools.pEmail)" class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmail" cols=12>
                         <h3>Assistant Principal</h3>
-                        <v-text-field :label="schools.assistantPrincipal" v-model="schools.aEmail" 
+                        <v-text-field :label="schools.assistantPrincipal" v-model="schools.aEmail" hint="Click to open email" persistent-hint
                             readonly @click="openEmail(schools.aEmail)" class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailTwo" cols=12>
                         <h3>Assistant Principal</h3>
-                        <v-text-field :label="schools.assistantPrincipalTwo" v-model="schools.aEmailTwo" 
+                        <v-text-field :label="schools.assistantPrincipalTwo" v-model="schools.aEmailTwo" hint="Click to open email" persistent-hint
                             readonly @click="openEmail(schools.aEmailTwo)" class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailThree" cols=12>
                         <h3>Assistant Principal</h3>
-                        <v-text-field :label="schools.assistantPrincipalThree" v-model="schools.aEmailThree" 
+                        <v-text-field :label="schools.assistantPrincipalThree" v-model="schools.aEmailThree" hint="Click to open email" persistent-hint
                             readonly @click="openEmail(schools.aEmailThree)" class="email-text-field"></v-text-field>
                     </v-col>
                 </v-row>

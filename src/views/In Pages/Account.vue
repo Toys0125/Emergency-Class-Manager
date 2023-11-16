@@ -28,7 +28,7 @@
             <v-text-field  :disabled=true label="School" v-model="user.school" readonly :loading="loading"></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field label="First Name" v-model="user.fName" :readonly="!isEditing"
+            <v-text-field label="First Name" v-model="user.fName" :readonly="!isEditing" :rules="firstNameRules"
               @input="handleInput('fName, user.fName')"></v-text-field>
           </v-col>
           <v-col cols="12">
@@ -50,7 +50,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
 
-        <v-btn :disabled="!isEditing" color=green @click="saveChanges"> Save </v-btn>
+        <v-btn :disabled="!isEditing" color=green variant="elevated" @click="saveChanges"> Save </v-btn>
       </v-card-actions>
 
       <v-snackbar v-model="hasSaved" :timeout="2000" attach position="absolute" location="bottom left">
