@@ -15,12 +15,14 @@
       <v-dialog v-model="model">
         <v-card>
           <v-card-text>
-            <v-text-field v-model="modalData.eventName" placeholder="EventName" label="Event Name" readonly />
-            <v-row><v-text-field v-model="modalData.date" placeholder="Date" label="Date" readonly />
+            <v-row no-gutters>
+              <v-text-field v-model="modalData.eventName" placeholder="EventName" label="Event Name" readonly />
             </v-row>
-            <v-row>
-              <v-textarea v-model="modalData.description" placeholder="Description" label="Description" readonly
-                :disabled=true />
+            <v-row no-gutters><v-text-field v-model="modalData.date" placeholder="Date and Time" label="Date and Time"
+                readonly />
+            </v-row>
+            <v-row no-gutters>
+              <v-textarea v-model="modalData.description" placeholder="Description" label="Description" readonly />
             </v-row>
           </v-card-text>
           <v-card-actions>
@@ -64,6 +66,10 @@ const supabaseRetrive = {
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
+  },
+  formatDate(dateString) {
+    const formattedDate = dateString.replace("T", " ").replace(/\+\d{2}:\d{2}/, "");
+    return formattedDate;
   },
   async count() {
     const date = new Date();
@@ -155,7 +161,7 @@ export default {
     itemsPerPage: 5,
     headers: [
       {
-        title: 'Event',
+        title: `Today's Events`,
         align: 'center',
         sortable: true,
         key: 'eventName'
@@ -214,7 +220,7 @@ export default {
       this.model = true
 
       this.modalData.eventName = data2.item.eventName
-      this.modalData.date = data2.item.date
+      this.modalData.date = supabaseRetrive.formatDate(data2.item.date)
       this.modalData.description = data2.item.description
     },
     showModal() {
