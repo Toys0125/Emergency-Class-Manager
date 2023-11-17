@@ -25,23 +25,23 @@
             <v-text-field :disabled=true label="Email" v-model="user.userEmail" readonly></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field  :disabled=true label="School" v-model="user.school" readonly :loading="loading"></v-text-field>
+            <v-text-field :disabled=true label="School" v-model="user.school" readonly :loading="loading"></v-text-field>
           </v-col>
           <v-col cols="12">
             <v-text-field label="First Name" v-model="user.fName" :readonly="!isEditing" :rules="firstNameRules"
-              @input="handleInput('fName, user.fName')"></v-text-field>
+              @input="handleInput('fName', user.fName)"></v-text-field>
           </v-col>
           <v-col cols="12">
             <v-text-field label="Last Name" v-model="user.lName" :readonly="!isEditing"
-              @input="handleInput('lName, user.lName')"></v-text-field>
+              @input="handleInput('lName', user.lName)"></v-text-field>
           </v-col>
           <v-col cols="12">
             <v-text-field :required=false label="Phone Number" v-model="user.phoneNum" :readonly="!isEditing"
-              @input="handleInput('phoneNum, user.phoneNum')"></v-text-field>
+              @input="handleInput('phoneNum', user.phoneNum)"></v-text-field>
           </v-col>
           <v-col cols="12">
             <v-text-field :required=false label="Emergency Contact Information" v-model="user.emergcyInfo"
-              :readonly="!isEditing" @input="handleInput('emergcyInfo, user.emergcyInfo')"></v-text-field>
+              :readonly="!isEditing" @input="handleInput('emergcyInfo', user.emergcyInfo)"></v-text-field>
           </v-col>
         </v-row>
       </v-card-text>
@@ -72,6 +72,7 @@ export default {
       hasSaved: false,
       isEditing: null,
       unsavedChanges: false,
+      formDirty: false,
       user: {
         fName: '',
         lName: '',
@@ -81,7 +82,7 @@ export default {
         school: '',
       },
       loading: false,
-      submitloading:false
+      submitloading: false
     };
   },
   mounted() {
@@ -90,7 +91,7 @@ export default {
   methods: {
     async fetchUserData() {
       try {
-        this.loading=true;
+        this.loading = true;
         // Get the signed-in user's data
         const { data: { user } } = await supabase.auth.getUser();
 
@@ -109,9 +110,11 @@ export default {
           } else if (data.length > 0) {
             const userWithSchool = data[0];
 
-            this.user= {...userWithSchool,
-            school: userWithSchool.school.school}
-            this.loading=false
+            this.user = {
+              ...userWithSchool,
+              school: userWithSchool.school.school
+            }
+            this.loading = false
           }
         } else {
           console.error('User email not found.');
@@ -127,6 +130,8 @@ export default {
       if (this.isEditing) {
         this.user[field] = value;
         this.unsavedChanges = true;
+        this.formDirty = true;
+        console.log(this.formDirty);
       }
     },
     async saveChanges() {
@@ -153,8 +158,19 @@ export default {
         this.isEditing = false;
         this.submitloading = false;
       }
-      this.unsavedChanges = false;
+      this.formDirty = false;
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.$data.formDirty) {
+      if (confirm("You have unsaved changes. Are you sure you want to leave?")) {
+        next();
+      } else {
+        next(false);
+      }
+    } else {
+      next();
+    }
   },
 };
 </script>
