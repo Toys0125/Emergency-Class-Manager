@@ -7,44 +7,24 @@
   </div>
   <v-container class="fill-height">
     <v-responsive class="align-center text-center fill-height">
-      <v-data-table-server
-        v-model:items-per-page="itemsPerPage"
-        :headers="headers"
-        :items-length="totalrows"
-        :items="rows"
-        :loading="loading"
-        class="elevation-1"
-        item-value="name"
-        :items-per-page-options="itemsPerPageOptions"
-        @update:options="loadRows"
-        @click:row="editRow"
-      >
-      
+      <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers" :items-length="totalrows"
+        :items="rows" :loading="loading" class="elevation-1" item-value="name"
+        :items-per-page-options="itemsPerPageOptions" @update:options="loadRows" @click:row="editRow">
+
       </v-data-table-server>
       <v-dialog v-model="model">
         <v-card>
           <v-card-text>
-            <v-text-field
-              v-model="modalData.eventName"
-              placeholder="EventName"
-              label="Event Name"
-              readonly
-            />
-            <v-row
-              ><v-text-field v-model="modalData.date" placeholder="Date" label="Date" readonly />
+            <v-text-field v-model="modalData.eventName" placeholder="EventName" label="Event Name" readonly />
+            <v-row><v-text-field v-model="modalData.date" placeholder="Date" label="Date" readonly />
             </v-row>
             <v-row>
-              <v-textarea
-                v-model="modalData.description"
-                placeholder="Description"
-                label="Description"
-                readonly
-                :disabled=true
-              />
+              <v-textarea v-model="modalData.description" placeholder="Description" label="Description" readonly
+                :disabled=true />
             </v-row>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="model=false" color="green" variant="flat">Okay </v-btn>
+            <v-btn @click="model = false" color="green" variant="flat">Okay </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -58,45 +38,94 @@ import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
 </script>
 <script>
 const supabaseRetrive = {
+  async fetchUserData() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user && user.email) {
+        const userEmail = user.email;
+
+        const { data: userData, error: userError } = await supabase
+          .from('Users')
+          .select('school_id')
+          .eq('userEmail', userEmail)
+          .single();
+
+        console.log("school id: " + userData.school_id)
+        if (userError) {
+          console.error('Error fetching user data:', userError);
+        } else {
+
+          this.school_id = userData.school_id; // Set the school_id property
+        }
+      } else {
+        console.error('User email not found.');
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  },
   async count() {
-    const date = new Date()
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+
+    const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999);
+
     const { count, error } = await supabase
       .from('Events')
       .select('*', { count: 'exact', head: true })
-      .eq('date', date)
+      .range(date, endDate)
     if (error) {
       console.error(error)
       this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
     }
-    console.log(count)
     return count
   },
   async fetch({ page = 0, itemsPerPage = 50, sortBy = 'date' }) {
-    let date = new Date()
-    let formattedDate = date.toLocaleDateString();
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+
+    const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999);
+
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage
     console.log(from, to)
-    const { data, error } = await supabase
-      .from('Events')
-      .select('*')
-      .order('date', { ascending: true })
-      .eq('date', formattedDate)
-    console.log(data)
-    if (error) {
-      console.error(error)
-      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+
+    try {
+      await this.fetchUserData();
+      const { data, error } = await supabase
+        .from('Events')
+        .select('*')
+        .order('date', { ascending: true })
+        .range(date, endDate)
+        .eq('school_id', this.school_id)
+      console.log(data)
+      if (error) {
+        console.error(error)
+        this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      }
+      if (sortBy.length) {
+        const sortKey = sortBy[0].key
+        const sortOrder = sortBy[0].order
+        data.sort((a, b) => {
+          const aValue = a[sortKey]
+          const bValue = b[sortKey]
+          return sortOrder === 'date' ? bValue - aValue : aValue - bValue
+        })
+      }
+      return { rows: data }
     }
-    if (sortBy.length) {
-      const sortKey = sortBy[0].key
-      const sortOrder = sortBy[0].order
-      data.sort((a, b) => {
-        const aValue = a[sortKey]
-        const bValue = b[sortKey]
-        return sortOrder === 'date' ? bValue - aValue : aValue - bValue
-      })
+    catch (error) {
+      console.error('Error in fetch method:', error);
+      this.$store.dispatch('showSnackbar', {
+        text: 'Error in fetch method',
+        timeout: 5000,
+        color: 'red',
+      });
+      return { rows: [] };
     }
-    return { rows: data }
   },
   async search({ page = 0, itemsPerPage = 50, sortBy = 'date', text = '' }) {
     var from = (page - 1) * itemsPerPage
@@ -190,7 +219,7 @@ export default {
     },
     showModal() {
       this.modal = false
-    }
+    },
   }
 }
 </script>

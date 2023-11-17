@@ -5,6 +5,7 @@
 
     <!-- FullCalendar component to display events -->
     <FullCalendar :options="calendarOptions" ref="calendar" />
+
   </div>
 </template>
 
@@ -29,7 +30,7 @@ export default {
       newEventTitle: '',
       newEventDate: '',
       newEventDesc: '',
-      school_id: '',
+      school_id: ''
     };
   },
   async mounted() {
