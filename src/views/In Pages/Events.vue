@@ -9,17 +9,16 @@
     </div>
 
     <div>
-      <label for="eventDate">Event Date:</label>
-      <input type="date" id="eventDate" v-model="newEventDate" />
+      <label for="eventDate">Event Date and Time:</label>
+      <input type="datetime-local" id="eventDate" v-model="newEventDate" />
     </div>
 
     <div>
-      <label for="eventTime">Event Time:</label>
-      <input type="time" id="scheduledTime" v-model="newEventTime" />
+      <v-textarea v-model="newEventDesc" placeholder="Event Description" label="Event Description" />
     </div>
 
     <div>
-      <v-textarea v-model="newEventDesc" placeholder="Event Description"  label="Event Description" />
+      <v-text-field :disabled="true" type="text" v-model="school_id" label="School Id" />
     </div>
 
     <div>
@@ -47,44 +46,52 @@ export default {
         initialView: 'dayGridMonth',
         weekends: true,
         events: [],
-        timeZone: 'America/Chicago'
+        timeZone: 'auto'
       },
       newEventTitle: '',
       newEventDate: '',
-      newEventTime: '',
       newEventDesc: '',
+      school_id: '',
     };
   },
   async mounted() {
+    await this.fetchUserData();
     // Load events from the database and populate the calendar
     const { data: events, error } = await supabase
       .from('Events')
-      .select('*');
+      .select('*')
+      .eq("school_id", this.school_id);
 
     console.log(events)
-    
+
     if (error) {
       console.error(error);
     } else {
-      const d = new Date().toISOString()
-      console.log(d);
       // Populate events in the calendar
-
       this.calendarOptions.events = events.map(event => ({
         title: event.eventName,
-        start: new Date(event.date).toISOString(),
+        start: event.date
       }));
     }
+
   },
   methods: {
     async addEvent() {
-      if (this.newEventTitle && this.newEventDate) {
-        const dateTimeString = `${this.newEventDate}T${this.newEventTime}`;
-        const eventDate = new Date(dateTimeString)
+      if (this.newEventTitle && this.newEventDate && this.school_id) {
+        const { data: userExists } = await supabase
+          .from('Users')
+          .select('school_id') // Assuming 'id' is the primary key of the Users table
+          .eq('school_id', this.school_id)
+          .single();
+
+        if (!userExists) {
+          alert('Invalid school_id. Please select a valid school_id.');
+          return;
+        }
+
         const event = {
           title: this.newEventTitle,
-          //It likes this & this works
-          start: eventDate.toISOString()
+          start: this.newEventDate,
         };
 
         if (this.newEventDesc) {
@@ -97,17 +104,44 @@ export default {
         await this.insertData({
           date: this.newEventDate,
           eventName: this.newEventTitle,
-          scheduledTime: this.newEventTime,
           description: this.newEventDesc,
+          school_id: this.school_id
         });
 
         // Clear input fields
         this.newEventTitle = '';
         this.newEventDate = '';
-        this.newEventTime = '';
         this.newEventDesc = '';
+        this.school_id = '';
       } else {
         alert('Please enter event title and date');
+      }
+    },
+    async fetchUserData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user && user.email) {
+          const userEmail = user.email;
+
+          const { data: userData, error: userError } = await supabase
+            .from('Users')
+            .select('school_id')
+            .eq('userEmail', userEmail)
+            .single();
+
+            console.log("school id: " + userData.school_id)
+          if (userError) {
+            console.error('Error fetching user data:', userError);
+          } else {
+            
+            this.school_id = userData.school_id; // Set the school_id property
+          }
+        } else {
+          console.error('User email not found.');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
       }
     },
     async insertData(data) {

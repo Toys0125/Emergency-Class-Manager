@@ -23,19 +23,22 @@ export default {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
         weekends: true,
-        events: []
+        events: [],
+        timeZone: 'auto'
       },
       newEventTitle: '',
       newEventDate: '',
-      newEventTime: '',
       newEventDesc: '',
+      school_id: '',
     };
   },
   async mounted() {
     // Load events from the database and populate the calendar
+    await this.fetchUserData();
     const { data: events, error } = await supabase
       .from('Events')
-      .select('*');
+      .select('*')
+      .eq('school_id', this.school_id);
 
     console.log(events)
     
@@ -45,59 +48,36 @@ export default {
       // Populate events in the calendar
       this.calendarOptions.events = events.map(event => ({
         title: event.eventName,
-        //It does not like this .-.
-        //start: new Date(event.date),
-        //start: new Date(event.date + 'T' + event.scheduledTime),
-        //start: new Date(event.date + event.scheduledTime),
-        //start: new Date(`${event.date} + 'T' + ${event.scheduledTime}`)
-        //start: new Date(`${event.date} + ${event.scheduledTime}`)
-        //start: new Date(event.date, event.scheduledTime)
-        start: new Date(`${event.date} ${event.scheduledTime}`),
+        start: event.date,
       }));
     }
   },
   methods: {
-    async addEvent() {
-      if (this.newEventTitle && this.newEventDate) {
-        const event = {
-          title: this.newEventTitle,
-          //It likes this & this works
-          start: new Date(this.newEventDate + 'T' + this.newEventTime),
-        };
+    async fetchUserData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
 
-        if (this.newEventDesc) {
-          event.description = this.newEventDesc;
+        if (user && user.email) {
+          const userEmail = user.email;
+
+          const { data: userData, error: userError } = await supabase
+            .from('Users')
+            .select('school_id')
+            .eq('userEmail', userEmail)
+            .single();
+
+            console.log("school id: " + userData.school_id)
+          if (userError) {
+            console.error('Error fetching user data:', userError);
+          } else {
+            
+            this.school_id = userData.school_id; // Set the school_id property
+          }
+        } else {
+          console.error('User email not found.');
         }
-
-        // Add the new event to the FullCalendar
-        this.$refs.calendar.getApi().addEvent(event);
-
-        await this.insertData({
-          date: this.newEventDate,
-          eventName: this.newEventTitle,
-          scheduledTime: this.newEventTime,
-          description: this.newEventDesc,
-        });
-
-        // Clear input fields
-        this.newEventTitle = '';
-        this.newEventDate = '';
-        this.newEventTime = '';
-        this.newEventDesc = '';
-      } else {
-        alert('Please enter event title and date');
-      }
-    },
-    async insertData(data) {
-      const { data: insertedData, error } = await supabase
-        .from('Events')
-        .insert([data]);
-      if (error) {
-        console.error(error)
-        this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
-      } else {
-        console.log('Data inserted:', insertedData);
-        this.$root.snackbar.show({ text: 'Data inserted into table', timeout: 10000, color: 'green' })
+      } catch (error) {
+        console.error('Error fetching user data:', error);
       }
     },
   }

@@ -3,26 +3,30 @@
     <div>
         <v-card class="w-50 mx-auto" align:center>
             <v-card-text>
-                <v-row>
+                <v-row dense>
                     <v-col cols=12>
                         <h3>Principal</h3>
-                        <v-text-field :label="schools.principal" v-model="schools.pEmail" hint="Click to open email" persistent-hint
-                            readonly @click="openEmail(schools.pEmail)" class="email-text-field"></v-text-field>
+                        <v-text-field :label="schools.principal" v-model="schools.pEmail" hint="Click to open email"
+                            persistent-hint readonly @click="openEmail(schools.pEmail)"
+                            class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmail" cols=12>
                         <h3>Assistant Principal</h3>
-                        <v-text-field :label="schools.assistantPrincipal" v-model="schools.aEmail" hint="Click to open email" persistent-hint
-                            readonly @click="openEmail(schools.aEmail)" class="email-text-field"></v-text-field>
+                        <v-text-field :label="schools.assistantPrincipal" v-model="schools.aEmail"
+                            hint="Click to open email" persistent-hint readonly @click="openEmail(schools.aEmail)"
+                            class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailTwo" cols=12>
                         <h3>Assistant Principal</h3>
-                        <v-text-field :label="schools.assistantPrincipalTwo" v-model="schools.aEmailTwo" hint="Click to open email" persistent-hint
-                            readonly @click="openEmail(schools.aEmailTwo)" class="email-text-field"></v-text-field>
+                        <v-text-field :label="schools.assistantPrincipalTwo" v-model="schools.aEmailTwo"
+                            hint="Click to open email" persistent-hint readonly @click="openEmail(schools.aEmailTwo)"
+                            class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailThree" cols=12>
                         <h3>Assistant Principal</h3>
-                        <v-text-field :label="schools.assistantPrincipalThree" v-model="schools.aEmailThree" hint="Click to open email" persistent-hint
-                            readonly @click="openEmail(schools.aEmailThree)" class="email-text-field"></v-text-field>
+                        <v-text-field :label="schools.assistantPrincipalThree" v-model="schools.aEmailThree"
+                            hint="Click to open email" persistent-hint readonly @click="openEmail(schools.aEmailThree)"
+                            class="email-text-field"></v-text-field>
                     </v-col>
                 </v-row>
             </v-card-text>
@@ -55,15 +59,15 @@ export default {
     },
     methods: {
         openEmail(email) {
-      window.location.href = `mailto:${email}`;
-    },
+            const windowRef = window.open(`mailto:${email}`, '_blank');
+            windowRef.focus();
+        },
         async fetchUserData() {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
 
                 if (user && user.email) {
                     const userEmail = user.email;
-                    console.log('Signed-in user email:', userEmail);
 
                     const { data: userData, error: userError } = await supabase
                         .from('Users')
@@ -107,9 +111,7 @@ export default {
 </script>
   
 <style scoped>
-    .email-text-field {
-  cursor: pointer;
-  text-decoration: underline;
-  align-content: start;
-}
-</style>
+.email-text-field {
+    cursor: pointer;
+    align-content: start;
+}</style>
