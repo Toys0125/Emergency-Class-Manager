@@ -29,9 +29,9 @@
       <v-card>
         <v-card-title> Event Details </v-card-title>
         <v-card-text>
-          <v-text-field v-model="modalData.eventName" label="Event Name"></v-text-field>
-          <v-text-field v-model="modalData.date" label="Event Date and Time"></v-text-field>
-          <v-text-field v-model="modalData.description" label="Event Description"></v-text-field>
+          <v-text-field v-model="modalData.eventName" label="Event Name" readonly></v-text-field>
+          <v-text-field v-model="modalData.date" label="Event Date and Time" readonly></v-text-field>
+          <v-text-field v-model="modalData.description" label="Event Description" readonly></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-btn variant="elevated" color="green" @click="modal = false">Close</v-btn>
@@ -90,7 +90,8 @@ export default {
       // Populate events in the calendar
       this.calendarOptions.events = events.map(event => ({
         title: event.eventName,
-        start: event.date
+        start: event.date,
+        description: event.description
       }));
     }
 
@@ -106,7 +107,7 @@ export default {
       const formattedDate = eventDate.toISOString().replace('T', ' ').replace('Z', '')
       this.modalData.date = formattedDate
       this.modalData.description =
-        clickedEvent.extendedProps.description || 'No description available' // Assuming you have a description property in your events
+        clickedEvent.extendedProps.description // Assuming you have a description property in your events
 
       // Open the modal
       this.modal = true
