@@ -2,7 +2,7 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <div>
-    <h1>Welcome to your Dashboard.</h1>
+    <h1>Welcome to your Dashboard {{ fName }}</h1>
     <h2>Upcoming events:</h2>
   </div>
   <v-container class="fill-height">
@@ -35,8 +35,16 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import supabase from '@/supabase'
 import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
+
+const { fetchUserData, /* other methods */ } = supabaseRetrive;
+
+// Add the following lines to call fetchUserData when the component is created
+onMounted(() => {
+  fetchUserData();
+});
 </script>
 <script>
 const supabaseRetrive = {
@@ -49,16 +57,18 @@ const supabaseRetrive = {
 
         const { data: userData, error: userError } = await supabase
           .from('Users')
-          .select('school_id')
+          .select('*')
           .eq('userEmail', userEmail)
           .single();
 
+          console.log("Name: ", userData.fName)
         console.log("school id: " + userData.school_id)
         if (userError) {
           console.error('Error fetching user data:', userError);
         } else {
 
           this.school_id = userData.school_id; // Set the school_id property
+          this.fName = userData.fName;
         }
       } else {
         console.error('User email not found.');
@@ -158,6 +168,7 @@ const supabaseRetrive = {
 
 export default {
   data: () => ({
+    fName: '',
     itemsPerPage: 5,
     headers: [
       {
