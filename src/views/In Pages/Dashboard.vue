@@ -6,10 +6,11 @@
     <h2>Upcoming events:</h2>
   </div>
   <v-container class="fill-height">
+    
     <v-responsive class="align-center text-center fill-height">
       <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers" :items-length="totalrows"
         :items="rows" :loading="loading" class="elevation-1" item-value="name"
-        :items-per-page-options="itemsPerPageOptions" @update:options="loadRows" @click:row="editRow">
+        :items-per-page-options="itemsPerPageOptions" @update:options="loadRows" @click:row="editRow" no-data-text="No Upcoming Events">
 
       </v-data-table-server>
       <v-dialog v-model="model">
