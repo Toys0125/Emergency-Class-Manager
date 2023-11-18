@@ -61,7 +61,7 @@ const supabaseRetrive = {
           .eq('userEmail', userEmail)
           .single();
 
-          console.log("Name: ", userData.fName)
+          console.log("Admin?: ", userData.admin)
         console.log("school id: " + userData.school_id)
         if (userError) {
           console.error('Error fetching user data:', userError);

@@ -98,18 +98,14 @@ export default {
   },
   methods: {
     handleEventClick(info) {
-      // Extract event details from the clicked event
       const clickedEvent = info.event
 
-      // Set modalData properties based on the clicked event
       this.modalData.eventName = clickedEvent.title
       const eventDate = new Date(clickedEvent.start)
       const formattedDate = eventDate.toISOString().replace('T', ' ').replace('Z', '')
       this.modalData.date = formattedDate
       this.modalData.description =
-        clickedEvent.extendedProps.description // Assuming you have a description property in your events
-
-      // Open the modal
+        clickedEvent.extendedProps.description
       this.modal = true
     },
     async addEvent() {
