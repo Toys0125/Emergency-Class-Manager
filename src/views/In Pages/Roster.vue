@@ -15,9 +15,9 @@
         class="elevation-1"
         item-value="name"
         @update:options="loadRows"
-      > 
-      <template v-slot:item.presence="{ item }">
-          <v-select 
+      >
+        <template v-slot:item.presence="{ item }">
+          <v-select
             v-model="item.presence"
             :items="presenceOptions"
             label="Select"
@@ -26,21 +26,41 @@
           ></v-select>
         </template>
       </v-data-table-server>
+      <v-dialog v-model="model" persistent max-width="600px">
+        <v-card>
+          <v-card-title> Add New Student </v-card-title>
+          <v-card-text>
+            <v-text-field v-model="modalData.id_number" label="ID Number"></v-text-field>
+            <v-text-field v-model="modalData.fName" label="First Name"></v-text-field>
+            <v-text-field v-model="modalData.lName" label="Last Name"></v-text-field>
+            <!-- Add more fields as needed -->
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="blue darken-1" @click="addStudent">Add Student</v-btn>
+            <v-btn color="grey darken-1" @click="model = false">Close</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <div class="text-right">
-      <v-btn color="green" @click="submitTable">Sumbit</v-btn>
-    </div>
+        <v-btn color="primary" @click="openModal">Add Student</v-btn>
+        <v-btn color="green" @click="submitTable">Submit</v-btn>
+      </div>
     </v-responsive>
   </v-container>
 </template>
 
 <script setup>
-  import supabase from '@/supabase'
-  import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
+import supabase from '@/supabase'
+import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
+import { ref } from 'vue'
 
-  const presenceOptions = ['Present', 'Absent', 'Visiting'];
+const presenceOptions = ['Present', 'Absent', 'Missing', 'Visiting']
+const model = ref(false)
+const openModal = () => {
+  model.value = true // Assuming model is a ref
+}
 </script>
 <script>
-
 const supabaseRetrive = {
   async count() {
     const { count, error } = await supabase
@@ -57,10 +77,7 @@ const supabaseRetrive = {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage - 1
     console.log(from, to)
-    const { data, error } = await supabase
-      .from('Students')
-      .select('*')
-      .range(from, to)
+    const { data, error } = await supabase.from('Students').select('*').range(from, to)
     console.log(data)
     if (error) {
       console.error(error)
@@ -79,9 +96,11 @@ const supabaseRetrive = {
   },
   async search({ page = 0, itemsPerPage = 50, sortBy = 'desc', text = '' }) {
     var from = (page - 1) * itemsPerPage
-    var to = page * itemsPerPage-1
+    var to = page * itemsPerPage - 1
     console.log(from, to)
-    const { data, error } = await supabase.rpc('searchstudents', { searchtext: text }).range(from, to)
+    const { data, error } = await supabase
+      .rpc('searchstudents', { searchtext: text })
+      .range(from, to)
     console.log(data)
     if (error) {
       console.error(error)
@@ -97,27 +116,66 @@ const supabaseRetrive = {
       })
     }
     return { rows: data }
-  },
+  }
 }
 
 export default {
   data: () => ({
     itemsPerPage: 5,
     headers: [
-      { title: 'ID Number', key: 'id_number', align: 'left' ,width:'20%' },
+      { title: 'ID Number', key: 'id_number', align: 'left', width: '20%' },
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
       { title: 'Presense', value: 'presence', align: 'end' }
     ],
-    
     rows: [],
     loading: true,
     totalrows: 0,
     search: '',
     options: { page: 1, itemsPerPage: 5, sortBy: {} },
-    itemsPerPageOptions:[{value: 1, title: '1'},{value: 5, title: '5'},{value: 10, title: '10'},{value: 20, title: '20'}],
-    }),
+    itemsPerPageOptions: [
+      { value: 1, title: '1' },
+      { value: 5, title: '5' },
+      { value: 10, title: '10' },
+      { value: 20, title: '20' }
+    ],
+    modalData: {
+      id_number: null,
+      fName: null,
+      lName: null,
+      loading: false
+    }
+  }),
   methods: {
+    addStudent() {
+    // Check if the required fields are filled in
+    if (!this.modalData.id_number || !this.modalData.fName || !this.modalData.lName) {
+      this.$root.snackbar.show({ text: 'Please fill in all fields', timeout: 3000, color: 'red' });
+      return;
+    }
+
+    // Create a new student object
+    const newStudent = {
+      id_number: this.modalData.id_number,
+      fName: this.modalData.fName,
+      lName: this.modalData.lName,
+      presence: 'Visiting',
+    };
+    this.rows.push(newStudent);
+    this.model = false;
+    this.modalData = { id_number: null, fName: null, lName: null, loading: false };
+
+    this.$root.snackbar.show({ text: 'Student added successfully', timeout: 3000, color: 'green' });
+  },
+    editRow(data) {
+      //console.log(data)
+      //Provided data is value.item.{columns}
+      this.model = true
+      this.passedData = data.item
+      this.modalData.id_number = data.item.userEmail
+      this.modalData.fName = data.item.fName
+      this.modalData.lName = data.item.lName
+    },
     loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
@@ -141,15 +199,13 @@ export default {
       if (this.search.length < 3) return
       this.loading = true
 
-      supabaseRetrive
-        .search({
-          page: this.options.page,
-          rowsPerPage: this.options.itemsPerPage,
-          sortBy: this.options.sortBy,
-          text: this.search
-        })
-    },
-    
+      supabaseRetrive.search({
+        page: this.options.page,
+        rowsPerPage: this.options.itemsPerPage,
+        sortBy: this.options.sortBy,
+        text: this.search
+      })
+    }
   }
 }
 </script>
