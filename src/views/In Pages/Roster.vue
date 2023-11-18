@@ -57,7 +57,7 @@ import { ref } from 'vue'
 const presenceOptions = ['Present', 'Absent', 'Missing', 'Visiting']
 const model = ref(false)
 const openModal = () => {
-  model.value = true // Assuming model is a ref
+  model.value = true
 }
 </script>
 <script>
@@ -149,7 +149,7 @@ export default {
   methods: {
     addStudent() {
     // Check if the required fields are filled in
-    if (!this.modalData.id_number || !this.modalData.fName || !this.modalData.lName) {
+    if (!this.modalData.fName || !this.modalData.lName) {
       this.$root.snackbar.show({ text: 'Please fill in all fields', timeout: 3000, color: 'red' });
       return;
     }
