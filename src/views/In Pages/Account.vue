@@ -49,7 +49,7 @@
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        
+
         <v-btn :disabled="!isEditing" color=green variant="elevated" @click="saveChanges"> Save </v-btn>
       </v-card-actions>
 
@@ -177,4 +177,3 @@ export default {
   },
 };
 </script>
-

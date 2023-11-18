@@ -13,7 +13,6 @@
         :items="rows"
         :loading="loading"
         class="elevation-1"
-        item-value="name"
         @update:options="loadRows"
       >
         <template v-slot:item.presence="{ item }">
@@ -30,7 +29,13 @@
         <v-card>
           <v-card-title> Add New Student </v-card-title>
           <v-card-text>
-            <v-text-field v-model="modalData.id_number" label="ID Number"></v-text-field>
+            <v-autocomplete
+              v-model="modalData.selectedStudent"
+              :items="studentIds"
+              label="Select ID Number"
+              @input="updateStudentInfo"
+            ></v-autocomplete>
+
             <v-text-field v-model="modalData.fName" label="First Name"></v-text-field>
             <v-text-field v-model="modalData.lName" label="Last Name"></v-text-field>
             <!-- Add more fields as needed -->
@@ -42,7 +47,7 @@
         </v-card>
       </v-dialog>
       <div class="text-right">
-        <v-btn color="primary" @click="openModal">Add Student</v-btn>
+        <v-btn color="blue" @click="openModal">Add Student</v-btn>
         <v-btn color="green" @click="submitTable">Submit</v-btn>
       </div>
     </v-responsive>
@@ -62,6 +67,16 @@ const openModal = () => {
 </script>
 <script>
 const supabaseRetrive = {
+  async fetchStudentIds() {
+    const { data, error } = await supabase.from('Students').select('id_number');
+    if (error) {
+      console.error(error);
+      this.$root.snackbar.show({ text: 'Error fetching student IDs', timeout: 10000, color: 'red' });
+      return [];
+    }
+    const studentIds = data.map(student => student.id_number);
+  return studentIds;
+  },
   async count() {
     const { count, error } = await supabase
       .from('Students')
@@ -140,30 +155,51 @@ export default {
       { value: 20, title: '20' }
     ],
     modalData: {
+      selectedStudent: null,
       id_number: null,
       fName: null,
       lName: null,
       loading: false
     }
   }),
-  methods: {
-    addStudent() {
-    if (!this.modalData.fName || !this.modalData.lName) {
-      this.$root.snackbar.show({ text: 'Please fill in all fields', timeout: 3000, color: 'red' });
-      return;
-    }
-    const newStudent = {
-      id_number: this.modalData.id_number,
-      fName: this.modalData.fName,
-      lName: this.modalData.lName,
-      presence: 'Visiting',
-    };
-    this.rows.push(newStudent);
-    this.model = false;
-    this.modalData = { id_number: null, fName: null, lName: null, loading: false };
-
-    this.$root.snackbar.show({ text: 'Student added successfully', timeout: 3000, color: 'green' });
+  async mounted() {
+    this.studentIds = await supabaseRetrive.fetchStudentIds();
   },
+  methods: {
+    updateStudentInfo() {
+      const selectedStudent = this.rows.find(student => student.id_number === this.modalData.selectedStudent);
+
+      if (selectedStudent) {
+        this.modalData.fName = selectedStudent.fName;
+        this.modalData.lName = selectedStudent.lName;
+      }
+      else {
+    // Reset first and last names if the selected ID is not found
+    this.modalData.fName = null;
+    this.modalData.lName = null;
+  }
+    },
+    addStudent() {
+      if (!this.modalData.fName || !this.modalData.lName) {
+        this.$root.snackbar.show({ text: 'Please fill in all fields', timeout: 3000, color: 'red' })
+        return
+      }
+      const newStudent = {
+        id_number: this.modalData.selectedStudent,
+        fName: this.modalData.fName,
+        lName: this.modalData.lName,
+        presence: 'Visiting'
+      }
+      this.rows.push(newStudent)
+      this.model = false
+      this.modalData = { selectedStudent: null, fName: null, lName: null, loading: false }
+
+      this.$root.snackbar.show({
+        text: 'Student added successfully',
+        timeout: 3000,
+        color: 'green'
+      })
+    },
     loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
