@@ -25,6 +25,19 @@
       <v-btn color="green" variant="flat" @click="addEvent">Add Event</v-btn>
     </div>
 
+    <v-dialog v-model="modal" persistent max-width="600px">
+      <v-card>
+        <v-card-title> Event Details </v-card-title>
+        <v-card-text>
+          <v-text-field v-model="modalData.eventName" label="Event Name"></v-text-field>
+          <v-text-field v-model="modalData.date" label="Event Date and Time"></v-text-field>
+          <v-text-field v-model="modalData.description" label="Event Description"></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn variant="elevated" color="green" @click="modal = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <!-- FullCalendar component to display events -->
     <FullCalendar :options="calendarOptions" ref="calendar" />
   </div>
@@ -41,17 +54,24 @@ export default {
   },
   data() {
     return {
+      modal:false,
       calendarOptions: {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
         weekends: true,
         events: [],
-        timeZone: 'auto'
+        timeZone: 'auto',
+        eventClick: this.handleEventClick
       },
       newEventTitle: '',
       newEventDate: '',
       newEventDesc: '',
       school_id: '',
+      modalData: {
+        eventName: null,
+        date: null,
+        description: null
+      }
     };
   },
   async mounted() {
@@ -76,6 +96,21 @@ export default {
 
   },
   methods: {
+    handleEventClick(info) {
+      // Extract event details from the clicked event
+      const clickedEvent = info.event
+
+      // Set modalData properties based on the clicked event
+      this.modalData.eventName = clickedEvent.title
+      const eventDate = new Date(clickedEvent.start)
+      const formattedDate = eventDate.toISOString().replace('T', ' ').replace('Z', '')
+      this.modalData.date = formattedDate
+      this.modalData.description =
+        clickedEvent.extendedProps.description || 'No description available' // Assuming you have a description property in your events
+
+      // Open the modal
+      this.modal = true
+    },
     async addEvent() {
       if (this.newEventTitle && this.newEventDate && this.school_id) {
         const { data: userExists } = await supabase
