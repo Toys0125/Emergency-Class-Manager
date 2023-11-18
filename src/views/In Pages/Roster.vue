@@ -148,13 +148,10 @@ export default {
   }),
   methods: {
     addStudent() {
-    // Check if the required fields are filled in
     if (!this.modalData.fName || !this.modalData.lName) {
       this.$root.snackbar.show({ text: 'Please fill in all fields', timeout: 3000, color: 'red' });
       return;
     }
-
-    // Create a new student object
     const newStudent = {
       id_number: this.modalData.id_number,
       fName: this.modalData.fName,
@@ -167,15 +164,6 @@ export default {
 
     this.$root.snackbar.show({ text: 'Student added successfully', timeout: 3000, color: 'green' });
   },
-    editRow(data) {
-      //console.log(data)
-      //Provided data is value.item.{columns}
-      this.model = true
-      this.passedData = data.item
-      this.modalData.id_number = data.item.userEmail
-      this.modalData.fName = data.item.fName
-      this.modalData.lName = data.item.lName
-    },
     loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
