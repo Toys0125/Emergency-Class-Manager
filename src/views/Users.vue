@@ -203,7 +203,7 @@ export default {
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
       { title: 'School', key: 'school', align: 'end' },
-      { title: 'admin', key: 'admin', align: 'end', sortable: false, width: '15%' },
+      { title: 'admin', key: 'admin', align: 'start', sortable: false, width: '5%'},
       { title: 'Edit', key: 'edit', align: 'end' }
     ],
     rows: [],
