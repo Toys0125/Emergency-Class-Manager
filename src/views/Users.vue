@@ -67,7 +67,7 @@
 
               <v-autocomplete
                 v-model="searchData.selected"
-                placeholder="Search for school"
+                placeholder="Min 4 characters to search"
                 :items="searchData.rows"
                 @update:search="schoolSearch"
                 :loading="searchData.loading || modalData.loading"
@@ -77,7 +77,7 @@
                 @onkeyup.enter="updateSchool"
               ></v-autocomplete>
               <v-btn
-                v-show="modalData.school_id != searchData.selected.school_id"
+                v-show="searchData.selected != null ? modalData.school_id != searchData.selected?.school_id : false"
                 @click="updateSchool"
                 color="primary"
                 >Change Schools</v-btn
