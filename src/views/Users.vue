@@ -20,7 +20,6 @@
         <template v-slot:item.admin="{ value }"
           ><v-checkbox
             width="10px"
-            prepend-icon="verified_user"
             :model-value="value"
             :disabled="true"
           ></v-checkbox
