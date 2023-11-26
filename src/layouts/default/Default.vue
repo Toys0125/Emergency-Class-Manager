@@ -121,12 +121,12 @@ export default {
 }
 </script>
 <style scoped>
-:deep() .v-table .v-table__wrapper>table>thead>tr>th:not(:last-child) {
+:global( .v-table .v-table__wrapper>table>thead>tr>th:not(:last-child)) {
   border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
-:deep() .v-table .v-table__wrapper>table>tbody>tr>td:not(:last-child),
-.v-table .v-table__wrapper>table>tbody>tr>th:not(:last-child) {
+:global( .v-table .v-table__wrapper>table>tbody>tr>td:not(:last-child)),
+:global(.v-table .v-table__wrapper>table>tbody>tr>th:not(:last-child) ){
   border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 </style>
