@@ -1,130 +1,76 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-card>
-    <v-tabs v-model="tab" bg-color="primary" v-show="modalData.class_id != null">
-      <v-tab value="one">Students</v-tab>
-      <v-tab value="two">Teachers</v-tab>
-    </v-tabs>
-    <v-card-text>
-      <v-window v-model="tab">
-        <v-responsive v-show="modalData.class_id == null"><p>Create new class</p></v-responsive>
-        <v-window-item value="one">
-          <v-responsive v-show="modalData.class_id != null"><p>Editing Class</p></v-responsive>
-          <v-text-field
-            v-model="modalData.className"
-            placeholder="Class Name Here"
-            label="Class name"
-            :rules="[
-              (v) => !!v || 'Name is required',
-              (v) => (v && v.length > 4) || 'Must be more than 4 characters'
-            ]"
-          />
-          <v-row class="pa-md-4 mx-lg-auto">
-            <v-data-table-server
-              v-model:items-per-page="itemsPerPage"
-              :headers="headers"
-              :items-length="totalrows"
-              :items="rows"
-              :loading="loading"
-              class="elevation-1"
-              item-value="name"
-              :items-per-page-options="itemsPerPageOptions"
-              @update:options="loadRows"
-              v-if="modalData.class_id != null"
-            >
-              <template v-slot:item.id_number="{ value }"
-                ><p class="d-flex justify-left">{{ value }}</p></template
-              >
-              <template v-slot:item.edit="value"
-                ><v-btn color="red" variant="outlined" @click="removeRow(value.item)"
-                  >Remove</v-btn
-                ></template
-              >
-            </v-data-table-server>
-          </v-row>
-          <v-row v-show="modalData.class_id != null">
-            <v-autocomplete
-              v-model="searchData.selected"
-              placeholder="Search for student"
-              :items="searchData.rows"
-              @update:search="studentSearch"
-              :loading="searchData.loading"
-              item-title="fName"
-              no-filter
-              return-object
-              @onkeyup.enter="addStudent"
-              ><template v-slot:selection="{ item }">
-                <p>
-                  {{ item?.raw?.id_number + '\t' + item?.raw?.fName + '\t' + item?.raw?.lName }}
-                </p>
-              </template>
-              <template v-slot:item="{ props, item }">
-                <v-list-item
-                  v-bind="props"
-                  :title="item?.raw?.id_number + '\t' + item?.raw?.fName + '\t' + item?.raw?.lName"
-                ></v-list-item> </template
-            ></v-autocomplete>
-          </v-row>
-          <v-row v-show="searchData.selected" class="pa-md-4 mx-lg-auto"
-            ><v-spacer></v-spacer>
-            <v-btn color="primary" outlined align-end :onclick="addStudent">Add User</v-btn></v-row
-          >
-        </v-window-item>
-        <v-window-item value="two">
-          <EditTeachers
-            v-if="modalData.class_id != null"
-            :passedData="modalData"
-            ref="editTeachers"
-          ></EditTeachers>
-        </v-window-item>
-      </v-window>
-    </v-card-text>
-    <v-card-actions class="d-flex align-end flex-column">
-      <div v-if="tab == 'one'">
-        <v-btn
-          :color="addedRows.length > 0 ? 'green' : 'primary'"
-          outlined
-          v-show="modalData.class_id != null"
-          :onclick="saveChanges"
-          >Submit</v-btn
+  <v-responsive>
+    <v-row class="pa-md-4 mx-lg-auto">
+      <v-data-table-server
+        v-model:items-per-page="itemsPerPage"
+        :headers="headers"
+        :items-length="totalrows"
+        :items="rows"
+        :loading="loading"
+        class="elevation-1"
+        item-value="name"
+        :items-per-page-options="itemsPerPageOptions"
+        @update:options="loadRows"
+        v-if="modalData.class_id != null"
+      >
+        <template v-slot:item.isPrimary="value"
+          ><v-checkbox
+            width="10px"
+            :model-value="value.item.isPrimary"
+            @update:model-value="setPrimary(value.item)"
+          ></v-checkbox>
+        </template>
+        <template v-slot:item.edit="value"
+          ><v-btn color="red" variant="outlined" @click="removeRow(value.item)"
+            >Remove</v-btn
+          ></template
         >
-        <v-btn
-          :color="
-            modalData.className != null && modalData.className.length > 4 ? 'green' : 'primary'
-          "
-          outlined
-          v-show="modalData.class_id == null"
-          :onclick="createClass"
-          >Create Class</v-btn
-        >
-      </div>
-      <div v-if="tab == 'two'">
-        <v-btn
-          :color="teacherRows > 0 ? 'green' : 'primary'"
-          outlined
-          v-show="modalData.class_id != null"
-          :onclick="callTeacherSubmit"
-          >Submit</v-btn
-        >
-      </div>
-    </v-card-actions>
-  </v-card>
+      </v-data-table-server>
+    </v-row>
+    <v-row>
+      <v-autocomplete
+        v-model="searchData.selected"
+        placeholder="Search for users"
+        :items="searchData.rows"
+        @update:search="userSearch"
+        :loading="searchData.loading"
+        item-title="fName"
+        no-filter
+        return-object
+        @onkeyup.enter="addTeacher"
+        ><template v-slot:selection="{ item }">
+          <p>
+            {{ item?.raw?.fName + '\t' + item?.raw?.lName }}
+          </p>
+        </template>
+        <template v-slot:item="{ props, item }">
+          <v-list-item
+            v-bind="props"
+            :title="item?.raw?.fName + '\t' + item?.raw?.lName"
+          ></v-list-item> </template
+      ></v-autocomplete>
+    </v-row>
+    <v-row v-show="searchData.selected" class="pa-md-4 mx-lg-auto"
+      ><v-spacer></v-spacer>
+      <v-btn color="primary" outlined align-end :onclick="addTeacher">Add User</v-btn></v-row
+    >
+  </v-responsive>
   <Confirmation ref="confirm"></Confirmation>
 </template>
 
 <script setup>
 import supabase from '@/supabase'
-import Confirmation from '@/components/Confirmation.vue'
 import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
-import EditTeachers from './EditTeachers.vue'
+import Confirmation from '@/components/Confirmation.vue'
 </script>
 
 <script>
 const supabaseRetrive = {
   async count(class_id) {
     const { count, error } = await supabase
-      .from('Perm Roaster')
+      .from('Teacher Classes')
       .select('*', { count: 'exact', head: true })
       .eq('class_id', class_id)
     if (error) {
@@ -139,7 +85,7 @@ const supabaseRetrive = {
     var to = page * itemsPerPage - 1
     console.log(from, to)
     const { data, error } = await supabase
-      .rpc('permstudents', { varclass_id: class_id })
+      .rpc('getteachers', { varclass_id: class_id })
       .select('*')
       .range(from, to)
     console.log(data)
@@ -163,7 +109,7 @@ const supabaseRetrive = {
     var to = page * itemsPerPage - 1
     console.log(from, to)
     const { data, error } = await supabase
-      .rpc('searchpermstudents', { searchtext: text, varclass_id: class_id })
+      .rpc('searchteachers', { searchtext: text, varclass_id: class_id })
       .range(from, to)
     console.log('Search data:', data)
     if (error) {
@@ -181,8 +127,8 @@ const supabaseRetrive = {
     }
     return { rows: data }
   },
-  async searchStudents({ text = '' }) {
-    const { data, error } = await supabase.rpc('searchstudents', { searchtext: text }).range(0, 5)
+  async searchUsers({ text = '' }) {
+    const { data, error } = await supabase.rpc('searchusers', { searchtext: text }).range(0, 5)
     //console.log(data)
     if (error) {
       console.error(error)
@@ -196,12 +142,14 @@ export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Edit Class',
   props: { passedData: Object },
+  expose: ['saveChanges'],
   data: () => ({
     itemsPerPage: 5,
     headers: [
-      { title: 'ID Number', key: 'id_number', align: 'left', width: '20%' },
+      { title: 'User Email', key: 'usersEmail', align: 'left', width: '20%' },
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
+      { title: 'is Primary', key: 'isPrimary', align: 'start', width: '5%' },
       { title: 'Buttons', key: 'edit', align: 'end' }
     ],
     rows: [],
@@ -227,17 +175,12 @@ export default {
       text: '',
       loading: false
     },
-    tab: 'one'
+    tab: 1
   }),
-  computed: {
-    teacherRows() {
-      if (this.$refs.editTeachers == null) return 0
-      else return this.$refs.editTeachers.$data.addedRows
-    }
-  },
   methods: {
     loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
+      console.log(this.modalData.class_id)
       if (this.totalrows == 0) {
         supabaseRetrive
           .count(this.modalData.class_id)
@@ -246,7 +189,6 @@ export default {
           })
           .catch(() => {
             this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
-            return
           })
       }
       this.options = { page: page, itemsPerPage: itemsPerPage, sortBy: sortBy }
@@ -277,14 +219,14 @@ export default {
         text: this.search
       })
     },
-    async studentSearch(searchtext) {
+    async userSearch(searchtext) {
       if (searchtext.length > 3) {
         if (this.searchData.text != searchtext) {
           this.loading = true
           this.searchData.loading = true
           this.searchData.text = searchtext
           await Promise.all([
-            supabaseRetrive.searchStudents({ text: this.searchData.text }),
+            supabaseRetrive.searchUsers({ text: this.searchData.text }),
             supabaseRetrive.search({
               page: this.options.page,
               rowsPerPage: this.options.rowsPerPage,
@@ -311,29 +253,18 @@ export default {
       var newrows = []
       var errorcheck = false
       this.addedRows.forEach((element) => {
-        newrows.push({ class_id: this.modalData.class_id, student_id: element.student_id })
+        newrows.push({
+          class_id: this.modalData.class_id,
+          userEmail: element.userEmail,
+          isPrimary: element.isPrimary
+        })
       })
-      const { error } = await supabase.from('Perm Roaster').insert(newrows)
+      const { error } = await supabase.from('Teacher Classes').insert(newrows)
 
       if (error) {
         console.error('Error saving changes:', error)
         errorcheck = true
         this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
-      }
-      if (
-        this.modalData.className.length > 4 &&
-        this.modalData.className != this.passedData.className
-      ) {
-        const { error } = await supabase
-          .from('Classes')
-          .update({ className: this.modalData.className })
-          .eq('class_id', this.modalData.class_id)
-
-        if (error) {
-          console.error('Error Class Name changes:', error)
-          errorcheck = true
-          this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
-        }
       }
       if (!errorcheck) {
         this.$root.snackbar.show({
@@ -344,25 +275,7 @@ export default {
         this.$emit('onsubmit')
       }
     },
-    async createClass() {
-      if (this.modalData.className.length < 4) return
-      const { error } = await supabase
-        .from('Classes')
-        .insert({ className: this.modalData.className })
-
-      if (error) {
-        console.error('Error saving changes:', error)
-        this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
-      } else {
-        this.$root.snackbar.show({
-          text: 'Succesfully made class',
-          timeout: 10000,
-          color: 'green'
-        })
-        this.$emit('onsubmit')
-      }
-    },
-    addStudent() {
+    addTeacher() {
       var exists = this.rows.find(
         (value) => value.student_id == this.searchData.selected.student_id
       )
@@ -371,7 +284,7 @@ export default {
         this.rows.push(this.searchData.selected)
       } else {
         this.$root.snackbar.show({
-          text: 'Student Already in list.',
+          text: 'User Already in list.',
           timeout: 5000,
           color: 'yellow'
         })
@@ -410,13 +323,46 @@ export default {
         }
       }
     },
-    callTeacherSubmit() {
-      this.$refs.editTeachers.saveChanges()
+    async setPrimary(rowdata) {
+      console.log(rowdata)
+      rowdata.isPrimary = !rowdata.isPrimary
+      if (this.addedRows.includes(rowdata)) {
+        if (
+          await this.$refs.confirm.open(
+            'Confirm',
+            'Are you sure you want to change primary teacher?'
+          )
+        ) {
+          this.addedRows[
+            this.addedRows.findIndex((value) => (value.userEmail = rowdata.userEmail))
+          ].isPrimary = rowdata.isPrimary
+          return
+        }
+      }
+      if (
+        await this.$refs.confirm.open('Confirm', 'Are you sure you want to change primary teacher?')
+      ) {
+        //this.rows.splice(this.rows.findIndex(rowdata),1)
+        //console.log('Delete row.')
+        const { error } = await supabase
+          .from('Teacher Classes')
+          .update({ isPrimary: rowdata.isPrimary })
+          .eq('class_id', this.modalData.class_id)
+          .eq('userEmail', rowdata.userEmail)
+        if (error) {
+          console.error('Error updating row from supabase', error)
+          this.$root.snackbar.show({ text: 'Error updating Primary', color: 'Red', timeout: 5000 })
+        } else {
+          console.log('changed value')
+          const index = this.rows.indexOf(rowdata)
+          this.rows[index].isPrimary = rowdata.isPrimary
+        }
+      }
     }
   },
   mounted() {
     this.modalData = this.passedData
-    console.log('Mounted', this.passedData)
+    console.log('Mounted', this.modalData)
   },
   beforeRouteLeave(to, from, next) {
     if (this.addedRows.length > 0) {
