@@ -119,7 +119,7 @@ const supabaseRetrive = {
       .eq('class_id', class_id)
     if (error) {
       console.error(error)
-      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      throw error
     }
     console.log(count)
     return count
@@ -135,7 +135,7 @@ const supabaseRetrive = {
     console.log(data)
     if (error) {
       console.error(error)
-      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      throw error
     }
     if (sortBy.length) {
       const sortKey = sortBy[0].key
