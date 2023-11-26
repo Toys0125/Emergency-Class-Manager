@@ -217,7 +217,7 @@ export default {
       text: '',
       loading: false
     },
-    tab: 1
+    tab: 'one'
   }),
   methods: {
     loadRows({ page, itemsPerPage, sortBy }) {
