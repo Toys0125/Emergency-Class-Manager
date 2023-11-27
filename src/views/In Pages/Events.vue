@@ -32,7 +32,6 @@
           <v-text-field v-model="modalData.eventName" label="Event Name" readonly></v-text-field>
           <v-text-field v-model="modalData.date" label="Event Date and Time" readonly></v-text-field>
           <v-text-field v-model="modalData.description" label="Event Description" readonly></v-text-field>
-          <v-text-field v-model="modalData.event_id" label="Event ID" readonly></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-btn variant="elevated" color="green" @click="modal = false">Close</v-btn>

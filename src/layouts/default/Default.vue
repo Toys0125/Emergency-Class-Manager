@@ -89,7 +89,7 @@ export default {
   data: () => ({
     drawer: false,
     session: null,
-    iamAdmin: null,
+    user: null,
     darkMode: false
   }),
   created() {
