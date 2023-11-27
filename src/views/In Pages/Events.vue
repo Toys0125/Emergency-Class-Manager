@@ -32,12 +32,16 @@
           <v-text-field v-model="modalData.eventName" label="Event Name" readonly></v-text-field>
           <v-text-field v-model="modalData.date" label="Event Date and Time" readonly></v-text-field>
           <v-text-field v-model="modalData.description" label="Event Description" readonly></v-text-field>
+          <v-text-field v-model="modalData.event_id" label="Event ID" readonly></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-btn variant="elevated" color="green" @click="modal = false">Close</v-btn>
+          <v-btn variant="elevated" color="red" @click="deleteEvent">Delete</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    
     <!-- FullCalendar component to display events -->
     <FullCalendar :options="calendarOptions" ref="calendar" />
   </div>
@@ -70,7 +74,8 @@ export default {
       modalData: {
         eventName: null,
         date: null,
-        description: null
+        description: null,
+        event_id: null
       }
     };
   },
@@ -91,7 +96,8 @@ export default {
       this.calendarOptions.events = events.map(event => ({
         title: event.eventName,
         start: event.date,
-        description: event.description
+        description: event.description,
+        id: event.event_id
       }));
     }
 
@@ -106,6 +112,7 @@ export default {
       this.modalData.date = formattedDate
       this.modalData.description =
         clickedEvent.extendedProps.description
+      this.modalData.event_id = clickedEvent.id
       this.modal = true
     },
     async addEvent() {
@@ -188,6 +195,32 @@ export default {
         this.$root.snackbar.show({ text: 'Data inserted into table', timeout: 10000, color: 'green' })
       }
     },
+    async deleteEvent() {
+      const event_id = this.modalData.event_id;
+
+      const { data: deletedData, error } = await supabase
+        .from('Events')
+        .delete()
+        .eq('event_id', event_id)
+
+      if(error) {
+        console.error(error);
+        this.$root.snackbar.show({ text: 'Error deleting event', timeout: 10000, color: 'red' });
+      } else {
+        console.log('Event deleted: ' + deletedData);
+        this.$root.snackbar.show({ text: 'Event deleted successfully', timeout: 10000, color: 'green' });
+
+        // Remove the event from the calendar
+        const calendarApi = this.$refs.calendar.getApi();
+        const eventToRemove = calendarApi.getEventById(event_id);
+        if (eventToRemove) {
+          eventToRemove.remove();
+        }
+
+        // Close the modal after deletion
+        this.modal = false;
+      }
+    }
   },
 };
 </script>
