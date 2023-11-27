@@ -6,24 +6,47 @@
     <h2>Upcoming events:</h2>
   </div>
   <v-container class="fill-height">
-    
     <v-responsive class="align-center text-center fill-height">
-      <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers" :items-length="totalrows"
-        :items="rows" :loading="loading" class="elevation-1" item-value="name"
-        :items-per-page-options="itemsPerPageOptions" @update:options="loadRows" @click:row="editRow" no-data-text="No Upcoming Events">
-
+      <v-data-table-server
+        v-model:items-per-page="itemsPerPage"
+        :headers="headers"
+        :items-length="totalrows"
+        :items="rows"
+        :loading="loading"
+        class="elevation-1"
+        item-value="name"
+        :items-per-page-options="itemsPerPageOptions"
+        @update:options="loadRows"
+        @click:row="editRow"
+        no-data-text="No Upcoming Events"
+      >
       </v-data-table-server>
       <v-dialog v-model="model">
         <v-card>
           <v-card-text>
             <v-row no-gutters>
-              <v-text-field v-model="modalData.eventName" placeholder="EventName" label="Event Name" readonly />
+              <v-text-field
+                v-model="modalData.eventName"
+                placeholder="EventName"
+                label="Event Name"
+                readonly
+              />
             </v-row>
-            <v-row no-gutters><v-text-field v-model="modalData.date" placeholder="Date and Time" label="Date and Time"
-                readonly />
+            <v-row no-gutters
+              ><v-text-field
+                v-model="modalData.date"
+                placeholder="Date and Time"
+                label="Date and Time"
+                readonly
+              />
             </v-row>
             <v-row no-gutters>
-              <v-textarea v-model="modalData.description" placeholder="Description" label="Description" readonly />
+              <v-textarea
+                v-model="modalData.description"
+                placeholder="Description"
+                label="Description"
+                readonly
+              />
             </v-row>
           </v-card-text>
           <v-card-actions>
@@ -40,54 +63,55 @@ import { onMounted } from 'vue'
 import supabase from '@/supabase'
 import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
 
-const { fetchUserData, /* other methods */ } = supabaseRetrive;
+const { fetchUserData /* other methods */ } = supabaseRetrive
 
 // Add the following lines to call fetchUserData when the component is created
 onMounted(() => {
-  fetchUserData();
-});
+  fetchUserData()
+})
 </script>
 <script>
 const supabaseRetrive = {
   async fetchUserData() {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
 
       if (user && user.email) {
-        const userEmail = user.email;
+        const userEmail = user.email
 
         const { data: userData, error: userError } = await supabase
           .from('Users')
           .select('*')
           .eq('userEmail', userEmail)
-          .single();
+          .single()
 
-          console.log("Admin?: ", userData.admin)
-        console.log("school id: " + userData.school_id)
+        console.log('Admin?: ', userData.admin)
+        console.log('school id: ' + userData.school_id)
         if (userError) {
-          console.error('Error fetching user data:', userError);
+          console.error('Error fetching user data:', userError)
         } else {
-
-          this.school_id = userData.school_id; // Set the school_id property
-          this.fName = userData.fName;
+          this.school_id = userData.school_id // Set the school_id property
+          this.fName = userData.fName
         }
       } else {
-        console.error('User email not found.');
+        console.error('User email not found.')
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error('Error fetching user data:', error)
     }
   },
   formatDate(dateString) {
-    const formattedDate = dateString.replace("T", " ").replace(/\+\d{2}:\d{2}/, "");
-    return formattedDate;
+    const formattedDate = dateString.replace('T', ' ').replace(/\+\d{2}:\d{2}/, '')
+    return formattedDate
   },
   async count() {
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
+    const date = new Date()
+    date.setHours(0, 0, 0, 0)
 
-    const endDate = new Date();
-    endDate.setHours(23, 59, 59, 999);
+    const endDate = new Date()
+    endDate.setHours(23, 59, 59, 999)
 
     const { count, error } = await supabase
       .from('Events')
@@ -100,24 +124,25 @@ const supabaseRetrive = {
     return count
   },
   async fetch({ page = 0, itemsPerPage = 50, sortBy = 'date' }) {
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
+    const currentDate = new Date()
+    currentDate.setHours(0, 0, 0, 0)
 
-    const endDate = new Date();
-    endDate.setHours(23, 59, 59, 999);
-
+    const endDate = new Date()
+    endDate.setHours(23, 59, 59, 999)
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage
     console.log(from, to)
 
     try {
-      await this.fetchUserData();
+      await this.fetchUserData()
       const { data, error } = await supabase
         .from('Events')
         .select('*')
         .order('date', { ascending: true })
-        .range(date, endDate)
+        .gte('date', currentDate.toISOString()) // Greater than or equal to the start of the day
+        .lt('date', endDate.toISOString())
         .eq('school_id', this.school_id)
+        .range(from, to)
       console.log(data)
       if (error) {
         console.error(error)
@@ -133,15 +158,14 @@ const supabaseRetrive = {
         })
       }
       return { rows: data }
-    }
-    catch (error) {
-      console.error('Error in fetch method:', error);
+    } catch (error) {
+      console.error('Error in fetch method:', error)
       this.$store.dispatch('showSnackbar', {
         text: 'Error in fetch method',
         timeout: 5000,
-        color: 'red',
-      });
-      return { rows: [] };
+        color: 'red'
+      })
+      return { rows: [] }
     }
   },
   async search({ page = 0, itemsPerPage = 50, sortBy = 'date', text = '' }) {
@@ -237,7 +261,7 @@ export default {
     },
     showModal() {
       this.modal = false
-    },
+    }
   }
 }
 </script>
