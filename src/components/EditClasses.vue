@@ -362,22 +362,54 @@ export default {
         this.$emit('onsubmit')
       }
     },
-    addStudent() {
-      var exists = this.rows.find(
-        (value) => value.student_id == this.searchData.selected.student_id
-      )
-      if (!exists) {
-        this.addedRows.push(this.searchData.selected)
-        this.rows.push(this.searchData.selected)
-      } else {
+    async addStudent() {
+      try {
+        const exists = this.rows.find(
+          (value) => value.student_id === this.searchData.selected.student_id
+        )
+
+        if (!exists) {
+          this.addedRows.push(this.searchData.selected)
+          this.rows.push(this.searchData.selected)
+
+          const { error } = await supabase
+            .from('Students')
+            .update({ class_id: this.modalData.class_id })
+            .eq('student_id', this.searchData.selected.student_id)
+
+          if (error) {
+            console.error('Error updating class_id in Students table:', error)
+            this.$root.snackbar.show({
+              text: 'Error updating class for the student',
+              timeout: 5000,
+              color: 'red'
+            })
+          } else {
+            this.$root.snackbar.show({
+              text: 'Student added to class successfully',
+              timeout: 5000,
+              color: 'green'
+            })
+          }
+        } else {
+          this.$root.snackbar.show({
+            text: 'Student already in the list.',
+            timeout: 5000,
+            color: 'yellow'
+          })
+        }
+
+        this.searchData.selected = null
+      } catch (error) {
+        console.error('Error in addStudent method:', error)
         this.$root.snackbar.show({
-          text: 'Student Already in list.',
+          text: 'An error occurred while adding the student to the class',
           timeout: 5000,
-          color: 'yellow'
+          color: 'red'
         })
       }
-      this.searchData.selected = null
     },
+
     async removeRow(rowdata) {
       console.log(rowdata)
       if (this.addedRows.includes(rowdata)) {

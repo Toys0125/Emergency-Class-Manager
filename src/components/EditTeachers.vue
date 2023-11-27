@@ -275,14 +275,29 @@ export default {
         this.$emit('onsubmit')
       }
     },
-    addTeacher() {
+    async addTeacher() {
       var exists = this.rows.find(
         (value) => value.student_id == this.searchData.selected.student_id
       )
       if (!exists) {
         this.addedRows.push(this.searchData.selected)
         this.rows.push(this.searchData.selected)
-      } else {
+
+        try {
+      await supabase.from('Teacher Classes').insert([
+        {
+          class_id: this.modalData.class_id,
+          userEmail: this.searchData.selected.userEmail,
+          isPrimary: this.searchData.selected.isPrimary
+        }
+      ]);
+
+      this.$root.snackbar.show({ text: 'Teacher added successfully', timeout: 2000, color: 'green' });
+    } catch (error) {
+      console.error('Error adding teacher to the database:', error);
+      this.$root.snackbar.show({ text: 'Error adding teacher to the database', timeout: 5000, color: 'red' });
+    }
+  } else {
         this.$root.snackbar.show({
           text: 'User Already in list.',
           timeout: 5000,

@@ -89,26 +89,67 @@ const supabaseRetrive = {
     return count
   },
   async fetch({ page = 0, itemsPerPage = 50, sortBy = 'desc' }) {
-    var from = (page - 1) * itemsPerPage
-    var to = page * itemsPerPage - 1
-    console.log(from, to)
-    const { data, error } = await supabase.from('Students').select('*').range(from, to)
-    console.log(data)
-    if (error) {
-      console.error(error)
-      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user && user.email) {
+      const userEmail = user.email;
+
+      const { data: userData, error: userError } = await supabase
+        .from('Users')
+        .select('*')
+        .eq('userEmail', userEmail)
+        .single();
+
+        console.log('User Data:', userData);
+
+      if (userError) {
+        console.error('Error fetching user data:', userError);
+        return { rows: [], total: 0 }; 
+      }
+
+      const classId = userData && userData.class_id ? userData.class_id : null;
+
+      if (!classId) {
+        console.error('Class ID not found for the user.');
+        return { rows: [], total: 0 };
+      }
+
+      var from = (page - 1) * itemsPerPage;
+      var to = page * itemsPerPage - 1;
+
+      const { data: studentsData, error: studentsError } = await supabase
+        .from('Students')
+        .select('*')
+        .eq('class_id', classId) 
+        .range(from, to);
+
+      if (studentsError) {
+        console.error('Error fetching students:', studentsError);
+        return { rows: [], total: 0 };
+      }
+
+      if (sortBy.length) {
+        const sortKey = sortBy[0].key;
+        const sortOrder = sortBy[0].order;
+        studentsData.sort((a, b) => {
+          const aValue = a[sortKey];
+          const bValue = b[sortKey];
+          return sortOrder === 'desc' ? bValue - aValue : aValue - bValue;
+        });
+      }
+
+      return { rows: studentsData, total: studentsData.length };
+    } else {
+      console.error('User email not found.');
+      return { rows: [], total: 0 };
     }
-    if (sortBy.length) {
-      const sortKey = sortBy[0].key
-      const sortOrder = sortBy[0].order
-      data.sort((a, b) => {
-        const aValue = a[sortKey]
-        const bValue = b[sortKey]
-        return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
-      })
-    }
-    return { rows: data }
-  },
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return { rows: [], total: 0 };
+  }
+},
+
   async search({ page = 0, itemsPerPage = 50, sortBy = 'desc', text = '' }) {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage - 1
