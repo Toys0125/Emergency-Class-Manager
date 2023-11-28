@@ -18,10 +18,6 @@
     </div>
 
     <div>
-      <v-text-field :disabled="true" type="text" v-model="school_id" label="School Id" />
-    </div>
-
-    <div>
       <v-btn color="green" variant="flat" @click="addEvent">Add Event</v-btn>
     </div>
 
@@ -150,7 +146,6 @@ export default {
         this.newEventTitle = '';
         this.newEventDate = '';
         this.newEventDesc = '';
-        this.school_id = '';
       } else {
         alert('Please enter event title and date');
       }

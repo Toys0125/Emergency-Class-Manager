@@ -14,11 +14,6 @@
     <div>
       <v-text-field v-model="lName" placeholder="Student Last Name" label="Student Last Name" />
     </div>
-
-    <div>
-      <v-text-field :disabled="true" type="text" v-model="school_id" label="School Id" />
-    </div>
-
     <div>
       <v-btn color="green" variant="flat" @click="addStudent">Add Student</v-btn>
     </div>
