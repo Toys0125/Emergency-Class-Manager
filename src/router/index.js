@@ -86,6 +86,11 @@ const routes = [
         name: 'TeachContact',
         component: () => import(/* webpackChunkName: "Classes" */ '@/views/In Pages/TeachContact.vue'),
       },
+      {
+        path: 'addStudents',
+        name: 'AddStudents',
+        component: () => import(/* webpackChunkName: "Classes" */ '@/views/In Pages/AddStudents.vue'),
+      },
     ]
   }
 ]

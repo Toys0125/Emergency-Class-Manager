@@ -150,7 +150,6 @@ export default {
       { title: 'First Name', key: 'fName', align: 'end' },
       { title: 'Last Name', key: 'lName', align: 'end' },
       { title: 'is Primary', key: 'isPrimary', align: 'start', width: '5%' },
-      { title: 'School ID', key: 'school_id', align: 'end' },
       { title: 'Buttons', key: 'edit', align: 'end' }
     ],
     rows: [],
