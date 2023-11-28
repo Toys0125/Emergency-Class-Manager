@@ -216,6 +216,7 @@ export default {
       { value: 20, title: '20' }
     ],
     model: false,
+    school_id: null,
     modalData: {
       class_id: null,
       className: null
@@ -236,6 +237,33 @@ export default {
     }
   },
   methods: {
+    async fetchUserData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user && user.email) {
+          const userEmail = user.email;
+
+          const { data: userData, error: userError } = await supabase
+            .from('Users')
+            .select('school_id')
+            .eq('userEmail', userEmail)
+            .single();
+
+            console.log("school id: " + userData.school_id)
+          if (userError) {
+            console.error('Error fetching user data:', userError);
+          } else {
+            
+            this.school_id = userData.school_id; // Set the school_id property
+          }
+        } else {
+          console.error('User email not found.');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    },
     loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
       if (this.totalrows == 0) {
@@ -326,7 +354,7 @@ export default {
       ) {
         const { error } = await supabase
           .from('Classes')
-          .update({ className: this.modalData.className })
+          .update({ className: this.modalData.className, school_id: this.modalData.school_id })
           .eq('class_id', this.modalData.class_id)
 
         if (error) {
@@ -348,7 +376,7 @@ export default {
       if (this.modalData.className.length < 4) return
       const { error } = await supabase
         .from('Classes')
-        .insert({ className: this.modalData.className })
+        .insert({ className: this.modalData.className, school_id: this.school_id })
 
       if (error) {
         console.error('Error saving changes:', error)
@@ -446,9 +474,10 @@ export default {
       this.$refs.editTeachers.saveChanges()
     }
   },
-  mounted() {
+  async mounted() {
     this.modalData = this.passedData
     console.log('Mounted', this.passedData)
+    await this.fetchUserData();
   },
   beforeRouteLeave(to, from, next) {
     if (this.addedRows.length > 0) {
