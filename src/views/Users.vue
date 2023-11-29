@@ -67,7 +67,7 @@
 
               <v-autocomplete
                 v-model="searchData.selected"
-                placeholder="Min 4 characters to search"
+                placeholder='Min 4 characters to search'
                 :items="searchData.rows"
                 @update:search="schoolSearch"
                 :loading="searchData.loading || modalData.loading"
