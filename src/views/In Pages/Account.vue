@@ -20,7 +20,7 @@
     </v-toolbar>
     <v-card>
       <v-card-text>
-        <v-row>
+        <v-row no-gutters>
           <v-col cols="12">
             <v-text-field :disabled=true label="Email" v-model="user.userEmail" readonly></v-text-field>
           </v-col>
