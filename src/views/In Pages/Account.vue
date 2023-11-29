@@ -50,7 +50,10 @@
       <v-card-actions>
         <v-spacer></v-spacer>
 
-        <v-btn :disabled="!isEditing" color=green variant="elevated" @click="saveChanges"> Save </v-btn>
+        <v-btn :disabled="!isEditing" :color="isEditing ? 'green' : 'grey'" :variant="isEditing ? 'elevated' : 'text'"
+          @click="saveChanges">
+          Save
+        </v-btn>
       </v-card-actions>
 
       <v-snackbar v-model="hasSaved" :timeout="2000" attach position="absolute" location="bottom left">
@@ -90,8 +93,8 @@ export default {
   },
   methods: {
     resetForm() {
-          this.$refs.form.reset();
-        },
+      this.$refs.form.reset();
+    },
     async fetchUserData() {
       try {
         this.loading = true;

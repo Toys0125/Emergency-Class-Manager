@@ -2,7 +2,7 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <div>
-    <h1>Welcome to your Dashboard {{ fName }}</h1>
+    <h1>Welcome to your Dashboard, {{ supabaseRetrive.fName }}!</h1>
     <h2>Upcoming events:</h2>
   </div>
   <v-container class="fill-height">
@@ -89,6 +89,7 @@ const supabaseRetrive = {
 
         console.log('Admin?: ', userData.admin)
         console.log('school id: ' + userData.school_id)
+        console.log('first name: ' + userData.fName)
         if (userError) {
           console.error('Error fetching user data:', userError)
         } else {
