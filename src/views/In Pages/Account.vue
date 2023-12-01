@@ -28,7 +28,10 @@
             <v-text-field :disabled=true label="School" v-model="user.school" readonly :loading="loading"></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field label="First Name" v-model="user.fName" :readonly="!isEditing" :rules="firstNameRules"
+            <v-text-field :rules="[
+                  (v) => !!v || 'Name is required',
+                  (v) => (v && v.length > 2) || 'Must be more than 2 characters'
+                ]" label="First Name" v-model="user.fName" :readonly="!isEditing"
               @input="handleInput('fName', user.fName)"></v-text-field>
           </v-col>
           <v-col cols="12">

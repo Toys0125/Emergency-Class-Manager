@@ -4,15 +4,15 @@
 
     <!-- Input fields for event details -->
     <div>
-      <v-text-field v-model="id_number" placeholder="Student ID Number" label="Student ID Number" />
+      <v-text-field v-model="id_number" placeholder="ID" label="Student ID Number" />
     </div>
 
     <div>
-      <v-text-field v-model="fName" placeholder="Student First Name" label="Student First Name" />
+      <v-text-field v-model="fName" placeholder="First Name" label="Student First Name" />
     </div>
 
     <div>
-      <v-text-field v-model="lName" placeholder="Student Last Name" label="Student Last Name" />
+      <v-text-field v-model="lName" placeholder="Last Name" label="Student Last Name" />
     </div>
     <div>
       <v-btn color="green" variant="flat" @click="addStudent">Add Student</v-btn>
@@ -36,8 +36,32 @@ export default {
   },
   methods: {
     async addStudent() {
-  if (!this.id_number || !this.fName || !this.lName || !this.school_id) {
+  if (!this.id_number || !this.fName || !this.lName) {
     alert('Please fill in all the required fields.');
+    return;
+  }
+
+  // Check if the id_number already exists for the given school_id
+  const { data: existingStudent, error: studentError } = await supabase
+    .from('Students')
+    .select('id_number')
+    .eq('id_number', this.id_number)
+    .eq('school_id', this.school_id)
+    .single();
+
+  if (studentError) {
+    await this.insertData({
+    id_number: this.id_number,
+    fName: this.fName,
+    lName: this.lName,
+    school_id: this.school_id
+  });
+    this.$root.snackbar.show({ text: 'Student has been added', timeout: 10000, color: 'green' });
+    return;
+  }
+
+  if (existingStudent ) {
+    this.$root.snackbar.show({ text: 'Student already exists with that id number', timeout: 10000, color: 'red' });
     return;
   }
 
@@ -58,15 +82,8 @@ export default {
     return;
   }
 
-  // Proceed with student insertion
-  await this.insertData({
-    id_number: this.id_number,
-    fName: this.fName,
-    lName: this.lName,
-    school_id: this.school_id
-  });
+  
 
-  // Clear input fields
   this.id_number = '';
   this.fName = '';
   this.lName = '';
