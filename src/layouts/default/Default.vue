@@ -19,7 +19,7 @@
           <v-list-item to="/Users" title="Users"> </v-list-item>
           <v-list-item to="/events" title="Events" />
           <v-list-item to="/classes" title="Classes" />
-          <v-list-item to="/addStudents" title="Add Students" />
+          <v-list-item to="/studentManager" title="Student Manager" />
           <v-list-item to="/reports" title="Reports" />
         </v-list-group>
         <v-list-item v-show="session" @click="signOut" to="/" title="Sign Out" />

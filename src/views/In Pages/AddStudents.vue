@@ -1,22 +1,46 @@
 <template>
-    <div>
-    <h2>Add Student</h2>
+  <div>
+    <v-tabs v-model="tab" bg-color="primary">
+      <v-tab value="one">Add Student</v-tab>
+      <v-tab value="two">Delete Student</v-tab>
+    </v-tabs>
 
-    <!-- Input fields for event details -->
-    <div>
-      <v-text-field v-model="id_number" placeholder="ID" label="Student ID Number" />
+    <!-- Add Student Tab -->
+    <div v-if="tab === 'one'">
+      <div>
+        <v-text-field v-model="id_number" placeholder="ID" label="Student ID Number" />
+      </div>
+
+      <div>
+        <v-text-field v-model="fName" placeholder="First Name" label="Student First Name" />
+      </div>
+
+      <div>
+        <v-text-field v-model="lName" placeholder="Last Name" label="Student Last Name" />
+      </div>
+      <div>
+        <v-btn color="green" variant="flat" @click="addStudent">Add Student</v-btn>
+      </div>
     </div>
 
-    <div>
-      <v-text-field v-model="fName" placeholder="First Name" label="Student First Name" />
+    <!-- Delete Student Tab -->
+    <div v-if="tab === 'two'">
+      <div>
+        <v-text-field v-model="id_number" placeholder="ID" label="Student ID Number" />
+      </div>
+
+      <div>
+        <v-text-field v-model="fName" placeholder="First Name" label="Student First Name" />
+      </div>
+
+      <div>
+        <v-text-field v-model="lName" placeholder="Last Name" label="Student Last Name" />
+      </div>
+      <div>
+        <v-btn color="red" variant="flat" @click="deleteStudent">Delete Student</v-btn>
+      </div>
     </div>
 
-    <div>
-      <v-text-field v-model="lName" placeholder="Last Name" label="Student Last Name" />
-    </div>
-    <div>
-      <v-btn color="green" variant="flat" @click="addStudent">Add Student</v-btn>
-    </div>
   </div>
 </template>
 <script>
@@ -28,7 +52,9 @@ export default {
       id_number: '',
       fName: '',
       lName: '',
-      school_id: ''
+      school_id: '',
+      removed: false,
+      tab: 'one',
     };
   },
   async mounted() {
@@ -36,59 +62,101 @@ export default {
   },
   methods: {
     async addStudent() {
-  if (!this.id_number || !this.fName || !this.lName) {
-    alert('Please fill in all the required fields.');
-    return;
-  }
+      if (!this.id_number || !this.fName || !this.lName) {
+        alert('Please fill in all the required fields.');
+        return;
+      }
 
-  // Check if the id_number already exists for the given school_id
-  const { data: existingStudent, error: studentError } = await supabase
-    .from('Students')
-    .select('id_number')
-    .eq('id_number', this.id_number)
-    .eq('school_id', this.school_id)
-    .single();
+      const { data: existingStudent, error: studentNoExist } = await supabase
+        .from('Students')
+        .select('id_number')
+        .eq('id_number', this.id_number)
+        .eq('school_id', this.school_id)
+        .single();
 
-  if (studentError) {
-    await this.insertData({
-    id_number: this.id_number,
-    fName: this.fName,
-    lName: this.lName,
-    school_id: this.school_id
-  });
-    this.$root.snackbar.show({ text: 'Student has been added', timeout: 10000, color: 'green' });
-    return;
-  }
+      if (studentNoExist) {
+        await this.insertData({
+          id_number: this.id_number,
+          fName: this.fName,
+          lName: this.lName,
+          school_id: this.school_id,
+          removed: this.removed
+        });
 
-  if (existingStudent ) {
-    this.$root.snackbar.show({ text: 'Student already exists with that id number', timeout: 10000, color: 'red' });
-    return;
-  }
+        this.id_number = '';
+        this.fName = '';
+        this.lName = '';
+        this.school_id = '';
+        this.$root.snackbar.show({ text: 'Student has been added', timeout: 10000, color: 'green' });
+        return;
+      }
 
-  const { data: userExists, error: userError } = await supabase
-    .from('Users')
-    .select('school_id')
-    .eq('school_id', this.school_id)
-    .single();
+      if (existingStudent) {
+        this.$root.snackbar.show({ text: 'Student already exists with that id number', timeout: 10000, color: 'red' });
+        return;
+      }
 
-  if (userError) {
-    console.error('Error checking school_id:', userError);
-    this.$root.snackbar.show({ text: 'Error checking school_id', timeout: 10000, color: 'red' });
-    return;
-  }
+      const { data: userExists, error: userError } = await supabase
+        .from('Users')
+        .select('school_id')
+        .eq('school_id', this.school_id)
+        .single();
 
-  if (!userExists) {
-    alert('Invalid school_id. Please select a valid school_id.');
-    return;
-  }
+      if (userError) {
+        console.error('Error checking school_id:', userError);
+        this.$root.snackbar.show({ text: 'Error checking school_id', timeout: 10000, color: 'red' });
+        return;
+      }
 
-  
+      if (!userExists) {
+        alert('Invalid school_id. Please select a valid school_id.');
+        return;
+      }
+    },
+    async deleteStudent() {
+      console.time('deleteStudent');
+      const { data: existingStudent, error: studentNoExist } = await supabase
+        .from('Students')
+        .select('id_number')
+        .eq('id_number', this.id_number)
+        .eq('school_id', this.school_id)
+        .single();
 
-  this.id_number = '';
-  this.fName = '';
-  this.lName = '';
-  this.school_id = '';
-},
+      if (existingStudent) {
+        await this.updateData({
+          removed: true
+        });
+
+        this.id_number = '';
+        this.fName = '';
+        this.lName = '';
+        this.$root.snackbar.show({ text: 'Student has been deleted', timeout: 10000, color: 'green' });
+        return;
+      }
+
+      if (studentNoExist) {
+        this.$root.snackbar.show({ text: 'Student could not be deleted', timeout: 10000, color: 'red' });
+        return;
+      }
+
+      const { data: userExists, error: userError } = await supabase
+        .from('Users')
+        .select('school_id')
+        .eq('school_id', this.school_id)
+        .single();
+
+      if (userError) {
+        console.error('Error checking school_id:', userError);
+        this.$root.snackbar.show({ text: 'Error checking school_id', timeout: 10000, color: 'red' });
+        return;
+      }
+
+      if (!userExists) {
+        alert('Invalid school_id. Please select a valid school_id.');
+        return;
+      }
+      console.timeEnd('deleteStudent');
+    },
     async fetchUserData() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -102,11 +170,11 @@ export default {
             .eq('userEmail', userEmail)
             .single();
 
-            console.log("school id: " + userData.school_id)
+          console.log("school id: " + userData.school_id)
           if (userError) {
             console.error('Error fetching user data:', userError);
           } else {
-            
+
             this.school_id = userData.school_id; // Set the school_id property
           }
         } else {
@@ -114,6 +182,19 @@ export default {
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
+      }
+    },
+    async updateData(data) {
+      const { data: insertedData, error } = await supabase
+        .from('Students')
+        .update([data])
+        .eq('id_number', this.id_number);
+      if (error) {
+        console.error(error)
+        this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      } else {
+        console.log('Data updated:', insertedData);
+        this.$root.snackbar.show({ text: 'Data updated', timeout: 10000, color: 'green' })
       }
     },
     async insertData(data) {
