@@ -60,16 +60,10 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
 import supabase from '@/supabase'
 import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
 
-const { fetchUserData /* other methods */ } = supabaseRetrive
-
 // Add the following lines to call fetchUserData when the component is created
-onMounted(() => {
-  fetchUserData()
-})
 </script>
 <script>
 const supabaseRetrive = {
@@ -94,8 +88,7 @@ const supabaseRetrive = {
         if (userError) {
           console.error('Error fetching user data:', userError)
         } else {
-          this.school_id = userData.school_id // Set the school_id property
-          this.fName = userData.fName
+          return userData
         }
       } else {
         console.error('User email not found.')
@@ -108,10 +101,10 @@ const supabaseRetrive = {
     const formattedDate = dateString.replace('T', ' ').replace(/\+\d{2}:\d{2}/, '')
     return formattedDate
   },
-  async count() {
+  async count(school_id) {
     const currentDate = new Date()
     currentDate.setHours(0, 0, 0, 0)
-    
+
     const endDate = new Date()
     endDate.setHours(23, 59, 59, 999)
 
@@ -120,14 +113,14 @@ const supabaseRetrive = {
       .select('*', { count: 'exact', head: true })
       .gte('date', currentDate.toISOString()) // Greater than or equal to the start of the day
       .lt('date', endDate.toISOString())
-      .eq('school_id', this.school_id)
+      .eq('school_id', school_id)
     if (error) {
       console.error(error)
-      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      throw error
     }
     return count
   },
-  async fetch({ page = 0, itemsPerPage = 50, sortBy = 'date' }) {
+  async fetch({ page = 0, itemsPerPage = 50, sortBy = 'date', school_id }) {
     const currentDate = new Date()
     currentDate.setHours(0, 0, 0, 0)
 
@@ -138,19 +131,19 @@ const supabaseRetrive = {
     console.log(from, to)
 
     try {
-      await this.fetchUserData()
+      //await this.fetchUserData()
       const { data, error } = await supabase
         .from('Events')
         .select('*')
         .order('date', { ascending: true })
         .gte('date', currentDate.toISOString()) // Greater than or equal to the start of the day
         .lt('date', endDate.toISOString())
-        .eq('school_id', this.school_id)
+        .eq('school_id', school_id)
         .range(from, to)
       console.log(data)
       if (error) {
         console.error(error)
-        this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+        throw error
       }
       if (sortBy.length) {
         const sortKey = sortBy[0].key
@@ -164,12 +157,7 @@ const supabaseRetrive = {
       return { rows: data }
     } catch (error) {
       console.error('Error in fetch method:', error)
-      this.$store.dispatch('showSnackbar', {
-        text: 'Error in fetch method',
-        timeout: 5000,
-        color: 'red'
-      })
-      return { rows: [] }
+      throw error
     }
   },
   async search({ page = 0, itemsPerPage = 50, sortBy = 'date', text = '' }) {
@@ -180,7 +168,7 @@ const supabaseRetrive = {
     console.log(data)
     if (error) {
       console.error(error)
-      this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+      throw error
     }
     if (sortBy.length) {
       const sortKey = sortBy[0].key
@@ -223,36 +211,58 @@ export default {
       eventName: null,
       date: null,
       description: null
-    }
+    },
+    localuserData: null
   }),
+  computed: {
+  },
   methods: {
-    loadRows({ page, itemsPerPage, sortBy }) {
+    async loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
+      //console.log(this.$root.userData)
+      const userData = await this.$root.userData;
       if (this.totalrows == 0) {
-        supabaseRetrive.count().then((count) => {
-          this.totalrows = count
-        })
+        await supabaseRetrive
+          .count(await userData.school_id)
+          .then((count) => {
+            this.totalrows = count
+          })
+          .catch(() => {
+            this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+          })
       }
+      console.log('School id:', userData.school_id)
       this.options = { page: page, rowsPerPage: itemsPerPage, sortBy: sortBy }
       if (this.search.length < 3) {
-        supabaseRetrive.fetch({ page, itemsPerPage, sortBy }).then(({ rows }) => {
-          this.rows = rows
-          this.loading = false
-          this.$root.snackbar.show({ text: 'Loaded', timeout: 2000, color: 'blue' })
-        })
+        supabaseRetrive
+          .fetch({ page, itemsPerPage, sortBy, school_id: userData.school_id })
+          .then(({ rows }) => {
+            this.rows = rows
+            this.loading = false
+            this.$root.snackbar.show({ text: 'Loaded', timeout: 2000, color: 'blue' })
+          })
+          .catch(() => {
+            this.rows = []
+            this.loading = false
+            this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+          })
       } else {
         this.searchRows()
       }
-      console.log(this.$root.snackbar)
+      //console.log(this.$root.snackbar)
     },
     searchRows() {
       if (this.search.length < 3) return
-      supabaseRetrive.search({
-        page: this.options.page,
-        rowsPerPage: this.options.rowsPerPage,
-        sortBy: this.options.sortBy,
-        text: this.search
-      })
+      supabaseRetrive
+        .search({
+          page: this.options.page,
+          rowsPerPage: this.options.rowsPerPage,
+          sortBy: this.options.sortBy,
+          text: this.search
+        })
+        .catch(() => {
+          this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+        })
     },
     editRow(data, data2) {
       //console.log(data)

@@ -91,7 +91,9 @@ export default {
     drawer: false,
     session: null,
     user: null,
-    darkMode: false
+    darkMode: false,
+    iamAdmin:null,
+
   }),
   created() {
     //this.darkMode=this.$vuetify.theme.current.dark
@@ -104,12 +106,13 @@ export default {
     supabase.auth.onAuthStateChange((_, _session) => {
       this.session = _session
     })
+    
   },
   computed: {
-    isAdmin() {
+    async isAdmin() {
       if (this.iamAdmin != null) return this.iamAdmin
-      this.iamAdmin = true
-      return true
+      this.iamAdmin = await this.$root.userData.admin
+      return this.iamAdmin
     }
   },
   methods: {
@@ -117,7 +120,7 @@ export default {
       await supabase.auth.signOut()
       console.log('signed out')
       this.session = null
-    }
+    },
   }
 }
 </script>
