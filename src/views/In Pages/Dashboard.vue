@@ -109,16 +109,18 @@ const supabaseRetrive = {
     return formattedDate
   },
   async count() {
-    const date = new Date()
-    date.setHours(0, 0, 0, 0)
-
+    const currentDate = new Date()
+    currentDate.setHours(0, 0, 0, 0)
+    
     const endDate = new Date()
     endDate.setHours(23, 59, 59, 999)
 
     const { count, error } = await supabase
       .from('Events')
       .select('*', { count: 'exact', head: true })
-      .range(date, endDate)
+      .gte('date', currentDate.toISOString()) // Greater than or equal to the start of the day
+      .lt('date', endDate.toISOString())
+      .eq('school_id', this.school_id)
     if (error) {
       console.error(error)
       this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
