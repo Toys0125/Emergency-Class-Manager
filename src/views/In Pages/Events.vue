@@ -36,7 +36,7 @@
       </v-card>
     </v-dialog>
 
-    
+
     <!-- FullCalendar component to display events -->
     <FullCalendar :options="calendarOptions" ref="calendar" />
   </div>
@@ -53,7 +53,7 @@ export default {
   },
   data() {
     return {
-      modal:false,
+      modal: false,
       calendarOptions: {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
@@ -163,11 +163,11 @@ export default {
             .eq('userEmail', userEmail)
             .single();
 
-            console.log("school id: " + userData.school_id)
+          console.log("school id: " + userData.school_id)
           if (userError) {
             console.error('Error fetching user data:', userError);
           } else {
-            
+
             this.school_id = userData.school_id; // Set the school_id property
           }
         } else {
@@ -192,12 +192,24 @@ export default {
     async deleteEvent() {
       const event_id = this.modalData.event_id;
 
+      const calendarApi = this.$refs.calendar.getApi();
+      const clickedEvent = calendarApi.getEventById(event_id);
+
+      // Check if the event has already occurred
+      const eventDate = new Date(clickedEvent.start);
+      const currentDate = new Date();
+
+      if (eventDate < currentDate) {
+        this.$root.snackbar.show({ text: 'Cannot delete events that have already occured.', timeout: 10000, color: 'red' })
+        return;
+      }
+
       const { data: deletedData, error } = await supabase
         .from('Events')
         .delete()
         .eq('event_id', event_id)
 
-      if(error) {
+      if (error) {
         console.error(error);
         this.$root.snackbar.show({ text: 'Error deleting event', timeout: 10000, color: 'red' });
       } else {
