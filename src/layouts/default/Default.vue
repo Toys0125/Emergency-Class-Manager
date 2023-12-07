@@ -135,7 +135,6 @@ export default {
 
           this.user = {
             ...userWithAdminStatus
-            // Add other properties if needed
           };
         } else {
           console.error('User email not found.');
