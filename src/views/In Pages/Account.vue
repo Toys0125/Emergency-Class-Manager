@@ -29,13 +29,16 @@
           </v-col>
           <v-col cols="12">
             <v-text-field :rules="[
-                  (v) => !!v || 'Name is required',
+                  (v) => !!v || 'First name is required',
                   (v) => (v && v.length > 2) || 'Must be more than 2 characters'
                 ]" label="First Name" v-model="user.fName" :readonly="!isEditing"
               @input="handleInput('fName', user.fName)"></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field label="Last Name" v-model="user.lName" :readonly="!isEditing"
+            <v-text-field :rules="[
+                  (v) => !!v || 'Last name is required',
+                  (v) => (v && v.length > 1) || 'Must be more than 1 character'
+                ]" label="Last Name" v-model="user.lName" :readonly="!isEditing"
               @input="handleInput('lName', user.lName)"></v-text-field>
           </v-col>
           <v-col cols="12">

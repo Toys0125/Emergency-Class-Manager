@@ -195,7 +195,6 @@ export default {
       const calendarApi = this.$refs.calendar.getApi();
       const clickedEvent = calendarApi.getEventById(event_id);
 
-      // Check if the event has already occurred
       const eventDate = new Date(clickedEvent.start);
       const currentDate = new Date();
 

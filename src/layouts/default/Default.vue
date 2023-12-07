@@ -30,20 +30,16 @@
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-app-bar-title class="align-self-center"><router-link to="/dashboard">
-      <v-img
-        class="align-self-center"
-        src="@/assets/IMG_2734.jpeg-PhotoRoom.png-PhotoRoom.png"
-        height="100px"
-        width="150px"
-        to="/dashboard"
-      ></v-img>
-      </router-link></v-app-bar-title>
-      
+          <v-img class="align-self-center" src="@/assets/IMG_2734.jpeg-PhotoRoom.png-PhotoRoom.png" height="100px"
+            width="150px" to="/dashboard"></v-img>
+        </router-link></v-app-bar-title>
+
       <v-spacer></v-spacer>
 
-      
-      <v-switch class="align-self-baseline" inset v-bind:prepend-icon="darkMode ? 'mdi-weather-night' : 'mdi-weather-sunny'"
-        v-model="darkMode" color="primary" @change="toggleTheme($event)"></v-switch>
+
+      <v-switch class="align-self-baseline" inset
+        v-bind:prepend-icon="darkMode ? 'mdi-weather-night' : 'mdi-weather-sunny'" v-model="darkMode" color="primary"
+        @change="toggleTheme($event)"></v-switch>
     </v-app-bar>
 
     <v-main>
@@ -91,14 +87,13 @@ export default {
     drawer: false,
     session: null,
     user: null,
-    darkMode: false,
-    iamAdmin:null,
-
+    darkMode: false
   }),
   created() {
     //this.darkMode=this.$vuetify.theme.current.dark
   },
-  mounted() {
+  async mounted() {
+    this.fetchUserData();
     supabase.auth.getSession().then(({ data }) => {
       this.session = data.session
     })
@@ -106,13 +101,10 @@ export default {
     supabase.auth.onAuthStateChange((_, _session) => {
       this.session = _session
     })
-    
   },
   computed: {
-    async isAdmin() {
-      if (this.iamAdmin != null) return this.iamAdmin
-      this.iamAdmin = await this.$root.userData.admin
-      return this.iamAdmin
+    isAdmin() {
+      return this.user && this.user.admin === true;
     }
   },
   methods: {
@@ -121,16 +113,47 @@ export default {
       console.log('signed out')
       this.session = null
     },
+    async fetchUserData() {
+      try {
+        this.loading = true;
+        // Get the signed-in user's data
+        const { data: { user } } = await supabase.auth.getUser();
+
+        // Check if the user object exists and has an email property
+        if (user && user.email) {
+          const userEmail = user.email;
+          console.log('Signed-in user email:', userEmail);
+
+          const { data, error } = await supabase
+            .from('Users')
+            .select('admin')
+            .eq('userEmail', userEmail);
+
+          if (error) {
+            console.error('Error fetching user data:', error);
+          } const userWithAdminStatus = data[0];
+
+          this.user = {
+            ...userWithAdminStatus
+            // Add other properties if needed
+          };
+        } else {
+          console.error('User email not found.');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    },
   }
 }
 </script>
 <style scoped>
-:global( .v-table .v-table__wrapper>table>thead>tr>th:not(:last-child)) {
+:global(.v-table .v-table__wrapper>table>thead>tr>th:not(:last-child)) {
   border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
-:global( .v-table .v-table__wrapper>table>tbody>tr>td:not(:last-child)),
-:global(.v-table .v-table__wrapper>table>tbody>tr>th:not(:last-child) ){
+:global(.v-table .v-table__wrapper>table>tbody>tr>td:not(:last-child)),
+:global(.v-table .v-table__wrapper>table>tbody>tr>th:not(:last-child)) {
   border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 </style>
