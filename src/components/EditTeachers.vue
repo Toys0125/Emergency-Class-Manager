@@ -305,7 +305,7 @@ export default {
     },
     async addTeacher() {
       var exists = this.rows.find(
-        (value) => value.student_id == this.searchData.selected.student_id
+        (value) => value.userEmail == this.searchData.selected.userEmail
       )
       if (!exists) {
         this.addedRows.push(this.searchData.selected)
