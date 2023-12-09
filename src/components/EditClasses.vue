@@ -9,7 +9,7 @@
     <v-card-text>
       <v-window v-model="tab">
         <v-responsive v-show="modalData.class_id == null"><p>Create new class</p></v-responsive>
-        <v-window-item value="one">
+        <v-window-item value="one" class="pa-3">
           <v-responsive v-show="modalData.class_id != null"><p>Editing Class</p></v-responsive>
           <v-text-field
             v-model="modalData.className"
@@ -20,7 +20,7 @@
               (v) => (v && v.length > 4) || 'Must be more than 4 characters'
             ]"
           />
-          <v-row class="pa-md-4 mx-lg-auto">
+          <v-row>
             <v-data-table-server
               v-model:items-per-page="itemsPerPage"
               :headers="headers"
@@ -66,12 +66,12 @@
                 ></v-list-item> </template
             ></v-autocomplete>
           </v-row>
-          <v-row v-show="searchData.selected" class="pa-md-4 mx-lg-auto"
+          <v-row v-show="searchData.selected" 
             ><v-spacer></v-spacer>
-            <v-btn color="primary" outlined align-end :onclick="addStudent">Add User</v-btn></v-row
+            <v-btn color="primary" outlined align-end :onclick="addStudent" class="flex-grow-0">Add User</v-btn></v-row
           >
         </v-window-item>
-        <v-window-item value="two">
+        <v-window-item value="two" class="pa-3">
           <EditTeachers
             v-if="modalData.class_id != null"
             :passedData="modalData"
