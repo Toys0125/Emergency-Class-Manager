@@ -2,7 +2,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <v-responsive>
-    <v-row class="pa-md-4 mx-lg-auto">
+    <v-row class="mt-1">
       <v-data-table-server
         v-model:items-per-page="itemsPerPage"
         :headers="headers"
@@ -52,7 +52,7 @@
           ></v-list-item> </template
       ></v-autocomplete>
     </v-row>
-    <v-row v-show="searchData.selected" class="pa-md-4 mx-lg-auto"
+    <v-row v-show="searchData.selected"
       ><v-spacer></v-spacer>
       <v-btn color="primary" outlined align-end :onclick="addTeacher">Add User</v-btn></v-row
     >
