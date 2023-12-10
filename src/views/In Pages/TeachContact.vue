@@ -7,25 +7,25 @@
                     <v-col cols=12>
                         <h3>Principal</h3>
                         <v-text-field :label="schools.principal" v-model="schools.pEmail" hint="Click to open email"
-                            persistent-hint readonly @click="openEmail(schools.pEmail)"
+                            persistent-hint readonly @click="openEmail(schools.pEmail, 'Event Feedback')"
                             class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmail" cols=12>
                         <h3>Assistant Principal</h3>
                         <v-text-field :label="schools.assistantPrincipal" v-model="schools.aEmail"
-                            hint="Click to open email" persistent-hint readonly @click="openEmail(schools.aEmail)"
+                            hint="Click to open email" persistent-hint readonly @click="openEmail(schools.aEmail, 'Event Feedback')"
                             class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailTwo" cols=12>
                         <h3>Assistant Principal</h3>
                         <v-text-field :label="schools.assistantPrincipalTwo" v-model="schools.aEmailTwo"
-                            hint="Click to open email" persistent-hint readonly @click="openEmail(schools.aEmailTwo)"
+                            hint="Click to open email" persistent-hint readonly @click="openEmail(schools.aEmailTwo, 'Event Feedback')"
                             class="email-text-field"></v-text-field>
                     </v-col>
                     <v-col v-if="schools.aEmailThree" cols=12>
                         <h3>Assistant Principal</h3>
                         <v-text-field :label="schools.assistantPrincipalThree" v-model="schools.aEmailThree"
-                            hint="Click to open email" persistent-hint readonly @click="openEmail(schools.aEmailThree)"
+                            hint="Click to open email" persistent-hint readonly @click="openEmail(schools.aEmailThree, 'Event Feedback')"
                             class="email-text-field"></v-text-field>
                     </v-col>
                 </v-row>
@@ -58,8 +58,8 @@ export default {
         this.fetchUserData();
     },
     methods: {
-        openEmail(email) {
-            const windowRef = window.open(`mailto:${email}`, '_blank');
+        openEmail(email, subject = 'Default Subject') {
+            const windowRef = window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}`, '_blank');
             windowRef.focus();
         },
         async fetchUserData() {
