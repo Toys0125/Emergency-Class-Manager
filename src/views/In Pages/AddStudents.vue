@@ -103,7 +103,6 @@ export default {
         .single();
 
       if (userError) {
-        console.error('Error checking school_id:', userError);
         this.$root.snackbar.show({ text: 'Error checking school_id', timeout: 10000, color: 'red' });
         return;
       }
@@ -114,7 +113,6 @@ export default {
       }
     },
     async deleteStudent() {
-      console.time('deleteStudent');
       const { data: existingStudent, error: studentNoExist } = await supabase
         .from('Students')
         .select('id_number')
@@ -146,7 +144,6 @@ export default {
         .single();
 
       if (userError) {
-        console.error('Error checking school_id:', userError);
         this.$root.snackbar.show({ text: 'Error checking school_id', timeout: 10000, color: 'red' });
         return;
       }
@@ -155,7 +152,6 @@ export default {
         alert('Invalid school_id. Please select a valid school_id.');
         return;
       }
-      console.timeEnd('deleteStudent');
     },
     async fetchUserData() {
       try {
@@ -169,8 +165,6 @@ export default {
             .select('school_id')
             .eq('userEmail', userEmail)
             .single();
-
-          console.log("school id: " + userData.school_id)
           if (userError) {
             console.error('Error fetching user data:', userError);
           } else {

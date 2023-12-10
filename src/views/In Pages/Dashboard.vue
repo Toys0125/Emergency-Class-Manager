@@ -131,12 +131,11 @@ const supabaseRetrive = {
     console.log(from, to)
 
     try {
-      //await this.fetchUserData()
       const { data, error } = await supabase
         .from('Events')
         .select('*')
         .order('date', { ascending: true })
-        .gte('date', currentDate.toISOString()) // Greater than or equal to the start of the day
+        .gte('date', currentDate.toISOString())
         .lt('date', endDate.toISOString())
         .eq('school_id', school_id)
         .range(from, to)
@@ -219,7 +218,6 @@ export default {
   methods: {
     async loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
-      //console.log(this.$root.userData)
       const userData = await this.$root.userData;
       if (this.totalrows == 0) {
         await supabaseRetrive
@@ -249,7 +247,6 @@ export default {
       } else {
         this.searchRows()
       }
-      //console.log(this.$root.snackbar)
     },
     searchRows() {
       if (this.search.length < 3) return
@@ -265,8 +262,6 @@ export default {
         })
     },
     editRow(data, data2) {
-      //console.log(data)
-      //console.log(data2)
       this.model = true
 
       this.modalData.eventName = data2.item.eventName

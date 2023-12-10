@@ -2,8 +2,7 @@
 <template>
   <div>
     <h1>Event Calendar</h1>
-
-    <!-- Input fields for event details -->
+    
     <div>
       <v-text-field v-model="newEventTitle" placeholder="Event Title" label="Event Title" />
     </div>
@@ -76,7 +75,6 @@ export default {
   },
   async mounted() {
     await this.fetchUserData();
-    // Load events from the database and populate the calendar
     const { data: events, error } = await supabase
       .from('Events')
       .select('*')
@@ -87,7 +85,6 @@ export default {
     if (error) {
       console.error(error);
     } else {
-      // Populate events in the calendar
       this.calendarOptions.events = events.map(event => ({
         title: event.eventName,
         start: event.date,
@@ -114,7 +111,7 @@ export default {
       if (this.newEventTitle && this.newEventDate && this.school_id) {
         const { data: userExists } = await supabase
           .from('Users')
-          .select('school_id') // Assuming 'id' is the primary key of the Users table
+          .select('school_id') 
           .eq('school_id', this.school_id)
           .single();
 
@@ -132,7 +129,6 @@ export default {
           event.description = this.newEventDesc;
         }
 
-        // Add the new event to the FullCalendar
         this.$refs.calendar.getApi().addEvent(event);
 
         await this.insertData({
@@ -142,7 +138,6 @@ export default {
           school_id: this.school_id
         });
 
-        // Clear input fields
         this.newEventTitle = '';
         this.newEventDate = '';
         this.newEventDesc = '';
@@ -168,7 +163,7 @@ export default {
             console.error('Error fetching user data:', userError);
           } else {
 
-            this.school_id = userData.school_id; // Set the school_id property
+            this.school_id = userData.school_id;
           }
         } else {
           console.error('User email not found.');
@@ -215,14 +210,12 @@ export default {
         console.log('Event deleted: ' + deletedData);
         this.$root.snackbar.show({ text: 'Event deleted successfully', timeout: 10000, color: 'green' });
 
-        // Remove the event from the calendar
         const calendarApi = this.$refs.calendar.getApi();
         const eventToRemove = calendarApi.getEventById(event_id);
         if (eventToRemove) {
           eventToRemove.remove();
         }
 
-        // Close the modal after deletion
         this.modal = false;
       }
     }

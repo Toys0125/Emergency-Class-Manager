@@ -151,7 +151,6 @@ const supabaseRetrive = {
     return { rows: [], total: 0 };
   }
 },
-
   async search({ page = 0, itemsPerPage = 50, sortBy = 'desc', text = '' }) {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage - 1

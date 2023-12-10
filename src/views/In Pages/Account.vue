@@ -110,7 +110,6 @@ export default {
         // Check if the user object exists and has an email property
         if (user && user.email) {
           const userEmail = user.email;
-          console.log('Signed-in user email:', userEmail);
 
           const { data, error } = await supabase
             .from('Users')
@@ -143,7 +142,6 @@ export default {
         this.user[field] = value;
         this.unsavedChanges = true;
         this.formDirty = true;
-        console.log(this.formDirty);
       }
     },
     async saveChanges() {

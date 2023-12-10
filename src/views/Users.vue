@@ -49,7 +49,7 @@
                 label="First Name"
                 :rules="[
                   (v) => !!v || 'Name is required',
-                  (v) => (v && v.length > 4) || 'Must be more than 4 characters'
+                  (v) => (v && v.length > 2) || 'Must be more than 2 characters'
                 ]"
                 :loading="modalData.loading"
               />
@@ -60,7 +60,7 @@
                 label="Last Name"
                 :rules="[
                   (v) => !!v || 'Name is required',
-                  (v) => (v && v.length > 4) || 'Must be more than 4 characters'
+                  (v) => (v && v.length > 1) || 'Must be more than 1 character'
                 ]"
                 :loading="modalData.loading"
               />

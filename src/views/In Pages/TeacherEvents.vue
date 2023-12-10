@@ -3,7 +3,6 @@
   <div>
     <h1>Event Calendar</h1>
 
-    <!-- FullCalendar component to display events -->
     <FullCalendar :options="calendarOptions" ref="calendar" />
 
     <v-dialog v-model="modal" persistent max-width="600px">
@@ -54,7 +53,6 @@ export default {
     }
   },
   async mounted() {
-    // Load events from the database and populate the calendar
     await this.fetchUserData()
     const { data: events, error } = await supabase
       .from('Events')
@@ -66,7 +64,6 @@ export default {
     if (error) {
       console.error(error)
     } else {
-      // Populate events in the calendar
       this.calendarOptions.events = events.map((event) => ({
         title: event.eventName,
         start: event.date,
@@ -76,18 +73,15 @@ export default {
   },
   methods: {
     handleEventClick(info) {
-      // Extract event details from the clicked event
       const clickedEvent = info.event
       console.log(clickedEvent);
 
-      // Set modalData properties based on the clicked event
       this.modalData.eventName = clickedEvent.title
       const eventDate = new Date(clickedEvent.start)
       const formattedDate = eventDate.toISOString().replace('T', ' ').replace('Z', '')
       this.modalData.date = formattedDate
-      this.modalData.description = clickedEvent.extendedProps.description // Assuming you have a description property in your events
+      this.modalData.description = clickedEvent.extendedProps.description
 
-      // Open the modal
       this.modal = true
     },
     async fetchUserData() {
@@ -109,7 +103,7 @@ export default {
           if (userError) {
             console.error('Error fetching user data:', userError)
           } else {
-            this.school_id = userData.school_id // Set the school_id property
+            this.school_id = userData.school_id
           }
         } else {
           console.error('User email not found.')
