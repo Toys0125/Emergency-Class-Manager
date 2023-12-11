@@ -303,15 +303,20 @@ export default {
       console.log(this.$root.snackbar)
     },
     searchRows() {
+      console.log('Search initiated...');
       if (this.search.length < 3) return
       this.loading = true
 
       supabaseRetrive.search({
-        page: this.options.page,
-        rowsPerPage: this.options.itemsPerPage,
-        sortBy: this.options.sortBy,
-        text: this.search
-      })
+    page: this.options.page,
+    rowsPerPage: this.options.itemsPerPage,
+    sortBy: this.options.sortBy,
+    text: this.search,
+  }).then((result) => {
+    console.log('Search result:', result);
+    this.rows = result.rows;
+    this.loading = false;
+  });
     }
   }
 }
