@@ -58,7 +58,7 @@ export default {
 
           const { data: userData, error: userError } = await supabase
             .from('Users')
-            .select('school_id,admin')
+            .select('*')
             .eq('userEmail', userEmail)
             .single()
 
