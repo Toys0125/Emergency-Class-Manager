@@ -181,7 +181,7 @@ export default {
     async updateData(data) {
       const { data: insertedData, error } = await supabase
         .from('Students')
-        .delete([data])
+        .update([data])
         .eq('id_number', this.id_number);
       if (error) {
         console.error(error)
