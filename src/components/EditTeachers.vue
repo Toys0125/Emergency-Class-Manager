@@ -221,7 +221,7 @@ export default {
           })
       }
       this.options = { page: page, itemsPerPage: itemsPerPage, sortBy: sortBy }
-      if (this.search.length < 3) {
+      if (this.search.length < 1) {
         supabaseRetrive
           .fetch({ page, itemsPerPage, sortBy, class_id: this.modalData.class_id })
           .then(({ rows }) => {
@@ -305,28 +305,34 @@ export default {
       }
     },
     async addTeacher() {
-      var exists = this.rows.find(
-        (value) => value.userEmail == this.searchData.selected.userEmail
-      )
+      var exists = this.rows.find((value) => value.userEmail == this.searchData.selected.userEmail)
       if (!exists) {
         this.addedRows.push(this.searchData.selected)
         this.rows.push(this.searchData.selected)
 
         try {
-      await supabase.from('Teacher Classes').insert([
-        {
-          class_id: this.modalData.class_id,
-          userEmail: this.searchData.selected.userEmail,
-          isPrimary: this.searchData.selected.isPrimary
+          const { error } = await supabase.from('Teacher Classes').insert([
+            {
+              class_id: this.modalData.class_id,
+              userEmail: this.searchData.selected.userEmail,
+              isPrimary: !!this.searchData.selected.isPrimary
+            }
+          ])
+          if (error) throw error
+          this.$root.snackbar.show({
+            text: 'Teacher added successfully',
+            timeout: 2000,
+            color: 'green'
+          })
+        } catch (error) {
+          console.error('Error adding teacher to the database:', error)
+          this.$root.snackbar.show({
+            text: 'Error adding teacher to the database',
+            timeout: 5000,
+            color: 'red'
+          })
         }
-      ]);
-
-      this.$root.snackbar.show({ text: 'Teacher added successfully', timeout: 2000, color: 'green' });
-    } catch (error) {
-      console.error('Error adding teacher to the database:', error);
-      this.$root.snackbar.show({ text: 'Error adding teacher to the database', timeout: 5000, color: 'red' });
-    }
-  } else {
+      } else {
         this.$root.snackbar.show({
           text: 'User Already in list.',
           timeout: 5000,
