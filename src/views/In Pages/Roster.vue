@@ -77,7 +77,7 @@ const supabaseRetrive = {
       return [];
     }
     const studentIds = data.map(student => student.id_number);
-  return studentIds;
+    return studentIds;
   },
   async count() {
     const { count, error } = await supabase
@@ -103,16 +103,17 @@ const supabaseRetrive = {
         .eq('userEmail', userEmail)
         .single();
 
-        console.log('User Data:', userData);
+      console.log('User Data:', userData);
 
       if (userError) {
         console.error('Error fetching user data:', userError);
-        return { rows: [], total: 0 }; 
+        return { rows: [], total: 0 };
       }
 
+      const schoolId = userData && userData.school_id ? userData.school_id : null;
       const classId = userData && userData.class_id ? userData.class_id : null;
 
-      if (!classId) {
+      if (!schoolId || !classId) {
         console.error('Class ID not found for the user.');
         return { rows: [], total: 0 };
       }
@@ -120,11 +121,24 @@ const supabaseRetrive = {
       var from = (page - 1) * itemsPerPage;
       var to = page * itemsPerPage - 1;
 
+      const { data: roasterData, error: roasterError } = await supabase
+        .from('Perm Roaster')
+        .select('*')
+        .eq('class_id', classId)
+        .range(from, to);
+
+      if (roasterError) {
+        console.error('Error fetching roaster data:', roasterError);
+        return { rows: [], total: 0 };
+      }
+
+      const studentIds = roasterData.map(roaster => roaster.student_id);
+
       const { data: studentsData, error: studentsError } = await supabase
         .from('Students')
         .select('*')
-        .eq('class_id', classId) 
-        .range(from, to);
+        .in('student_id', studentIds)
+        .eq('school_id', schoolId);
 
       if (studentsError) {
         console.error('Error fetching students:', studentsError);
@@ -151,6 +165,7 @@ const supabaseRetrive = {
     return { rows: [], total: 0 };
   }
 },
+
   async search({ page = 0, itemsPerPage = 50, sortBy = 'desc', text = '' }) {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage - 1
