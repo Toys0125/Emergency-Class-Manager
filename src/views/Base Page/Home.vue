@@ -40,24 +40,22 @@
 <script>
 export default {
   name: 'HomePage',
-  // Add any necessary data, methods, or lifecycle hooks here
 };
 </script>
 
 <style scoped>
-/* Add any custom styles here */
 .smaller-image {
-  max-width: 200px; /* Adjust the max-width to your preference */
-  max-height: 150px; /* Adjust the max-height to your preference */
-  margin: 0 auto; /* Center the image horizontally */
-  display: block; /* Make the image a block element to center it */
+  max-width: 200px;
+  max-height: 150px;
+  margin: 0 auto;
+  display: block; 
 }
 .less-wide-button {
 }
 
 .slogan {
-  font-size: 1.2rem; /* Adjust the font size to make the slogan stand out */
-  font-weight: bold; /* Optionally make the text bold */
-  color: white; /* Optionally set a specific color */
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
 }
 </style>
