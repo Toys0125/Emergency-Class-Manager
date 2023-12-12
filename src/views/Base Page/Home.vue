@@ -54,6 +54,5 @@ export default {
 .slogan {
   font-size: 1.2rem;
   font-weight: bold;
-  color: white;
 }
 </style>
