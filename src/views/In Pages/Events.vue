@@ -2,7 +2,7 @@
 <template>
   <div>
     <h1>Event Calendar</h1>
-    
+
     <div>
       <v-text-field v-model="newEventTitle" placeholder="Event Title" label="Event Title" />
     </div>
@@ -30,10 +30,24 @@
         </v-card-text>
         <v-card-actions>
           <v-btn variant="elevated" color="green" @click="modal = false">Close</v-btn>
-          <v-btn variant="elevated" color="red" @click="deleteEvent">Delete</v-btn>
+          <v-btn variant="elevated" color="red" @click="openConfirmDeleteDialog">Delete</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="confirmDeleteDialog" max-width="400">
+  <v-card>
+    <v-card-title>Confirm Deletion</v-card-title>
+    <v-card-text>
+      Are you sure you want to delete this event?
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer> <!-- Add this spacer to push the buttons to the right -->
+      <v-btn variant="elevated" color="green" @click="deleteEvent">Yes</v-btn>
+      <v-btn variant="elevated" color="red" @click="cancelDelete">Cancel</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 
 
     <!-- FullCalendar component to display events -->
@@ -53,6 +67,7 @@ export default {
   data() {
     return {
       modal: false,
+      confirmDeleteDialog: false,
       calendarOptions: {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
@@ -186,6 +201,7 @@ export default {
     },
     async deleteEvent() {
       const event_id = this.modalData.event_id;
+      this.confirmDeleteDialog = true;
 
       const calendarApi = this.$refs.calendar.getApi();
       const clickedEvent = calendarApi.getEventById(event_id);
@@ -217,8 +233,18 @@ export default {
         }
 
         this.modal = false;
+        this.confirmDeleteDialog = false;
       }
-    }
+    },
+
+  cancelDelete() {
+    // Close the confirmation dialog without deleting
+    this.confirmDeleteDialog = false;
+  },
+  openConfirmDeleteDialog() {
+    // Open the confirmation dialog
+    this.confirmDeleteDialog = true;
+  },
   },
 };
 </script>
