@@ -5,7 +5,7 @@
         <!-- Adjust the column width to take the full width of the container -->
         <v-card class="text-center" style="width: 100%;">
           <v-img
-            src="src/assets/IMG_2734.jpeg-PhotoRoom.png-PhotoRoom.png"
+            src="@/assets/IMG_2734.jpeg-PhotoRoom.png-PhotoRoom.png"
             alt="Emergency Image"
             class="mb-3 smaller-image"
           ></v-img>
@@ -26,7 +26,7 @@
       </v-col>
       <v-col cols="12">
         <v-row justify="center">
-          <v-btn class="mt-1 less-wide-button">
+          <v-btn class="mt-1">
             <router-link to="/signin" style="text-decoration: none; color: inherit;">
               Sign In/Register
             </router-link>
@@ -49,8 +49,6 @@ export default {
   max-height: 150px;
   margin: 0 auto;
   display: block; 
-}
-.less-wide-button {
 }
 
 .slogan {
