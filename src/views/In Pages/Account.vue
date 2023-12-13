@@ -46,8 +46,8 @@
               @input="handleInput('phoneNum', user.phoneNum)"></v-text-field>
           </v-col>
           <v-col cols="12">
-            <v-text-field :required=false label="Emergency Contact Information" v-model="user.emergcyInfo"
-              :readonly="!isEditing" @input="handleInput('emergcyInfo', user.emergcyInfo)"></v-text-field>
+            <v-text-field :required=false label="Emergency Contact Information" v-model="user.emergencyInfo"
+              :readonly="!isEditing" @input="handleInput('emergencyInfo', user.emergencyInfo)"></v-text-field>
           </v-col>
         </v-row>
       </v-card-text>
@@ -87,7 +87,7 @@ export default {
         lName: '',
         userEmail: '',
         phoneNum: '',
-        emergcyInfo: '',
+        emergencyInfo: '',
         school: '',
       },
       loading: false,
@@ -113,7 +113,7 @@ export default {
 
           const { data, error } = await supabase
             .from('Users')
-            .select('userEmail, fName, lName, phoneNum, emergcyInfo, school:Schools(school)')
+            .select('userEmail, fName, lName, phoneNum, emergencyInfo, school:Schools(school)')
             .eq('userEmail', userEmail);
 
           if (error) {
@@ -157,7 +157,7 @@ export default {
             fName: this.user.fName,
             lName: this.user.lName,
             phoneNum: this.user.phoneNum,
-            emergcyInfo: this.user.emergcyInfo,
+            emergencyInfo: this.user.emergencyInfo,
           },
         ])
         .eq('userEmail', userEmail);
