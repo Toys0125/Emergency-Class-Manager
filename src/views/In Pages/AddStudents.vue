@@ -102,6 +102,9 @@ export default {
         this.lName = '';
         this.school_id = '';
         this.$root.snackbar.show({ text: 'Student has been added', timeout: 10000, color: 'green' });
+        
+        window.location.reload(true);
+
         return;
       }
 
@@ -145,6 +148,8 @@ export default {
         this.fName = '';
         this.lName = '';
         this.$root.snackbar.show({ text: 'Student has been deleted', timeout: 10000, color: 'green' });
+        window.location.reload(true);
+        this.tab == 'two'
         return;
       }
 

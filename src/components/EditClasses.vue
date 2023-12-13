@@ -218,7 +218,8 @@ export default {
     model: false,
     modalData: {
       class_id: null,
-      className: null
+      className: null,
+      school_id: null
     },
     addedRows: [],
     searchData: {
@@ -346,9 +347,10 @@ export default {
     },
     async createClass() {
       if (this.modalData.className.length < 4) return
+      await this.fetchUserData();
       const { error } = await supabase
         .from('Classes')
-        .insert({ className: this.modalData.className })
+        .insert({ className: this.modalData.className, school_id: this.modalData.school_id })
 
       if (error) {
         console.error('Error saving changes:', error)
@@ -444,11 +446,39 @@ export default {
     },
     callTeacherSubmit() {
       this.$refs.editTeachers.saveChanges()
+    },
+    async fetchUserData() {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user && user.email) {
+      const userEmail = user.email;
+
+      const { data: userData, error: userError } = await supabase
+        .from('Users')
+        .select('school_id')
+        .eq('userEmail', userEmail)
+        .single();
+
+      if (userError) {
+        console.error('Error fetching user data:', userError);
+      } else {
+        this.modalData.school_id = userData.school_id;
+      }
+    } else {
+      console.error('User email not found.');
     }
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+},
   },
   mounted() {
     this.modalData = this.passedData
     console.log('Mounted', this.passedData)
+    this.fetchUserData().then(() => {
+    this.loadRows({ page: 1, itemsPerPage: this.itemsPerPage, sortBy: {} });
+  });
   },
   beforeRouteLeave(to, from, next) {
     if (this.addedRows.length > 0) {
