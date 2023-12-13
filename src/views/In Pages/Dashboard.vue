@@ -70,7 +70,6 @@ onMounted(async () => {
   userData.value = await supabaseRetrive.fetchUserData()
 })
 
-// Add the following lines to call fetchUserData when the component is created
 </script>
 <script>
 const supabaseRetrive = {
