@@ -2,7 +2,7 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <div>
-    <h1 v-if="supabaseRetrive.fName">Welcome to your Dashboard, {{ supabaseRetrive.fName }}!</h1>
+    <h1 v-if="userData && userData.fName">Welcome to your Dashboard, {{ userData.fName }}!</h1>
     <h1 v-else>Welcome to your Dashboard!</h1>
     <h2>Upcoming events:</h2>
   </div>
@@ -61,7 +61,14 @@
 
 <script setup>
 import supabase from '@/supabase'
+import { ref, onMounted } from 'vue'
 import { VDataTableServer } from 'vuetify/lib/labs/components.mjs'
+
+const userData = ref(null)
+
+onMounted(async () => {
+  userData.value = await supabaseRetrive.fetchUserData()
+})
 
 // Add the following lines to call fetchUserData when the component is created
 </script>
