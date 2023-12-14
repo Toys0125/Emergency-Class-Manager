@@ -58,7 +58,7 @@ const supabaseRetrive = {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage - 1
     console.log(from, to)
-    const { data, error } = await supabase.from('Classes').select('*').range(from, to)
+    const { data, error } = await supabase.from('Classes').select('*').range(from, to).neq('removed', true)
     console.log(data)
     if (error) {
       console.error(error)
@@ -82,6 +82,7 @@ const supabaseRetrive = {
     const { data, error } = await supabase
       .rpc('searchclasses', { searchtext: text })
       .range(from, to)
+      .neq('removed', true);
     //console.log(data)
     if (error) {
       console.error(error)
