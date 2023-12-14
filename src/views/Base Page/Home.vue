@@ -5,7 +5,7 @@
         <!-- Adjust the column width to take the full width of the container -->
         <v-card class="text-center" style="width: 100%;">
           <v-img
-            src="@/assets/Emergency Class Manager Logo.svg"
+            src="@/assets/Emergency%20Class%20Manager%20Logo.svg"
             alt="Emergency Image"
             class="my-3 smaller-image"
           ></v-img>
