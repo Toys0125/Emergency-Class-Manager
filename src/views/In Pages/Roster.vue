@@ -312,7 +312,7 @@ export default {
       text: '',
       loading: false
     },
-    classSelection: [],
+    classSelection: undefined,
     classes: [],
     classesLoading: true,
     userData: null,
@@ -347,7 +347,7 @@ export default {
         ]).then((data) => {
           var localClass = data[0]
           localClass.className = localClass.className + '\t' + data[1].eventName
-          var TempClass = {Classes:localClass}
+          var TempClass = { Classes: localClass }
           this.classes.push(TempClass)
           this.classSelection = this.classes[0]
           this.classesLoading = false
@@ -356,7 +356,11 @@ export default {
           this.allrows = data[2]
           this.totalrows = this.currentLoaded.length
           this.totalLoadedrows = this.currentLoaded.length
-          this.rows = this.localfetch({ page:this.options.page, itemsPerPage:this.options.itemsPerPage, sortBy: this.options.sortBy })
+          this.rows = this.localfetch({
+            page: this.options.page,
+            itemsPerPage: this.options.itemsPerPage,
+            sortBy: this.options.sortBy
+          })
         })
         return
       }
@@ -468,6 +472,7 @@ export default {
     },
     async loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
+      console.log(this.classes, this.classSelection)
       if (this.totalrows == 0) {
         await supabaseRetrive
           .count({ class_id: this.classSelection.Classes.class_id })
@@ -606,7 +611,7 @@ export default {
           var lastLenght = this.totalrows - this.currentLoaded.length
           var amountOfPasses = Math.ceil((this.totalrows - lastLenght) / 100)
           var promisesList = []
-          for (var i = Math.floor(this.currentLoaded.length/100)+1; amountOfPasses >= i; i++) {
+          for (var i = Math.floor(this.currentLoaded.length / 100) + 1; amountOfPasses >= i; i++) {
             promisesList.push(
               supabaseRetrive.fetch({
                 page: i,
@@ -617,9 +622,9 @@ export default {
           }
           console.log(promisesList)
           await Promise.all(promisesList).then((data) => {
-            var remaining = (this.currentLoaded.length % 100)
+            var remaining = this.currentLoaded.length % 100
             var lastList = data[0]
-            console.log(lastList,remaining)
+            console.log(lastList, remaining)
             lastList = lastList.rows.splice(remaining)
             lastList.forEach((element) => {
               element.presence = 'Present'
@@ -645,9 +650,13 @@ export default {
         const { error } = await supabase.from('Event Roaster').insert(submitArray)
         this.submition = false
         if (error) {
-          if (error.code == "23505") {
-            console.log("Duplicate keys", error)
-            this.$root.snackbar.show({ text: 'Event already submitted', timeout: 10000, color: 'yellow' })
+          if (error.code == '23505') {
+            console.log('Duplicate keys', error)
+            this.$root.snackbar.show({
+              text: 'Event already submitted',
+              timeout: 10000,
+              color: 'yellow'
+            })
           }
           console.error(error)
           this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
