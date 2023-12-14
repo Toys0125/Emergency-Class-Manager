@@ -195,12 +195,12 @@ export default {
     },
 
     async addEvent() {
+      //school_id check
       if (this.newEventTitle && this.newEventDate && this.school_id) {
         const { data } = await supabase
           .from('Users')
           .select('school_id')
           .eq('school_id', this.school_id)
-          .single();
 
         if (!data) {
           alert('Invalid school_id. Please select a valid school_id.');
@@ -217,7 +217,6 @@ export default {
         }
 
         this.$refs.calendar.getApi().addEvent(event);
-        console.log("school_id before insertion: " + this.school_id);
         await this.insertData({
           date: this.newEventDate,
           eventName: this.newEventTitle,
