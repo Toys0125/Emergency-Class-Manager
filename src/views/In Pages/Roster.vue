@@ -68,16 +68,14 @@ const openModal = () => {
 <script>
 const supabaseRetrive = {
   async fetchStudentIds() {
-    const { data, error } = await supabase
-      .from('Students')
-      .select('id_number');
+    const { data, error } = await supabase.from('Students').select('id_number')
     if (error) {
-      console.error(error);
-      this.$root.snackbar.show({ text: 'Error fetching student IDs', timeout: 10000, color: 'red' });
-      return [];
+      console.error(error)
+      this.$root.snackbar.show({ text: 'Error fetching student IDs', timeout: 10000, color: 'red' })
+      return []
     }
-    const studentIds = data.map(student => student.id_number);
-  return studentIds;
+    const studentIds = data.map((student) => student.id_number)
+    return studentIds
   },
   async count() {
     const { count, error } = await supabase
@@ -91,72 +89,106 @@ const supabaseRetrive = {
     return count
   },
   async fetch({ page = 0, itemsPerPage = 50, sortBy = 'desc' }) {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
 
-    if (user && user.email) {
-      const userEmail = user.email;
+      if (user && user.email) {
+        const userEmail = user.email
 
-      const { data: userData, error: userError } = await supabase
-        .from('Users')
-        .select('*')
+        const { data: userData, error: userError } = await supabase
+          .from('Users')
+          .select('*')
+          .eq('userEmail', userEmail)
+          .single()
+
+        console.log('User Data:', userData)
+
+        if (userError) {
+          console.error('Error fetching user data:', userError)
+          return { rows: [], total: 0 }
+        }
+
+        const { data: teacherData, error: teacherError } = await supabase
+        .from('Teacher Classes')
+        .select('class_id')
         .eq('userEmail', userEmail)
         .single();
 
-        console.log('User Data:', userData);
-
-      if (userError) {
-        console.error('Error fetching user data:', userError);
-        return { rows: [], total: 0 }; 
-      }
-
-      const classId = userData && userData.class_id ? userData.class_id : null;
-
-      if (!classId) {
-        console.error('Class ID not found for the user.');
+      if (teacherError) {
+        console.error('Error fetching teacher data:', teacherError);
         return { rows: [], total: 0 };
       }
 
-      var from = (page - 1) * itemsPerPage;
-      var to = page * itemsPerPage - 1;
-
-      const { data: studentsData, error: studentsError } = await supabase
-        .from('Students')
-        .select('*')
-        .eq('class_id', classId) 
-        .range(from, to);
-
-      if (studentsError) {
-        console.error('Error fetching students:', studentsError);
+      if (!teacherData) {
+        console.error('Class id not found for the user.');
         return { rows: [], total: 0 };
       }
 
-      if (sortBy.length) {
-        const sortKey = sortBy[0].key;
-        const sortOrder = sortBy[0].order;
-        studentsData.sort((a, b) => {
-          const aValue = a[sortKey];
-          const bValue = b[sortKey];
-          return sortOrder === 'desc' ? bValue - aValue : aValue - bValue;
-        });
-      }
+        const schoolId = userData && userData.school_id ? userData.school_id : null
+        const classId = teacherData.class_id
 
-      return { rows: studentsData, total: studentsData.length };
-    } else {
-      console.error('User email not found.');
-      return { rows: [], total: 0 };
+        if (!schoolId || !classId) {
+          console.error('Class ID not found for the user.')
+          return { rows: [], total: 0 }
+        }
+
+        var from = (page - 1) * itemsPerPage
+        var to = page * itemsPerPage - 1
+
+        const { data: roasterData, error: roasterError } = await supabase
+          .from('Perm Roaster')
+          .select('*')
+          .eq('class_id', classId)
+          .range(from, to)
+
+        if (roasterError) {
+          console.error('Error fetching roaster data:', roasterError)
+          return { rows: [], total: 0 }
+        }
+
+        const studentIds = roasterData.map((roaster) => roaster.student_id)
+
+        const { data: studentsData, error: studentsError } = await supabase
+          .from('Students')
+          .select('*')
+          .in('student_id', studentIds)
+          .eq('school_id', schoolId)
+          .neq('removed', true)
+
+        if (studentsError) {
+          console.error('Error fetching students:', studentsError)
+          return { rows: [], total: 0 }
+        }
+
+        if (sortBy.length) {
+          const sortKey = sortBy[0].key
+          const sortOrder = sortBy[0].order
+          studentsData.sort((a, b) => {
+            const aValue = a[sortKey]
+            const bValue = b[sortKey]
+            return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
+          })
+        }
+
+        return { rows: studentsData, total: studentsData.length }
+      } else {
+        console.error('User email not found.')
+        return { rows: [], total: 0 }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      return { rows: [], total: 0 }
     }
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return { rows: [], total: 0 };
-  }
-},
+  },
+
   async search({ page = 0, itemsPerPage = 50, sortBy = 'desc', text = '' }) {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage - 1
     console.log(from, to)
     const { data, error } = await supabase
-      .rpc('searchstudents', { searchtext: text })
+      .rpc('searchstudents', { searchtext: text, school_id: this.school_id })
       .range(from, to)
     console.log(data)
     if (error) {
@@ -205,47 +237,67 @@ export default {
     }
   }),
   async mounted() {
-    this.studentIds = await supabaseRetrive.fetchStudentIds();
+    this.studentIds = await supabaseRetrive.fetchStudentIds()
   },
   methods: {
     async fetchUserData() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user }
+        } = await supabase.auth.getUser()
 
         if (user && user.email) {
-          const userEmail = user.email;
+          const userEmail = user.email
 
           const { data: userData, error: userError } = await supabase
             .from('Users')
             .select('school_id')
             .eq('userEmail', userEmail)
-            .single();
+            .single()
 
-            console.log("school id: " + userData.school_id)
+          console.log('school id: ' + userData.school_id)
           if (userError) {
-            console.error('Error fetching user data:', userError);
+            console.error('Error fetching user data:', userError)
           } else {
-            
-            this.school_id = userData.school_id; // Set the school_id property
+            this.school_id = userData.school_id
+          }
+
+          const { data: teacherData, error: teacherError } = await supabase
+            .from('Teacher Classes')
+            .select('class_id')
+            .eq('userEmail', userEmail)
+            .single()
+
+          console.log('class id: ' + teacherData.class_id)
+
+          if (teacherError) {
+            console.error('Error fetching teacher data:', teacherError)
+          } 
+          if (!teacherData) {
+          console.error('Class id not found for the user.');
+        } else {
+            this.class_id = teacherData.class_id
           }
         } else {
-          console.error('User email not found.');
+          console.error('User email not found.')
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error fetching user data:', error)
       }
     },
     updateStudentInfo() {
-      const selectedStudent = this.rows.find(student => student.id_number === this.modalData.selectedStudent);
+      const selectedStudent = this.rows.find(
+        (student) =>
+          student.id_number.toLowerCase() === this.modalData.selectedStudent.toLowerCase()
+      )
 
       if (selectedStudent) {
-        this.modalData.fName = selectedStudent.fName;
-        this.modalData.lName = selectedStudent.lName;
+        this.modalData.fName = selectedStudent.fName
+        this.modalData.lName = selectedStudent.lName
+      } else {
+        this.modalData.fName = null
+        this.modalData.lName = null
       }
-      else {
-    this.modalData.fName = null;
-    this.modalData.lName = null;
-  }
     },
     addStudent() {
       if (!this.modalData.fName || !this.modalData.lName) {
@@ -288,15 +340,22 @@ export default {
       console.log(this.$root.snackbar)
     },
     searchRows() {
+      console.log('Search initiated...')
       if (this.search.length < 3) return
       this.loading = true
 
-      supabaseRetrive.search({
-        page: this.options.page,
-        rowsPerPage: this.options.itemsPerPage,
-        sortBy: this.options.sortBy,
-        text: this.search
-      })
+      supabaseRetrive
+        .search({
+          page: this.options.page,
+          rowsPerPage: this.options.itemsPerPage,
+          sortBy: this.options.sortBy,
+          text: this.search
+        })
+        .then((result) => {
+          console.log('Search result:', result)
+          this.rows = result.rows
+          this.loading = false
+        })
     }
   }
 }

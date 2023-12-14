@@ -37,8 +37,21 @@
         <v-text-field v-model="lName" placeholder="Last Name" label="Student Last Name" />
       </div>
       <div>
-        <v-btn color="red" variant="flat" @click="deleteStudent">Delete Student</v-btn>
+        <v-btn color="red" variant="flat" @click="openConfirmDialog">Delete Student</v-btn>
       </div>
+      <v-dialog v-model="confirmDialog" max-width="400">
+        <v-card>
+          <v-card-title>Confirm Deletion</v-card-title>
+          <v-card-text>
+            Are you sure you want to delete this student?
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="flat" @click="deleteStudent" color="green">Yes</v-btn>
+            <v-btn variant="flat" @click="cancelDelete" color="red">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
 
   </div>
@@ -55,6 +68,7 @@ export default {
       school_id: '',
       removed: false,
       tab: 'one',
+      confirmDialog: false,
     };
   },
   async mounted() {
@@ -88,6 +102,9 @@ export default {
         this.lName = '';
         this.school_id = '';
         this.$root.snackbar.show({ text: 'Student has been added', timeout: 10000, color: 'green' });
+        
+        window.location.reload(true);
+
         return;
       }
 
@@ -113,6 +130,7 @@ export default {
       }
     },
     async deleteStudent() {
+      
       const { data: existingStudent, error: studentNoExist } = await supabase
         .from('Students')
         .select('id_number')
@@ -124,11 +142,14 @@ export default {
         await this.updateData({
           removed: true
         });
+        this.confirmDialog = true;
 
         this.id_number = '';
         this.fName = '';
         this.lName = '';
         this.$root.snackbar.show({ text: 'Student has been deleted', timeout: 10000, color: 'green' });
+        window.location.reload(true);
+        this.tab == 'two'
         return;
       }
 
@@ -203,6 +224,22 @@ export default {
         this.$root.snackbar.show({ text: 'Data inserted into table', timeout: 10000, color: 'green' })
       }
     },
+    openConfirmDialog() {
+    this.confirmDialog = true;
+  },
+
+  async confirmDelete() {
+    // Perform actual delete logic here
+    await this.deleteStudent();
+    
+    // Close the confirmation dialog
+    this.confirmDialog = false;
+  },
+
+  cancelDelete() {
+    // Close the confirmation dialog without deleting
+    this.confirmDialog = false;
+  },
   },
 };
 </script>

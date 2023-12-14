@@ -8,22 +8,24 @@
         <v-list-item v-show="!session" to="/signin" title="Sign in" />
         <v-list-item v-show="!session" to="/contact" title="Contact" />
         <v-list-item v-show="session" to="/dashboard" title="Home" />
-        <v-list-item v-show="session" to="/roster" title="Roster" />
         <v-list-item v-show="session" to="/account" title="Account" />
-        <v-list-item v-show="session" to="/teachevents" title="Teacher Events" />
+        <v-list-item v-show="session" to="/roster" title="Roster" />
+        <v-list-item v-show="session" to="/teachevents" title="Events" />
         <v-list-item v-show="session" to="/teachcontact" title="Contact Info" />
         <v-list-group v-show="isAdmin && session" title="Admin Section">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Admin Section"></v-list-item>
           </template>
-          <v-list-item to="/Users" title="Users"> </v-list-item>
-          <v-list-item to="/events" title="Events" />
-          <v-list-item to="/classes" title="Classes" />
-          <v-list-item to="/studentManager" title="Student Manager" />
           <v-list-item to="/reports" title="Reports" />
+          <v-list-item to="/classes" title="Classes" />
+          <v-list-item to="/events" title="Event Manager" />
+          <v-list-item to="/studentManager" title="Student Manager" />
+          <v-list-item to="/Users" title="Users"> </v-list-item>
         </v-list-group>
-        <v-list-item v-show="session" @click="signOut" to="/" title="Sign Out" />
       </v-list>
+      <template v-slot:append>
+        <v-list-item v-show="session" @click="signOut" to="/" title="Sign Out" />
+        </template>
     </v-navigation-drawer>
 
     <v-app-bar class="d-flex">

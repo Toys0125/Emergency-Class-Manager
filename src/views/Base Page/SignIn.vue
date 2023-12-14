@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <VForm validate-on="sumbit lazy" @submit.prevent="handleLogin">
-    <h1 class="header">Supabase + Vue 3</h1>
+    <h1 class="header">Sign In</h1>
     <p class="description">Sign in or register via magic link with your email below</p>
     <v-text-field v-model="email" label="Email" type="email"></v-text-field>
     <v-btn

@@ -124,6 +124,7 @@ export default {
       className: null
     }
   }),
+
   methods: {
     loadRows({ page, itemsPerPage, sortBy }) {
       this.loading = true
