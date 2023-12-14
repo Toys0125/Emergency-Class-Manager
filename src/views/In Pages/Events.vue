@@ -145,7 +145,7 @@ export default {
         }
 
         this.$refs.calendar.getApi().addEvent(event);
-
+        console.log("school_id before insertion: " + this.school_id);
         await this.insertData({
           date: this.newEventDate,
           eventName: this.newEventTitle,

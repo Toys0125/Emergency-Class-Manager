@@ -18,7 +18,7 @@
         item-value="name"
         :items-per-page-options="itemsPerPageOptions"
         @update:options="loadRows"
-        @click:row="editRow"
+        @click:row="showInfo"
         no-data-text="No Upcoming Events"
       >
       </v-data-table-server>
@@ -250,24 +250,9 @@ export default {
             this.loading = false
             this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
           })
-      } else {
-        this.searchRows()
-      }
+      } 
     },
-    searchRows() {
-      if (this.search.length < 3) return
-      supabaseRetrive
-        .search({
-          page: this.options.page,
-          rowsPerPage: this.options.rowsPerPage,
-          sortBy: this.options.sortBy,
-          text: this.search
-        })
-        .catch(() => {
-          this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
-        })
-    },
-    editRow(data, data2) {
+    showInfo(data, data2) {
       this.model = true
 
       this.modalData.eventName = data2.item.eventName

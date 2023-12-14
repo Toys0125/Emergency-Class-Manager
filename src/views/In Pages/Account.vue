@@ -98,9 +98,6 @@ export default {
     this.fetchUserData();
   },
   methods: {
-    resetForm() {
-      this.$refs.form.reset();
-    },
     async fetchUserData() {
       try {
         this.loading = true;
