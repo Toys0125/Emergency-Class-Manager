@@ -2,6 +2,7 @@
 import vue from '@vitejs/plugin-vue'
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import ViteFonts from 'unplugin-fonts/vite'
+import viteCompression from 'vite-plugin-compression'
 
 // Utilities
 import { defineConfig } from 'vite'
@@ -28,6 +29,7 @@ export default defineConfig({
         }],
       },
     }),
+    viteCompression(),
   ],
   define: { 'process.env': {} },
   resolve: {
