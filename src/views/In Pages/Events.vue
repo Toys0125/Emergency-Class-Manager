@@ -27,8 +27,35 @@
           <v-text-field v-model="modalData.eventName" label="Event Name" readonly></v-text-field>
           <v-text-field v-model="modalData.date" label="Event Date and Time" readonly></v-text-field>
           <v-text-field v-model="modalData.description" label="Event Description" readonly></v-text-field>
+          <v-card-title class="small-title">Event Submissions</v-card-title>
+          <v-simple-table v-if="modalData.classIdsSubmitted.length > 0">
+            <template v-slot:default>
+              <thead>
+
+                <tr>
+
+                  <th>Class ID</th>
+                  <th>Class Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="classInfo in modalData.classIdsSubmitted" :key="classInfo.id">
+                  <td>
+                    <a :href="generateRosterURL(classInfo.id)" target="_blank">{{ classInfo.id }}</a>
+                  </td>
+                  <td>
+                    <a>{{ classInfo.name }}</a>
+                  </td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+
+          <p v-else>
+            No submissions available.
+          </p>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="justify-end">
           <v-btn variant="elevated" color="green" @click="modal = false">Close</v-btn>
           <v-btn variant="elevated" color="red" @click="openConfirmDeleteDialog">Delete</v-btn>
         </v-card-actions>
@@ -36,18 +63,18 @@
     </v-dialog>
 
     <v-dialog v-model="confirmDeleteDialog" max-width="400">
-  <v-card>
-    <v-card-title>Confirm Deletion</v-card-title>
-    <v-card-text>
-      Are you sure you want to delete this event?
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer></v-spacer> <!-- Add this spacer to push the buttons to the right -->
-      <v-btn variant="elevated" color="green" @click="deleteEvent">Yes</v-btn>
-      <v-btn variant="elevated" color="red" @click="cancelDelete">Cancel</v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
+      <v-card>
+        <v-card-title>Confirm Deletion</v-card-title>
+        <v-card-text>
+          Are you sure you want to delete this event?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn variant="elevated" color="green" @click="deleteEvent">Yes</v-btn>
+          <v-btn variant="elevated" color="red" @click="cancelDelete">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
 
     <!-- FullCalendar component to display events -->
@@ -76,6 +103,7 @@ export default {
         timeZone: 'auto',
         eventClick: this.handleEventClick
       },
+      classNames: {},
       newEventTitle: '',
       newEventDate: '',
       newEventDesc: '',
@@ -110,23 +138,67 @@ export default {
 
   },
   methods: {
-    handleEventClick(info) {
-      const clickedEvent = info.event
+    async handleEventClick(info) {
+      const clickedEvent = info.event;
 
-      this.modalData.eventName = clickedEvent.title
-      const eventDate = new Date(clickedEvent.start)
-      const formattedDate = eventDate.toISOString().replace('T', ' ').replace('Z', '')
-      this.modalData.date = formattedDate
-      this.modalData.description =
-        clickedEvent.extendedProps.description
-      this.modalData.event_id = clickedEvent.id
-      this.modal = true
+      const eventId = clickedEvent.id;
+      try {
+        const { data: roasterData, error: roasterError } = await supabase
+          .from('Event Roaster')
+          .select('class_id')
+          .eq('event_id', eventId);
+
+        if (roasterError) {
+          console.error('Error fetching roaster data:', roasterError);
+        } else {
+          const classIdsSubmittedSet = new Set(roasterData.map((roaster) => roaster.class_id));
+
+          const classIdToNameMap = await this.fetchClassNames(Array.from(classIdsSubmittedSet));
+
+          const classIdsSubmittedWithNames = Array.from(classIdsSubmittedSet).map((classId) => ({
+            id: classId,
+            name: classIdToNameMap[classId],
+          }));
+
+          this.modalData = {
+            eventName: clickedEvent.title,
+            date: new Date(clickedEvent.start).toISOString().replace('T', ' ').replace('Z', ''),
+            description: clickedEvent.extendedProps.description,
+            event_id: eventId,
+            classIdsSubmitted: classIdsSubmittedWithNames,
+          };
+
+          console.log('Class IDs submitted to the event:', classIdsSubmittedWithNames);
+        }
+      } catch (error) {
+        console.error('Error fetching roaster data:', error);
+      }
+
+      this.modal = true;
     },
+
+    async fetchClassNames(classIds) {
+      const { data: classNames, error } = await supabase
+        .from('Classes')
+        .select('class_id, className')
+        .in('class_id', classIds);
+
+      if (error) {
+        console.error('Error fetching class names:', error);
+        return [];
+      } else {
+        return classNames.reduce((acc, curr) => {
+          acc[curr.class_id] = curr.className;
+          return acc;
+        }, {});
+      }
+    },
+
     async addEvent() {
       if (this.newEventTitle && this.newEventDate && this.school_id) {
         const { data } = await supabase
           .from('Users')
-          .select('school_id') 
+          .select('school_id')
           .eq('school_id', this.school_id)
           .single();
 
@@ -237,16 +309,22 @@ export default {
       }
     },
 
-  cancelDelete() {
-    // Close the confirmation dialog without deleting
-    this.confirmDeleteDialog = false;
-  },
-  openConfirmDeleteDialog() {
-    // Open the confirmation dialog
-    this.confirmDeleteDialog = true;
-  },
+    cancelDelete() {
+      this.confirmDeleteDialog = false;
+    },
+    openConfirmDeleteDialog() {
+      this.confirmDeleteDialog = true;
+    },
+    generateRosterURL(classId) {
+      const event_id = this.modalData.event_id;
+      return `https://manager.toysland.pw/roster?class_id=${encodeURIComponent(classId)}&event_id=${encodeURIComponent(event_id)}`;
+    },
   },
 };
 </script>
 
-
+<style scoped>
+.small-title {
+  font-size: 16px;
+}
+</style>

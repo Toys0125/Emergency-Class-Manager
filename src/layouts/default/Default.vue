@@ -16,7 +16,6 @@
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Admin Section"></v-list-item>
           </template>
-          <v-list-item to="/reports" title="Reports" />
           <v-list-item to="/classes" title="Classes" />
           <v-list-item to="/events" title="Event Manager" />
           <v-list-item to="/studentManager" title="Student Manager" />
