@@ -48,7 +48,7 @@
             ></v-select>
           </template>
           <template v-slot:item.date="{ item }">
-            <p>{{ Date.parse(item.date).toLocaleString() }}</p>
+            <p>{{ new Date(item.date).toLocaleString() }}</p>
           </template>
         </v-data-table-server>
         <div class="pt-3">
@@ -261,7 +261,7 @@ const supabaseRetrive = {
   async getEventData({ class_id, event_id }) {
     const { data, error } = await supabase
       .from('Event Roaster')
-      .select('Students!inner(id_number,fName,lName),status,date')
+      .select('Students!inner(id_number,fName,lName),presence,date')
       .eq('class_id', class_id)
       .eq('event_id', event_id)
     if (error) {
@@ -312,7 +312,7 @@ export default {
       text: '',
       loading: false
     },
-    classSelection: null,
+    classSelection: [],
     classes: [],
     classesLoading: true,
     userData: null,
@@ -334,9 +334,9 @@ export default {
         this.disableEdit = true
         this.loading = true
         this.headers = [
-          { title: 'ID Number', key: 'id_number', align: 'left', width: '20%' },
-          { title: 'First Name', key: 'fName', align: 'end' },
-          { title: 'Last Name', key: 'lName', align: 'end' },
+          { title: 'ID Number', key: 'Students.id_number', align: 'left', width: '20%' },
+          { title: 'First Name', key: 'Students.fName', align: 'end' },
+          { title: 'Last Name', key: 'Students.lName', align: 'end' },
           { title: 'Presense', value: 'presence', align: 'end' },
           { title: 'date', value: 'date', align: 'end' }
         ]
@@ -347,13 +347,15 @@ export default {
         ]).then((data) => {
           var localClass = data[0]
           localClass.className = localClass.className + '\t' + data[1].eventName
-          this.classes.push(localClass)
+          var TempClass = {Classes:localClass}
+          this.classes.push(TempClass)
           this.classSelection = this.classes[0]
           this.classesLoading = false
           this.loading = false
           this.currentLoaded = data[2]
           this.allrows = data[2]
           this.totalrows = this.currentLoaded.length
+          this.totalLoadedrows = this.currentLoaded.length
           this.rows = this.localfetch({ page:this.options.page, itemsPerPage:this.options.itemsPerPage, sortBy: this.options.sortBy })
         })
         return
