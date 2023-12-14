@@ -1,69 +1,49 @@
 # base
 
-## Project setup
+# Emergency Class Manager
 
-```
-# yarn
-yarn
+## Overview
 
-# npm
-npm install
+Emergency Class Manager is a website designed to assist elementary schools in CMCSS in keeping track of students during emergency siutations or drills. The system provides a platform for teachers to view events and send reports to administration from the events.
 
-# pnpm
-pnpm install
+## Repository Structure
 
-# pnpm
-bun install
-```
+The repository is structured:
 
-### Compiles and hot-reloads for development
+- **src:** Contains all the source code for the Emergency Class Manager website.
+- **documents:** Includes documentation related to the project, such as system requirements, design specifications, progress reports, and final report.
 
-```
-# yarn
-yarn dev
+## Getting Started
 
-# npm
-npm run dev
+To run the Emergency Class Manager application locally, follow these steps:
 
-# pnpm
-pnpm dev
+1. Clone the repository to your local machine:
 
-# bun
-bun run dev
-```
+    ```bash
+    git clone https://github.com/Toys0125/Emergency-Class-Manager
+    ```
 
-### Compiles and minifies for production
+2. Navigate to the project directory:
 
-```
-# yarn
-yarn build
+    ```bash
+    cd Emergency-Class-Manager
+    ```
 
-# npm
-npm run build
+3. Install the project dependencies:
 
-# pnpm
-pnpm build
+    ```bash
+    npm install
+    ```
 
-# bun
-bun run build
-```
+4. Run the application in development mode:
 
-### Lints and fixes files
+    ```bash
+    npm run dev
+    ```
 
-```
-# yarn
-yarn lint
+The application should now be accessible at [http://localhost:3000](http://localhost:3000).
 
-# npm
-npm run lint
+## Usage
 
-# pnpm
-pnpm lint
-
-# bun
-bun run lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://vitejs.dev/config/).
+- Teachers can log in to the system, view events, and send reports to administration.
+- Administrators can access reports, users, classes, and create events for teachers to view.
