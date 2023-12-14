@@ -79,7 +79,7 @@ const supabaseRetrive = {
   },
   async count() {
     const { count, error } = await supabase
-      .from('Students')
+      .from('Perm Roaster')
       .select('*', { count: 'exact', head: true })
     if (error) {
       console.error(error)
@@ -114,7 +114,9 @@ const supabaseRetrive = {
         .from('Teacher Classes')
         .select('class_id')
         .eq('userEmail', userEmail)
-        .single();
+        .single()
+
+        console.log('class_id: ', teacherData.class_id)
 
       if (teacherError) {
         console.error('Error fetching teacher data:', teacherError);
@@ -237,35 +239,17 @@ export default {
     }
   }),
   async mounted() {
+    this.userData = await this.$root.userData
+    this.modalData.school_id = this.userData.school_id
     this.studentIds = await supabaseRetrive.fetchStudentIds()
   },
   methods: {
     async fetchUserData() {
       try {
-        const {
-          data: { user }
-        } = await supabase.auth.getUser()
-
-        if (user && user.email) {
-          const userEmail = user.email
-
-          const { data: userData, error: userError } = await supabase
-            .from('Users')
-            .select('school_id')
-            .eq('userEmail', userEmail)
-            .single()
-
-          console.log('school id: ' + userData.school_id)
-          if (userError) {
-            console.error('Error fetching user data:', userError)
-          } else {
-            this.school_id = userData.school_id
-          }
-
-          const { data: teacherData, error: teacherError } = await supabase
+        const { data: teacherData, error: teacherError } = await supabase
             .from('Teacher Classes')
             .select('class_id')
-            .eq('userEmail', userEmail)
+            .eq('userEmail', this.userData.userEmail)
             .single()
 
           console.log('class id: ' + teacherData.class_id)
@@ -278,10 +262,8 @@ export default {
         } else {
             this.class_id = teacherData.class_id
           }
-        } else {
-          console.error('User email not found.')
-        }
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Error fetching user data:', error)
       }
     },

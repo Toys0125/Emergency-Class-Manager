@@ -72,7 +72,8 @@ export default {
     };
   },
   async mounted() {
-    await this.fetchUserData();
+    this.userData = await this.$root.userData
+    this.school_id = this.userData.school_id
   },
   methods: {
     async addStudent() {
@@ -174,31 +175,7 @@ export default {
         return;
       }
     },
-    async fetchUserData() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user && user.email) {
-          const userEmail = user.email;
-
-          const { data: userData, error: userError } = await supabase
-            .from('Users')
-            .select('school_id')
-            .eq('userEmail', userEmail)
-            .single();
-          if (userError) {
-            console.error('Error fetching user data:', userError);
-          } else {
-
-            this.school_id = userData.school_id; // Set the school_id property
-          }
-        } else {
-          console.error('User email not found.');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    },
+    
     async updateData(data) {
       const { data: insertedData, error } = await supabase
         .from('Students')
