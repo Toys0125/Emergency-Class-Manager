@@ -32,7 +32,7 @@
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-app-bar-title class="align-self-center"><router-link to="/dashboard">
-          <v-img class="align-self-center pa-5" src="@/assets/Emergency Class Manager Logo.svg" max-height="50px"
+          <v-img class="align-self-center pa-5" src="@/assets/Emergency_Class_Manager_Logo.svg" max-height="50px"
             width="150px" to="/dashboard"></v-img>
         </router-link></v-app-bar-title>
 
