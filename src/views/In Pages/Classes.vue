@@ -47,7 +47,6 @@ const supabaseRetrive = {
     const { count, error } = await supabase
       .from('Classes')
       .select('*', { count: 'exact', head: true })
-      
     if (error) {
       console.error(error)
       this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
@@ -59,7 +58,7 @@ const supabaseRetrive = {
     var from = (page - 1) * itemsPerPage
     var to = page * itemsPerPage - 1
     console.log(from, to)
-    const { data, error } = await supabase.from('Classes').select('*').range(from, to).neq('removed', true)
+    const { data, error } = await supabase.from('Classes').select('*').range(from, to)
     console.log(data)
     if (error) {
       console.error(error)
