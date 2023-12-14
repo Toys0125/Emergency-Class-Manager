@@ -5,9 +5,9 @@
         <!-- Adjust the column width to take the full width of the container -->
         <v-card class="text-center" style="width: 100%;">
           <v-img
-            src="@/assets/IMG_2734.jpeg-PhotoRoom.png-PhotoRoom.png"
+            src="@/assets/Emergency Class Manager Logo.svg"
             alt="Emergency Image"
-            class="mb-3 smaller-image"
+            class="my-3 smaller-image"
           ></v-img>
           <v-card-title class="headline text-center">
             Welcome to Emergency Class Manager
