@@ -317,9 +317,10 @@ export default {
       const { error } = await supabase.from('Perm Roaster').insert(newrows)
 
       if (error) {
-        console.error('Error saving changes:', error)
+        console.error('Error adding students:', error)
         errorcheck = true
         this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+        return
       }
       if (
         this.modalData.className.length > 4 &&
@@ -334,6 +335,7 @@ export default {
           console.error('Error Class Name changes:', error)
           errorcheck = true
           this.$root.snackbar.show({ text: 'Error check log', timeout: 10000, color: 'red' })
+          return;
         }
       }
       if (!errorcheck) {
@@ -365,7 +367,6 @@ export default {
       }
     },
     async addStudent() {
-      try {
         const exists = this.rows.find(
           (value) => value.student_id === this.searchData.selected.student_id
         )
@@ -373,26 +374,6 @@ export default {
         if (!exists) {
           this.addedRows.push(this.searchData.selected)
           this.rows.push(this.searchData.selected)
-
-          const { error } = await supabase
-            .from('Students')
-            .update({ class_id: this.modalData.class_id })
-            .eq('student_id', this.searchData.selected.student_id)
-
-          if (error) {
-            console.error('Error updating class_id in Students table:', error)
-            this.$root.snackbar.show({
-              text: 'Error updating class for the student',
-              timeout: 5000,
-              color: 'red'
-            })
-          } else {
-            this.$root.snackbar.show({
-              text: 'Student added to class successfully',
-              timeout: 5000,
-              color: 'green'
-            })
-          }
         } else {
           this.$root.snackbar.show({
             text: 'Student already in the list.',
@@ -402,14 +383,6 @@ export default {
         }
 
         this.searchData.selected = null
-      } catch (error) {
-        console.error('Error in addStudent method:', error)
-        this.$root.snackbar.show({
-          text: 'An error occurred while adding the student to the class',
-          timeout: 5000,
-          color: 'red'
-        })
-      }
     },
 
     async removeRow(rowdata) {
